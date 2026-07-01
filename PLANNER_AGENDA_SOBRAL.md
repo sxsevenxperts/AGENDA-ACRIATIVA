@@ -1,12 +1,37 @@
 # Planner Agenda Sobral
 
-Atualizado em: 2026-07-01 (revisão E2E + menu/gov.br/acessos)
+Atualizado em: 2026-07-01 (revisão E2E + menu/gov.br/acessos + tipografia + fix de cache/CDN)
 
 ## Objetivo do aplicativo
 
 Criar uma plataforma municipal de agendamento onde o usuário acessa todos os departamentos, secretarias, unidades e equipamentos públicos disponíveis, escolhe serviço, unidade, data, horário e assunto, recebe senha virtual e valida sua presença no equipamento público.
 
 O acesso Departamento/Secretaria é institucional, escolhido em caixa de seleção na tela de login, e deve visualizar apenas os dados daquele departamento e de seus equipamentos, alimentados pelos agendamentos dos usuários.
+
+## Estado consolidado (revisão criteriosa — 01/07/2026)
+
+Legenda: ✅ pronto e verificado no preview · 🟪 pronto (código), sem verificação de ponta a ponta · 🟡 parcial · 🔒 bloqueado por backend/credencial externa · ⬜ não iniciado
+
+| Área | Status | Como está / o que falta |
+|------|--------|--------------------------|
+| Landing, catálogo (23 secretarias / 62 unidades / 135 serviços) | ✅ | Renderiza, busca funcional |
+| Busca + sugestão de serviços similares + reportar falta à Ouvidoria | ✅ | Sem match exato abre modal de sugestões; registra a busca |
+| Histórico de buscas do cidadão (`#/historico-buscas`) | ✅ | Lista termos, contagem de resultados |
+| Login CPF (cidadão) + institucional (departamento) + demos | ✅ | Fluxos e guardas de rota testados |
+| Login/cadastro **gov.br** | 🟡 | Botão oficial pronto; redireciona se `window.GOVBR_AUTH_URL`. OAuth real depende de credenciamento no portal gov.br |
+| Menu contextual ☰ por perfil + Sair | ✅ | Navegação/Conta/Métricas/Ajuda; fecha ao navegar/ESC/fora |
+| Agendamento (secretaria→equipamento→serviço→data→hora→senha) | ✅ | Fluxo core validado E2E |
+| Código de validação virtual + comprovante com QR | ✅ | Gera e exibe |
+| Validação no equipamento + fila (chamar/atender/falta) | ✅ | Escopo por equipamento respeitado |
+| Histórico do cidadão (próximos/atendidos/cancelados/faltas) | ✅ | Corrigido `usuario_id`, status `confirmado`, senha |
+| Perfil (dados, foto, edição) | ✅ | |
+| Gestão de Acessos por departamento (`#/admin/acessos`) | ✅ | Cria/ativa/desativa acesso de cada equipamento, isolado ao departamento |
+| Métricas KPI/OKR + relatório por departamento + NPS + avaliações | ✅ | Renderizam; drill-down por equipamento é 🟡 |
+| Analytics (FAQ/dúvidas, avaliações, rastreamento, cancelamentos, buscas) | 🟪 | Módulo `analytics.js` completo; timeline visual de rastreamento é 🟡 |
+| Rodapé com links reais (Prefeitura, Ouvidoria, Transparência, Diário) + Maps/tel | ✅ | Também nas telas de acesso no mobile |
+| Tipografia premium (Montserrat + Inter) | ✅ | Aplicada em display/UI |
+| PWA / atualização de versão (SW versionado, network-first) | ✅ | Registra `sw.js?v=N`; recarrega ao trocar de SW. **Requer purge único no Cloudflare para destravar quem já visitou** |
+| **Supabase (backend real)** | 🔒 | Schema/adapter existem no repo, mas o app em execução **NÃO** usa Supabase — roda 100% em `localStorage`. Ver "Status verificado" abaixo |
 
 ## Entregas já realizadas
 
@@ -125,6 +150,8 @@ O projeto atual é um PWA estático. A camada de back-end funcional está simula
 
 ### Fase 1 - Back-end real
 
+> ⚠️ **Ressalva criteriosa:** os itens `[x]` abaixo referem-se à **modelagem no repositório** (schema SQL, RLS, RPCs, seed e adapter `js/supabaseClient.js`). **O app em execução NÃO está conectado ao Supabase** — nenhum módulo do front chama o adapter e não há anon key real configurada. A "virada" para o Supabase (Fase 3) continua pendente. Mesmo que a migration já tenha sido aplicada no banco remoto, isso não afeta o app enquanto o front não for religado.
+
 - [x] Criar schema Supabase isolado para Agenda Sobral.
 - [x] Modelar tabelas:
   - `profiles`
@@ -230,6 +257,26 @@ O projeto atual é um PWA estático. A camada de back-end funcional está simula
 - Todas as operações sensíveis ficam auditadas.
 - Deploy em EasyPanel funciona com HTTPS e banco remoto.
 
+## O que ainda precisa ser feito (backlog priorizado)
+
+### Curtíssimo prazo (operacional, sem código)
+1. **Cloudflare:** *Purge Everything* uma vez para destravar quem já visitou; criar *Cache Rule* de **Bypass cache** para `/sw.js`, `/index.html` e `/`.
+2. **Segurança:** revogar o token do GitHub exposto no chat e nunca colar credenciais em conversas.
+
+### Curto prazo (front, sem depender de backend novo)
+3. **Timeline de rastreamento** por atendimento (entrada→chamada→conclusão) + tempos médios de fila/atendimento no painel do gestor (dados já coletados em `analytics.js`).
+4. **Drill-down por equipamento** com KPI/OKR individual (hoje o relatório agrega por departamento).
+5. **Cancelamento com motivo** no fluxo do cidadão (registro já suportado em `analytics.js`).
+6. **Dashboard do cidadão v2:** próximo agendamento em destaque + tempo estimado de espera.
+
+### Médio prazo (backend/credenciais externas — bloqueado)
+7. **Conectar Supabase de verdade (Fase 3):** anon key real no `index.html`, confirmar schema no Easypanel e religar `Storage/Auth` ao `AgendaSobralSupabase` com fallback local. Sem isso, tudo segue em `localStorage`.
+8. **gov.br OAuth:** credenciar o serviço no portal gov.br e configurar `window.GOVBR_AUTH_URL` + callback.
+9. **Notificações e lembretes** (push 24h antes; e-mail/SMS de confirmação com opt-in) — exigem gateway/servidor.
+
+### Longo prazo (value-add)
+10. Relatório executivo em PDF; analytics de "melhor horário"; rating do servidor; agendamento recorrente; integração com Google/Outlook Calendar; gamificação; acessibilidade WCAG 2.1 AA; testes E2E (Cypress/Playwright).
+
 ## Próxima execução recomendada
 
-Iniciar a troca gradual do front para `AgendaSobralSupabase`, mantendo fallback local até todos os fluxos estarem conectados ao Supabase remoto.
+Itens **3 a 6** (front, sem dependência externa) rendem valor imediato para gestores e cidadãos. Em paralelo, destravar o cache no Cloudflare (item 1). A virada para Supabase (item 7) é o marco que transforma o protótipo em produção multiusuário, mas depende de credencial/infra do cliente.
