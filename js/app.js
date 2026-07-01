@@ -30,6 +30,7 @@ const App = (function() {
     '/admin/relatorio-departamento': renderRelatorioDepartamento,
     '/admin/duvidas': renderAdminDuvidas,
     '/admin/avaliacoes': renderAdminAvaliacoes,
+    '/admin/acessos': renderAdminAcessos,
     '/admin/queue-display': renderQueueDisplay,
     '/ouvidoria': renderOuvidoria,
     '/termos': renderTermos,
@@ -156,9 +157,9 @@ const App = (function() {
         item('#/admin', 'Dashboard', 'grid'),
         item('#/admin/validar', 'Validar Senha', 'check'),
         item('#/admin/fila', 'Fila de Atendimento', 'users'),
-        item('#/admin/horarios', 'Agenda', 'calendar'),
         item('#/admin/horarios', 'Gestão de Horários', 'clock'),
-        item('#/admin/servicos', 'Serviços Ofertados', 'file')
+        item('#/admin/servicos', 'Serviços Ofertados', 'file'),
+        item('#/admin/acessos', 'Gestão de Acessos', 'lock')
       ]);
       html += group('Métricas & Relatórios', [
         item('#/admin/metricas', 'Métricas (KPI/OKR)', 'chart'),
@@ -460,6 +461,12 @@ const App = (function() {
                 </div>
 
                 <button type="submit" class="btn btn-primary w-full mt-4">Entrar</button>
+
+                <div class="govbr-divider"><span>ou</span></div>
+                <button type="button" class="btn-govbr w-full" onclick="App.loginGovBr()">
+                  Entrar com <strong>gov.br</strong>
+                </button>
+                <p class="text-xs text-secondary text-center mt-2">Login único do Governo Federal — sua identidade digital.</p>
 
                 <div class="text-center mt-4" style="display: flex; flex-direction: column; gap: 8px;">
                   <p class="text-sm"><a href="#/esqueceu-senha" class="text-primary font-bold">Esqueceu a senha?</a></p>
@@ -1376,6 +1383,12 @@ const App = (function() {
 
                 <button type="submit" class="btn btn-primary w-full mt-4">Criar Conta</button>
 
+                <div class="govbr-divider"><span>ou</span></div>
+                <button type="button" class="btn-govbr w-full" onclick="App.loginGovBr()">
+                  Cadastrar com <strong>gov.br</strong>
+                </button>
+                <p class="text-xs text-secondary text-center mt-2">Use sua identidade digital do Governo Federal para se cadastrar mais rápido.</p>
+
                 <div class="text-center mt-4">
                   <p class="text-sm">Já tem conta? <a href="#/login" class="text-primary font-bold">Entre aqui</a></p>
                 </div>
@@ -1814,6 +1827,44 @@ const App = (function() {
       }
     }
     if (res && !res.success) Utils.showToast(res.error, 'error');
+  }
+
+  /**
+   * Login com gov.br (SSO do Governo Federal).
+   * Quando as credenciais OAuth estiverem provisionadas (client_id + redirect
+   * registrados no gov.br), define-se window.GOVBR_AUTH_URL e o botão redireciona
+   * para o fluxo oficial. Sem isso, informamos que a integração está pendente.
+   */
+  function loginGovBr() {
+    if (window.GOVBR_AUTH_URL) {
+      window.location.href = window.GOVBR_AUTH_URL;
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="card p-6" role="dialog" aria-modal="true" style="max-width: 440px; width: 100%;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <h3 class="font-bold text-lg">Entrar com gov.br</h3>
+          <button class="btn btn-icon btn-ghost" aria-label="Fechar" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+        <p class="text-sm text-secondary" style="line-height:1.5;">
+          A entrada com <strong>gov.br</strong> usa a identidade digital única do Governo Federal.
+          A integração oficial (OAuth do gov.br) precisa ser habilitada pela Prefeitura com o
+          cadastro do serviço no portal de credenciamento gov.br.
+        </p>
+        <div class="alert alert-info mt-3" style="font-size:13px;">
+          ${Utils.getIcon('info') || ''} Enquanto a credencial não é ativada, use o CPF e senha do app ou o acesso demo.
+        </div>
+        <div class="mt-4" style="display:flex; gap:8px;">
+          <button class="btn btn-primary" style="flex:1;" onclick="this.closest('.modal-overlay').remove(); App.loginDemo('cidadao')">Usar acesso demo</button>
+          <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Fechar</button>
+        </div>
+      </div>
+    `;
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
   }
 
   function goToAgendamento() {
@@ -2877,9 +2928,11 @@ const App = (function() {
                 <tr style="border-top:1px solid var(--border-color);">
                   <td style="padding:12px 16px;">${Utils.sanitizeHTML(b.termo)}</td>
                   <td style="text-align:center; padding:12px 16px;">
-                    ${b.encontrou === false
+                    ${b.resultados === 0
                       ? '<span class="badge badge-warning">Sem resultado</span>'
-                      : `<span class="badge badge-success">${b.resultados != null ? b.resultados : '—'}</span>`}
+                      : (b.encontrou === false
+                          ? `<span class="badge badge-info">${b.resultados} similar${b.resultados === 1 ? '' : 'es'}</span>`
+                          : `<span class="badge badge-success">${b.resultados != null ? b.resultados : '—'}</span>`)}
                   </td>
                   <td style="text-align:right; padding:12px 16px; color:var(--text-secondary); font-size:13px;">${new Date(b.buscado_em).toLocaleString('pt-BR')}</td>
                   <td style="text-align:right; padding:12px 16px;">
@@ -2903,6 +2956,122 @@ const App = (function() {
   function buscarNovamente(termo) {
     sessionStorage.setItem('sobral_hero_search', termo);
     goToAgendamento();
+  }
+
+  /* ========================================================================
+     GESTÃO DE ACESSOS DO DEPARTAMENTO
+     Cada equipamento público do departamento tem seu próprio acesso,
+     cadastrado e gerenciado pelo acesso do departamento/secretaria.
+     ======================================================================== */
+
+  function renderAdminAcessos() {
+    const session = Auth.getSession();
+    if (!session || session.type !== 'admin') { window.location.hash = '#/login'; return; }
+
+    const secretaria = Auth.getAdminSecretaria();
+    const equipIds = Auth.getAdminEquipamentos() || [];
+    const equipamentos = (SobralData.equipamentos || []).filter(e => equipIds.includes(e.id));
+    const admins = Storage.getAdmins();
+
+    const linhas = equipamentos.map(eq => {
+      const acesso = admins.find(a => a.equipamento_id === eq.id);
+      const emailPadrao = `admin@${eq.id}.sobral.ce.gov.br`;
+      return `
+        <tr style="border-top:1px solid var(--border-color);">
+          <td style="padding:12px 16px;">
+            <div class="font-bold">${Utils.sanitizeHTML(eq.nome)}</div>
+            <div class="text-xs text-secondary">${Utils.sanitizeHTML(eq.tipo || '')}${eq.bairro ? ' · ' + Utils.sanitizeHTML(eq.bairro) : ''}</div>
+          </td>
+          <td style="padding:12px 16px; font-family:monospace; font-size:13px;">${Utils.sanitizeHTML(acesso ? acesso.email : emailPadrao)}</td>
+          <td style="text-align:center; padding:12px 16px;">
+            ${acesso
+              ? (acesso.ativo === false
+                  ? '<span class="badge badge-warning">Inativo</span>'
+                  : '<span class="badge badge-success">Ativo</span>')
+              : '<span class="badge badge-info">Sem acesso</span>'}
+          </td>
+          <td style="text-align:right; padding:12px 16px;">
+            ${acesso
+              ? `<button class="btn btn-sm btn-ghost" onclick="App.toggleAcessoEquipamento('${acesso.id}')">${acesso.ativo === false ? 'Reativar' : 'Desativar'}</button>`
+              : `<button class="btn btn-sm btn-primary" onclick="App.criarAcessoEquipamento('${eq.id}')">Criar acesso</button>`}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Gestão de Acessos</h1>
+        <p class="page-subtitle">Acessos dos equipamentos públicos de <strong>${Utils.sanitizeHTML(secretaria ? secretaria.nome : 'seu departamento')}</strong>. Cada equipamento tem login próprio, vinculado a este departamento.</p>
+      </div>
+
+      <div class="alert alert-info mb-4" style="font-size:13px;">
+        ${Utils.getIcon('info') || ''} Os acessos criados aqui ficam atrelados ao seu departamento. A senha inicial padrão é <strong>admin123</strong> e deve ser trocada no primeiro acesso do equipamento.
+      </div>
+
+      <div class="card p-0" style="overflow:hidden;">
+        <table class="data-table" style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="text-align:left; padding:12px 16px;">Equipamento público</th>
+              <th style="text-align:left; padding:12px 16px;">Login de acesso</th>
+              <th style="text-align:center; padding:12px 16px;">Situação</th>
+              <th style="text-align:right; padding:12px 16px;">Ação</th>
+            </tr>
+          </thead>
+          <tbody>${linhas || `<tr><td colspan="4" style="padding:24px; text-align:center; color:var(--text-secondary);">Nenhum equipamento vinculado a este departamento.</td></tr>`}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function criarAcessoEquipamento(equipamentoId) {
+    const secretaria = Auth.getAdminSecretaria();
+    const eq = (SobralData.equipamentos || []).find(e => e.id === equipamentoId);
+    if (!eq || !secretaria) { Utils.showToast('Equipamento inválido.', 'error'); return; }
+
+    // Só permite criar acesso para equipamento do próprio departamento
+    const equipIds = Auth.getAdminEquipamentos() || [];
+    if (!equipIds.includes(equipamentoId)) {
+      Utils.showToast('Este equipamento não pertence ao seu departamento.', 'error');
+      return;
+    }
+
+    const admins = Storage.getAdmins();
+    if (admins.some(a => a.equipamento_id === equipamentoId)) {
+      Utils.showToast('Este equipamento já possui acesso.', 'info');
+      return;
+    }
+
+    admins.push({
+      id: Utils.generateId ? Utils.generateId() : 'adm_' + Date.now(),
+      nome: 'Operador — ' + eq.nome,
+      email: `admin@${equipamentoId}.sobral.ce.gov.br`,
+      senha: 'admin123',
+      role: 'equipamento_admin',
+      equipamento_id: equipamentoId,
+      secretaria_id: eq.secretaria_id,
+      ativo: true,
+      criado_em: new Date().toISOString()
+    });
+    Storage.saveAdmins(admins);
+    Utils.showToast('Acesso criado e vinculado ao departamento.', 'success');
+    renderAdminAcessos();
+  }
+
+  function toggleAcessoEquipamento(adminId) {
+    const equipIds = Auth.getAdminEquipamentos() || [];
+    const admins = Storage.getAdmins();
+    const admin = admins.find(a => a.id === adminId);
+    if (!admin) { Utils.showToast('Acesso não encontrado.', 'error'); return; }
+    if (!equipIds.includes(admin.equipamento_id)) {
+      Utils.showToast('Sem permissão sobre este acesso.', 'error');
+      return;
+    }
+    admin.ativo = admin.ativo === false;
+    Storage.saveAdmins(admins);
+    Utils.showToast(admin.ativo ? 'Acesso reativado.' : 'Acesso desativado.', 'success');
+    renderAdminAcessos();
   }
 
   /* ========================================================================
@@ -3508,11 +3677,14 @@ const App = (function() {
     toggleMobileMenu,
     secretariaEmblem,
     loginDemo,
+    loginGovBr,
     goToAgendamento,
     handleHeroSearch,
     irParaServicoSugerido,
     reportarServicoFalta,
     buscarNovamente,
+    criarAcessoEquipamento,
+    toggleAcessoEquipamento,
     showComprovante,
     submitOuvidoria,
     showNpsModal,

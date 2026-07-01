@@ -1,6 +1,6 @@
 # Planner Agenda Sobral
 
-Atualizado em: 2026-07-01
+Atualizado em: 2026-07-01 (revisão E2E + menu/gov.br/acessos)
 
 ## Objetivo do aplicativo
 
@@ -38,6 +38,15 @@ O acesso Departamento/Secretaria é institucional, escolhido em caixa de seleç�
 - Adapter front-end Supabase adicionado sem quebrar o modo local com `localStorage`.
 - Seed script criado para sincronizar departamentos, equipamentos e serviços do scraper/local data para o Supabase.
 - Documentação operacional do Supabase/EasyPanel criada em `SUPABASE_AGENDA_SOBRAL.md`.
+
+### Entregas desta sessão (menu, gov.br, acessos)
+
+- Menu contextual ☰ reescrito como painel dinâmico por perfil (Navegação, Conta, Métricas & Relatórios, Ajuda) com **Sair do acesso**; fecha ao navegar, clicar fora ou ESC. Ícones ausentes (`help`, `message`, `grid`, `users`, `file`, `star`) adicionados a `SobralData.icones`.
+- **Gestão de Acessos por departamento** (`#/admin/acessos`): cada equipamento público do departamento tem login próprio, criado/ativado/desativado pelo acesso do departamento e isolado ao departamento (via `Storage.saveAdmins`).
+- **Login/cadastro com gov.br**: botão oficial nas telas de login e criar conta; redireciona quando `window.GOVBR_AUTH_URL` estiver configurado; sem credencial, informa que a integração OAuth depende do credenciamento do serviço no portal gov.br.
+- Rodapé com links reais: Prefeitura, Ouvidoria interna, Transparência (`transparencia.sobral.ce.gov.br`), Diário Oficial (`diario.sobral.ce.gov.br`); endereço abre no Google Maps e telefone via `tel:`.
+- Padding de borda dos containers melhorado (responsivo 20/24/32px).
+- Cache-busting `?v=8` em todos os CSS/JS + `sw.js` v8 (corrige navegador servindo CSS/JS antigos).
 
 ## Revisão técnica realizada
 
@@ -85,6 +94,11 @@ O projeto atual é um PWA estático. A camada de back-end funcional está simula
 - O fluxo de UX e as regras de escopo já estão alinhados com o produto desejado.
 - Para operação real multiusuário, a base Supabase já está modelada em migration. O próximo passo é manter a evolução gradual dos fluxos de tela para o adapter Supabase, preservando fallback local até a virada completa.
 
+### Status verificado em 01/07/2026 (importante)
+
+- **Supabase NÃO está conectado ao app em execução.** O adapter `js/supabaseClient.js` existe, mas nenhum módulo (`storage/auth/app/scheduling/admin`) o chama, e não há anon key real (`js/config.example.js` tem placeholder). Tudo roda em `localStorage`. Para ativar: anon key real + schema executado no Easypanel + carregar config no `index.html` + ligar o adapter à camada storage/auth.
+- **gov.br é UI-only.** O botão existe e redireciona quando `window.GOVBR_AUTH_URL` for definido; o OAuth real exige credenciamento do serviço no portal gov.br (client_id + redirect_uri).
+
 ## Plano para ficar 100% funcional em produção
 
 ### Fase 1 - Back-end real
@@ -123,6 +137,8 @@ O projeto atual é um PWA estático. A camada de back-end funcional está simula
 - Criar convites e permissões por equipamento.
 - Implementar recuperação de senha.
 - Implementar trilha de auditoria para alterações de agenda, serviço e desfecho.
+- [parcial] Cadastro/ativação de acessos de equipamento pelo departamento (feito em `localStorage` via `#/admin/acessos`; migrar para Supabase).
+- [pendente] **Integração gov.br OAuth**: credenciar o serviço no portal gov.br e configurar `window.GOVBR_AUTH_URL` + callback.
 
 ### Fase 3 - Integração front/back
 

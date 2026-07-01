@@ -106,6 +106,58 @@
   }
 }
 
+/* --- Botão gov.br --- */
+.btn-govbr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid #1351B4;
+  background: #FFFFFF;
+  color: #1351B4;
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-govbr strong {
+  color: #1351B4;
+  font-weight: var(--font-bold);
+}
+
+.btn-govbr:hover {
+  background: #1351B4;
+  color: #FFFFFF;
+}
+
+.btn-govbr:hover strong {
+  color: #FFC845;
+}
+
+.govbr-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  margin: var(--space-4) 0 var(--space-3);
+}
+
+.govbr-divider::before,
+.govbr-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.govbr-divider span {
+  padding: 0 var(--space-3);
+}
+
 /* --- Sugestão de serviços (busca sem correspondência) --- */
 .sugestao-list {
   display: flex;
