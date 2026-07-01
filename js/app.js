@@ -26,13 +26,17 @@ const App = (function() {
     '/admin/fila': renderAdminFila,
     '/admin/relatorios': renderAdminRelatorios,
     '/admin/metricas': renderAdminMetricas,
+    '/admin/relatorio-departamento': renderRelatorioDepartamento,
+    '/admin/duvidas': renderAdminDuvidas,
+    '/admin/avaliacoes': renderAdminAvaliacoes,
     '/admin/queue-display': renderQueueDisplay,
     '/ouvidoria': renderOuvidoria,
     '/termos': renderTermos,
     '/privacidade': renderPrivacidade,
     '/lgpd': renderLGPD,
     '/esqueceu-senha': renderEsqueciSenha,
-    '/criar-conta': renderCriarConta
+    '/criar-conta': renderCriarConta,
+    '/duvidas': renderDuvidas
   };
 
   /**
@@ -2762,6 +2766,408 @@ const App = (function() {
     `;
   }
 
+  /* ========================================================================
+     DÚVIDAS COMUNS (FAQ)
+     ======================================================================== */
+
+  function renderDuvidas() {
+    const session = Auth.getSession();
+    const duvidas = Analytics.getRankingDuvidas();
+    const todasDuvidas = Analytics.getDuvidas();
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Dúvidas Comuns</h1>
+        <p class="page-subtitle">Encontre respostas para as perguntas mais frequentes ou crie uma nova dúvida</p>
+      </div>
+
+      <div class="grid-2 gap-6 mb-6">
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Top Dúvidas 🔥</h2>
+          <div class="faq-ranking">
+            ${duvidas.length ? duvidas.slice(0, 10).map(d => `
+              <div class="faq-item" onclick="App.abrirDuvida('${d.duvida_id}')" style="cursor: pointer; padding: 12px; border-left: 4px solid #4CAF50; margin-bottom: 8px; background: #f5f5f5; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                  <div style="flex: 1;">
+                    <strong style="color: #1D467A;">#${d.rank} - ${Utils.sanitizeHTML(d.titulo)}</strong>
+                    <span class="text-xs text-secondary" style="display: block; margin-top: 4px;">👀 ${d.hits} visualizações · ${d.status === 'respondida' ? '✓ Respondida' : '⏳ Aguardando'}</span>
+                  </div>
+                </div>
+              </div>
+            `).join('') : '<p class="text-secondary">Nenhuma dúvida registrada ainda.</p>}
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Sua Dúvida</h2>
+          <form id="form-nova-duvida" onsubmit="App.submeterNovaDuvida(event)">
+            <div class="input-group mb-4">
+              <label class="input-label">Qual sua dúvida? *</label>
+              <input type="text" class="input-field" id="duvida-titulo" placeholder="Ex: Como agendar uma consulta?" required>
+            </div>
+            <div class="input-group mb-4">
+              <label class="input-label">Detalhes *</label>
+              <textarea class="textarea-field" id="duvida-descricao" placeholder="Descreva sua dúvida com detalhes..." rows="4" required></textarea>
+            </div>
+            <div class="input-group mb-4">
+              <label class="input-label">Email (para resposta)</label>
+              <input type="email" class="input-field" id="duvida-email" placeholder="seu@email.com">
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Dúvida</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-4">Todas as Dúvidas (${todasDuvidas.length})</h2>
+        <div class="duvidas-list">
+          ${todasDuvidas.length ? todasDuvidas.map(d => `
+            <div class="card p-4 mb-3" onclick="App.abrirDuvida('${d.id}')" style="cursor: pointer; border-left: 4px solid ${d.status === 'respondida' ? '#4CAF50' : '#FF9800'}">
+              <h3 class="font-bold text-base mb-1">${Utils.sanitizeHTML(d.titulo)}</h3>
+              <p class="text-sm text-secondary mb-2">${Utils.sanitizeHTML(d.descricao.substring(0, 100))}...</p>
+              <div class="text-xs text-secondary">
+                <span>${d.hits} visualizações</span> ·
+                <span>${d.respostas.length} respostas</span> ·
+                <span>${d.status === 'respondida' ? '✓ Respondida' : '⏳ Aguardando resposta'}</span>
+              </div>
+            </div>
+          `).join('') : '<p class="text-secondary">Nenhuma dúvida ainda. Seja o primeiro a perguntar!</p>}
+        </div>
+      </div>
+    `;
+  }
+
+  function submeterNovaDuvida(event) {
+    event.preventDefault();
+    const titulo = document.getElementById('duvida-titulo').value.trim();
+    const descricao = document.getElementById('duvida-descricao').value.trim();
+    const email = document.getElementById('duvida-email').value.trim() || null;
+
+    const resultado = Analytics.criarDuvida({ titulo, descricao, email });
+    if (resultado.success) {
+      Utils.showToast('Dúvida criada com sucesso! Obrigado por contribuir.', 'success');
+      setTimeout(() => renderDuvidas(), 1000);
+    } else {
+      Utils.showToast(resultado.error, 'error');
+    }
+  }
+
+  function abrirDuvida(duvida_id) {
+    const duvida = Analytics.getDuvidas().find(d => d.id === duvida_id);
+    if (!duvida) return;
+
+    Analytics.registrarVisualizacaoDuvida(duvida_id);
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <button class="text-primary mb-4" onclick="window.history.back()" style="background: none; border: none; cursor: pointer; font-weight: bold;">← Voltar</button>
+        <h1 class="page-title">${Utils.sanitizeHTML(duvida.titulo)}</h1>
+        <p class="page-subtitle">
+          ${duvida.status === 'respondida' ? '✓ Respondida' : '⏳ Aguardando resposta'} ·
+          👀 ${duvida.hits} visualizações
+        </p>
+      </div>
+
+      <div class="card p-6 mb-6">
+        <p class="text-base mb-4">${Utils.sanitizeHTML(duvida.descricao)}</p>
+        <div class="text-sm text-secondary">
+          Dúvida criada em ${Utils.formatDate(duvida.criada_em)}
+        </div>
+      </div>
+
+      ${duvida.respostas.length ? `
+        <div class="card p-6 mb-6">
+          <h2 class="text-lg font-bold mb-4">Respostas (${duvida.respostas.length})</h2>
+          ${duvida.respostas.map(r => `
+            <div class="card p-4 mb-3" style="background: #f0f7ff; border-left: 4px solid #2196F3;">
+              <p class="mb-2">${Utils.sanitizeHTML(r.texto)}</p>
+              <div class="text-xs text-secondary">Respondido em ${Utils.formatDate(r.respondida_em)}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : '<div class="card p-6 mb-6 bg-warning-light">Essa dúvida ainda não foi respondida. Queremos resolução rápida para você!</div>'}
+    `;
+  }
+
+  /* ========================================================================
+     ADMIN - DÚVIDAS (Gestor)
+     ======================================================================== */
+
+  function renderAdminDuvidas() {
+    const duvidas = Analytics.getDuvidas();
+    const ranking = Analytics.getRankingDuvidas(20);
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Gerenciar Dúvidas</h1>
+        <p class="page-subtitle">Responda dúvidas dos cidadãos e analise perguntas mais comuns</p>
+      </div>
+
+      <div class="grid-2 gap-6 mb-6">
+        <div class="card p-6">
+          <div class="text-sm text-secondary uppercase font-bold">Total de Dúvidas</div>
+          <div class="text-3xl font-extrabold mt-2">${duvidas.length}</div>
+        </div>
+        <div class="card p-6">
+          <div class="text-sm text-secondary uppercase font-bold">Respondidas</div>
+          <div class="text-3xl font-extrabold mt-2">${duvidas.filter(d => d.status === 'respondida').length}</div>
+        </div>
+      </div>
+
+      <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4">Ranking de Dúvidas Mais Comuns</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e0e0e0;">
+              <th style="text-align: left; padding: 12px; font-weight: bold;">#</th>
+              <th style="text-align: left; padding: 12px; font-weight: bold;">Dúvida</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Visualizações</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Status</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${ranking.map((r, idx) => `
+              <tr style="border-bottom: 1px solid #f0f0f0;">
+                <td style="padding: 12px; font-weight: bold;">${idx + 1}</td>
+                <td style="padding: 12px;">${Utils.sanitizeHTML(r.titulo)}</td>
+                <td style="text-align: center; padding: 12px;">${r.hits}</td>
+                <td style="text-align: center; padding: 12px;">
+                  <span style="background: ${r.status === 'respondida' ? '#4CAF5030' : '#FF980030'}; color: ${r.status === 'respondida' ? '#4CAF50' : '#FF9800'}; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                    ${r.status === 'respondida' ? '✓ Respondida' : '⏳ Pendente'}
+                  </span>
+                </td>
+                <td style="text-align: center; padding: 12px;">
+                  <button class="btn btn-sm btn-primary" onclick="App.abrirRespostaDuvida('${r.duvida_id}')">Responder</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function abrirRespostaDuvida(duvida_id) {
+    const duvida = Analytics.getDuvidas().find(d => d.id === duvida_id);
+    if (!duvida) return;
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <button class="text-primary mb-4" onclick="window.history.back()" style="background: none; border: none; cursor: pointer; font-weight: bold;">← Voltar</button>
+        <h1 class="page-title">Responder Dúvida</h1>
+      </div>
+
+      <div class="card p-6 mb-6" style="background: #f5f5f5;">
+        <h3 class="font-bold mb-2">${Utils.sanitizeHTML(duvida.titulo)}</h3>
+        <p class="text-sm mb-2">${Utils.sanitizeHTML(duvida.descricao)}</p>
+        <div class="text-xs text-secondary">${duvida.respostas.length} respostas · ${duvida.hits} visualizações</div>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-4">Sua Resposta</h2>
+        <form id="form-resposta-duvida" onsubmit="App.submeterRespostaDuvida(event, '${duvida_id}')">
+          <div class="input-group mb-4">
+            <label class="input-label">Resposta *</label>
+            <textarea class="textarea-field" id="resposta-texto" placeholder="Digite sua resposta de forma clara e objetiva..." rows="6" required></textarea>
+          </div>
+          <div class="flex gap-2 justify-end">
+            <button type="button" class="btn btn-secondary" onclick="window.history.back()">Voltar</button>
+            <button type="submit" class="btn btn-primary">Enviar Resposta</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function submeterRespostaDuvida(event, duvida_id) {
+    event.preventDefault();
+    const resposta = document.getElementById('resposta-texto').value.trim();
+
+    const resultado = Analytics.responderDuvida(duvida_id, resposta);
+    if (resultado.success) {
+      Utils.showToast('Resposta publicada com sucesso!', 'success');
+      setTimeout(() => renderAdminDuvidas(), 1000);
+    } else {
+      Utils.showToast(resultado.error, 'error');
+    }
+  }
+
+  /* ========================================================================
+     ADMIN - AVALIAÇÕES DE SERVIÇO
+     ======================================================================== */
+
+  function renderAdminAvaliacoes() {
+    const servicos = (SobralData.servicos || []).slice(0, 20);
+    const avaliacoes = [];
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Avaliações de Serviço</h1>
+        <p class="page-subtitle">Qualidade do atendimento, tempo de espera e satisfação dos cidadãos</p>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-4">Ranking de Serviços</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e0e0e0;">
+              <th style="text-align: left; padding: 12px; font-weight: bold;">Serviço</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Avaliações</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Satisfação</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Atendimento</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Tempo Espera</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Recomenda</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${servicos.map(s => {
+              const aval = Analytics.getAvaliacoesPorServico(s.id);
+              return `
+                <tr style="border-bottom: 1px solid #f0f0f0;">
+                  <td style="padding: 12px;">${Utils.sanitizeHTML(s.nome)}</td>
+                  <td style="text-align: center; padding: 12px;">${aval ? aval.total : 0}</td>
+                  <td style="text-align: center; padding: 12px; font-weight: bold; color: ${aval && aval.score_medio >= 7 ? '#4CAF50' : '#FF9800'};">${aval ? aval.score_medio + '/10' : '—'}</td>
+                  <td style="text-align: center; padding: 12px;">${aval ? aval.atendimento_medio + '/5' : '—'}</td>
+                  <td style="text-align: center; padding: 12px;">${aval ? aval.tempo_espera_medio + '/5' : '—'}</td>
+                  <td style="text-align: center; padding: 12px;">${aval ? aval.taxa_recomendacao : '—'}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  /* ========================================================================
+     ADMIN - RELATÓRIO POR DEPARTAMENTO
+     ======================================================================== */
+
+  function renderRelatorioDepartamento() {
+    const secretarias = Scheduling.getSecretarias();
+    const hoje = new Date();
+    const dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
+    const dataFim = Utils.formatDateISO(hoje);
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Relatório por Departamento</h1>
+        <p class="page-subtitle">Análise consolidada de agendamentos, senhas e atendimentos por secretaria</p>
+      </div>
+
+      <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4">Filtros</h2>
+        <div class="grid-2 gap-4">
+          <div class="input-group">
+            <label class="input-label">Secretaria</label>
+            <select class="select-field" id="relatorio-secretaria" onchange="App.atualizarRelatorioDepartamento()">
+              <option value="">Selecione uma secretaria...</option>
+              ${secretarias.map(s => `<option value="${s.id}">${s.nome}</option>`).join('')}
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Período</label>
+            <select class="select-field" id="relatorio-periodo" onchange="App.atualizarRelatorioDepartamento()">
+              <option value="mes">Este Mês</option>
+              <option value="trimestre">Este Trimestre</option>
+              <option value="ano">Este Ano</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="relatorio-conteudo"></div>
+    `;
+
+    // Carrega relatório inicial
+    atualizarRelatorioDepartamento();
+  }
+
+  function atualizarRelatorioDepartamento() {
+    const secretaria_id = document.getElementById('relatorio-secretaria')?.value;
+    const periodo = document.getElementById('relatorio-periodo')?.value || 'mes';
+
+    if (!secretaria_id) return;
+
+    const hoje = new Date();
+    let dataInicio, dataFim = Utils.formatDateISO(hoje);
+
+    if (periodo === 'mes') {
+      dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
+    } else if (periodo === 'trimestre') {
+      const trimestre = Math.floor(hoje.getMonth() / 3);
+      dataInicio = new Date(hoje.getFullYear(), trimestre * 3, 1).toISOString().split('T')[0];
+    } else {
+      dataInicio = new Date(hoje.getFullYear(), 0, 1).toISOString().split('T')[0];
+    }
+
+    const relatorio = Analytics.getRelatorioDepartamento(secretaria_id, dataInicio, dataFim);
+    const conteudo = document.getElementById('relatorio-conteudo');
+
+    if (!conteudo) return;
+
+    conteudo.innerHTML = `
+      <div class="grid-4 mb-6">
+        <div class="card p-4 border-l-4 border-primary-500">
+          <div class="text-sm text-secondary uppercase font-bold">Total Agendamentos</div>
+          <div class="text-3xl font-extrabold mt-2">${relatorio.total_agendamentos}</div>
+        </div>
+        <div class="card p-4 border-l-4 border-success-500">
+          <div class="text-sm text-secondary uppercase font-bold">Senhas Emitidas</div>
+          <div class="text-3xl font-extrabold mt-2">${relatorio.senhas_emitidas}</div>
+        </div>
+        <div class="card p-4 border-l-4 border-info-500">
+          <div class="text-sm text-secondary uppercase font-bold">Validações</div>
+          <div class="text-3xl font-extrabold mt-2">${relatorio.validacoes}</div>
+        </div>
+        <div class="card p-4 border-l-4 border-success-700">
+          <div class="text-sm text-secondary uppercase font-bold">Atendimentos Concluídos</div>
+          <div class="text-3xl font-extrabold mt-2">${relatorio.atendimentos_concluidos}</div>
+        </div>
+      </div>
+
+      <div class="grid-2 gap-6 mb-6">
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Taxa de Comparecimento</h2>
+          <div class="text-4xl font-extrabold text-success">${relatorio.taxa_comparecimento}%</div>
+          <div class="text-sm text-secondary mt-2">Cidadãos que compareceram</div>
+        </div>
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Taxa de Cancelamento</h2>
+          <div class="text-4xl font-extrabold text-danger">${relatorio.taxa_cancelamento}%</div>
+          <div class="text-sm text-secondary mt-2">Cancelamentos + Não Comparecimento</div>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-4">Performance por Equipamento</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e0e0e0;">
+              <th style="text-align: left; padding: 12px; font-weight: bold;">Equipamento</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Total</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Senhas</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Validações</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Taxa Comparecimento</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${relatorio.equipamentos.map(eq => `
+              <tr style="border-bottom: 1px solid #f0f0f0;">
+                <td style="padding: 12px;">${Utils.sanitizeHTML(eq.equipamento_id)}</td>
+                <td style="text-align: center; padding: 12px;">${eq.total_agendamentos}</td>
+                <td style="text-align: center; padding: 12px;">${eq.senhas_emitidas}</td>
+                <td style="text-align: center; padding: 12px;">${eq.validacoes}</td>
+                <td style="text-align: center; padding: 12px; font-weight: bold; color: ${eq.taxa_comparecimento >= 80 ? '#4CAF50' : '#FF9800'};">${eq.taxa_comparecimento}%</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   // Public API
   return {
     init,
@@ -2797,7 +3203,16 @@ const App = (function() {
     removeProfilePhoto,
     openChangePassword,
     handleLogout,
-    switchHistoricoTab
+    switchHistoricoTab,
+    renderDuvidas,
+    submeterNovaDuvida,
+    abrirDuvida,
+    renderAdminDuvidas,
+    abrirRespostaDuvida,
+    submeterRespostaDuvida,
+    renderAdminAvaliacoes,
+    renderRelatorioDepartamento,
+    atualizarRelatorioDepartamento
   };
 })();
 
