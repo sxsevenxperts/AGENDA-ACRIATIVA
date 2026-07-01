@@ -118,7 +118,7 @@ const App = (function() {
     
     if (session) {
       const isCidadao = session.type === 'cidadao';
-      const nome = (session.user && session.user.nome) || (isCidadao ? 'Cidadão' : 'Gestor');
+      const nome = (session.user && session.user.nome) || (isCidadao ? 'Usuário' : 'Gestor');
       const primeiroNome = nome.split(' ').slice(0, 2).join(' ');
       const iniciais = nome.split(' ').filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
 
@@ -127,7 +127,7 @@ const App = (function() {
         headerUser.innerHTML = `
           <div class="user-info">
             <span class="user-name">${Utils.sanitizeHTML(primeiroNome)}</span>
-            <span class="user-role">${isCidadao ? 'Cidadão' : (session.user.escopo_secretaria_nome || 'Gestão do Equipamento')}</span>
+            <span class="user-role">${isCidadao ? 'Usuário' : (session.user.escopo_secretaria_nome || 'Departamento/Secretaria')}</span>
           </div>
           <div class="avatar">${iniciais || Utils.getIcon('user')}</div>
         `;
@@ -266,16 +266,17 @@ const App = (function() {
             <div class="login-card">
               <div class="login-header">
                 <img src="assets/logo.png" alt="Prefeitura de Sobral" onerror="this.style.display='none'" style="object-fit: contain;">
-                <h3>Acesso ao Sistema</h3>
+                <h3>Escolha seu tipo de acesso</h3>
               </div>
-              
+
               <div class="auth-tabs">
-                <div class="auth-tab active" data-tab="cidadao">Cidadão</div>
-                <div class="auth-tab" data-tab="servidor">Servidor</div>
+                <div class="auth-tab active" data-tab="cidadao">Usuário</div>
+                <div class="auth-tab" data-tab="servidor">Departamento/Secretaria</div>
               </div>
-              
-              <!-- Cidadão Form -->
+
+              <!-- Usuário Form -->
               <form id="form-cidadao" class="auth-form">
+                <p class="login-mode-copy">Use este acesso para agendar em qualquer secretaria, departamento ou equipamento público disponível.</p>
                 <div class="input-group">
                   <label class="input-label">CPF</label>
                   <input type="text" class="input-field" id="cpf" placeholder="000.000.000-00" required>
@@ -293,8 +294,9 @@ const App = (function() {
                 </div>
               </form>
               
-              <!-- Servidor Form -->
+              <!-- Departamento / Secretaria Form -->
               <form id="form-servidor" class="auth-form" style="display: none;">
+                <p class="login-mode-copy">Use este acesso para visualizar e administrar os dados recebidos dos usuários dentro do departamento escolhido, separados por equipamento público.</p>
                 <div class="input-group">
                   <label class="input-label">Departamento / Secretaria</label>
                   <select class="select-field" id="admin-secretaria" required>
@@ -313,16 +315,16 @@ const App = (function() {
                   <input type="password" class="input-field" id="senha-admin" placeholder="Sua senha" required>
                 </div>
                 
-                <button type="submit" class="btn btn-secondary w-full mt-4">Acesso Administrativo</button>
+                <button type="submit" class="btn btn-secondary w-full mt-4">Entrar no Departamento</button>
               </form>
 
               <div class="demo-divider"><span>ou experimente a demonstração</span></div>
               <div class="demo-actions">
                 <button type="button" class="btn btn-demo" onclick="App.loginDemo('cidadao')">
-                  ${Utils.getIcon('user')} Entrar como Cidadão (Demo)
+                  ${Utils.getIcon('user')} Entrar como Usuário (Demo)
                 </button>
                 <button type="button" class="btn btn-demo btn-demo-alt" onclick="App.loginDemo('gestor')">
-                  ${Utils.getIcon('settings')} Entrar como Gestor (Demo)
+                  ${Utils.getIcon('settings')} Entrar como Departamento (Demo)
                 </button>
               </div>
               <p class="demo-hint">Contas de teste — nenhum dado real é utilizado.</p>
@@ -399,7 +401,7 @@ const App = (function() {
   function renderCidadaoDashboard() {
     appElement.innerHTML = `
       <div class="page-header container mt-6">
-        <h1 class="page-title">Olá, Cidadão!</h1>
+        <h1 class="page-title">Olá, Usuário!</h1>
         <p class="page-subtitle">O que você deseja fazer hoje?</p>
       </div>
       

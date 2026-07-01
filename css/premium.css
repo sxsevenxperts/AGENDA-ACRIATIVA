@@ -92,6 +92,25 @@
 .btn-demo-alt:hover { background: var(--accent-600); color: #fff; }
 .demo-hint { text-align: center; font-size: 0.72rem; color: var(--text-tertiary); margin-top: 10px; }
 
+.login-mode-copy {
+  margin: -4px 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--primary-100);
+  border-radius: var(--radius-md);
+  background: var(--primary-50);
+  color: var(--primary-800);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.auth-tab {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
 /* --- Modal overlay --- */
 .modal-overlay {
   position: fixed;
