@@ -374,6 +374,13 @@ const Admin = (() => {
     proximo.status = 'chamado';
     proximo.chamado_em = new Date().toISOString();
     proximo.atualizado_em = new Date().toISOString();
+    _registrarHistorico(
+      proximo,
+      'chamado',
+      'Senha chamada',
+      'Senha chamada pelo painel do equipamento.',
+      'gestor'
+    );
 
     if (Storage.saveAgendamentos) {
       Storage.saveAgendamentos(agendamentos);
@@ -816,7 +823,35 @@ const Admin = (() => {
     agendamento.atualizado_em = new Date().toISOString();
 
     if (novoStatus === 'atendido') {
+      const session = Auth.getSession ? Auth.getSession() : null;
+      const colaborador = session && session.user ? session.user : null;
       agendamento.atendido_em = new Date().toISOString();
+      agendamento.colaborador_id = colaborador ? colaborador.id : 'gestor';
+      agendamento.colaborador_nome = colaborador ? colaborador.nome : 'Gestor do equipamento';
+      _registrarHistorico(
+        agendamento,
+        'atendido',
+        'Atendimento concluído',
+        'Desfecho registrado pelo equipamento. Pesquisa NPS liberada.',
+        'gestor'
+      );
+    } else if (novoStatus === 'nao_compareceu') {
+      agendamento.nao_compareceu_em = new Date().toISOString();
+      _registrarHistorico(
+        agendamento,
+        'nao_compareceu',
+        'Não compareceu',
+        'Falta registrada pelo equipamento.',
+        'gestor'
+      );
+    } else {
+      _registrarHistorico(
+        agendamento,
+        novoStatus,
+        'Status atualizado',
+        `Novo status: ${novoStatus}.`,
+        'gestor'
+      );
     }
 
     if (Storage.saveAgendamentos) {
@@ -824,6 +859,17 @@ const Admin = (() => {
     }
 
     return { success: true };
+  }
+
+  function _registrarHistorico(agendamento, status, titulo, detalhe, por) {
+    if (!agendamento.historico) agendamento.historico = [];
+    agendamento.historico.push({
+      status: status,
+      titulo: titulo,
+      detalhe: detalhe || '',
+      em: new Date().toISOString(),
+      por: por || 'gestor'
+    });
   }
 
   /**

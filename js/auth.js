@@ -56,9 +56,15 @@ const Auth = (() => {
             return null;
         }
 
+        const restoredUser = _sanitizeUser(user);
+        if (savedSession.type === 'admin' && savedSession.secretariaId) {
+            restoredUser.escopo_secretaria_id = savedSession.secretariaId;
+            restoredUser.escopo_secretaria_nome = _getSecretariaNome(savedSession.secretariaId);
+        }
+
         currentSession = {
             type: savedSession.type,
-            user: user
+            user: restoredUser
         };
 
         console.log(`[Auth] Sessão restaurada: ${savedSession.type} — ${user.nome}`);
@@ -138,15 +144,16 @@ const Auth = (() => {
      * 
      * @param {string} email - E-mail do administrador
      * @param {string} senha - Senha do administrador
+     * @param {string} secretariaId - Secretaria/departamento escolhido no login
      * @returns {Object} Resultado do login
      * @returns {boolean} .success - Se o login foi bem-sucedido
      * @returns {Object} [.admin] - Dados do admin logado (sem senha)
      * @returns {string} [.error] - Mensagem de erro em caso de falha
      */
-    function loginAdmin(email, senha) {
+    function loginAdmin(email, senha, secretariaId) {
         // Validação de campos obrigatórios
-        if (!email || !senha) {
-            return { success: false, error: 'E-mail e senha são obrigatórios.' };
+        if (!email || !senha || !secretariaId) {
+            return { success: false, error: 'E-mail, senha e departamento são obrigatórios.' };
         }
 
         const emailLower = email.trim().toLowerCase();
@@ -166,24 +173,42 @@ const Auth = (() => {
             return { success: false, error: 'Senha incorreta. Tente novamente.' };
         }
 
+        const equipamentosDepartamento = _getEquipamentosBySecretaria(secretariaId);
+        if (equipamentosDepartamento.length === 0) {
+            return { success: false, error: 'Departamento sem equipamentos vinculados.' };
+        }
+
+        if (admin.role !== 'super_admin') {
+            const equipamentoAdmin = (typeof SobralData !== 'undefined' && SobralData.equipamentos)
+                ? SobralData.equipamentos.find(e => e.id === admin.equipamento_id)
+                : null;
+            if (!equipamentoAdmin || equipamentoAdmin.secretaria_id !== secretariaId) {
+                return { success: false, error: 'Este login administrativo não pertence ao departamento selecionado.' };
+            }
+        }
+
         // Cria a sessão
         const session = {
             type: 'admin',
             userId: admin.id,
+            secretariaId: secretariaId,
             loginTime: new Date().toISOString()
         };
 
         Storage.saveSession(session);
 
         // Prepara dados do admin sem expor a senha
-        const adminSafe = _sanitizeUser(admin);
+        const adminSafe = Object.assign(_sanitizeUser(admin), {
+            escopo_secretaria_id: secretariaId,
+            escopo_secretaria_nome: _getSecretariaNome(secretariaId)
+        });
 
         currentSession = {
             type: 'admin',
             user: adminSafe
         };
 
-        console.log(`[Auth] Login admin: ${admin.nome} (${admin.role})`);
+        console.log(`[Auth] Login admin: ${admin.nome} (${admin.role}) — ${adminSafe.escopo_secretaria_nome}`);
         return { success: true, admin: adminSafe };
     }
 
@@ -359,7 +384,11 @@ const Auth = (() => {
 
         const admin = currentSession.user;
 
-        // Super admin gerencia todos os equipamentos
+        if (admin.escopo_secretaria_id) {
+            return _getEquipamentosBySecretaria(admin.escopo_secretaria_id).map(e => e.id);
+        }
+
+        // Super admin sem escopo legado gerencia todos os equipamentos
         if (admin.role === 'super_admin') {
             if (typeof SobralData !== 'undefined' && SobralData.equipamentos) {
                 return SobralData.equipamentos.map(e => e.id);
@@ -375,6 +404,16 @@ const Auth = (() => {
         }
 
         return [];
+    }
+
+    function getAdminSecretaria() {
+        if (!isAdmin() || !currentSession.user) return null;
+        const id = currentSession.user.escopo_secretaria_id || null;
+        if (!id) return null;
+        return {
+            id: id,
+            nome: currentSession.user.escopo_secretaria_nome || _getSecretariaNome(id)
+        };
     }
 
     // ══════════════════════════════════════════════════════════
@@ -537,6 +576,17 @@ const Auth = (() => {
         return { ...safeData };
     }
 
+    function _getEquipamentosBySecretaria(secretariaId) {
+        if (typeof SobralData === 'undefined' || !SobralData.equipamentos) return [];
+        return SobralData.equipamentos.filter(e => e.secretaria_id === secretariaId);
+    }
+
+    function _getSecretariaNome(secretariaId) {
+        if (typeof SobralData === 'undefined' || !SobralData.secretarias) return secretariaId;
+        const sec = SobralData.secretarias.find(s => s.id === secretariaId);
+        return sec ? sec.nome : secretariaId;
+    }
+
     // ══════════════════════════════════════════════════════════
     //  API PÚBLICA
     // ══════════════════════════════════════════════════════════
@@ -561,6 +611,7 @@ const Auth = (() => {
 
         // Permissões
         getAdminEquipamentos,
+        getAdminSecretaria,
 
         // Perfil
         updateProfile,

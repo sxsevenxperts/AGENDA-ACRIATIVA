@@ -1,0 +1,30 @@
+{
+  "app": "Agenda Sobral",
+  "updated_at": "2026-07-01",
+  "accounts": [
+    {
+      "profile": "cidadao",
+      "label": "Cidadão demo",
+      "cpf": "529.982.247-25",
+      "password": "demo",
+      "notes": "Acesso para testar busca, agendamento, senha virtual, comprovante e resposta NPS após atendimento concluído."
+    },
+    {
+      "profile": "admin",
+      "label": "Administrador geral demo",
+      "email": "admin@sobral.ce.gov.br",
+      "password": "admin123",
+      "department_required": true,
+      "default_department_for_demo_button": "sedhas",
+      "notes": "Acesso administrativo exige escolher um departamento/secretaria. A sessão fica limitada aos equipamentos desse departamento para horários, serviços, validação, fila, desfechos e relatórios NPS/KPI/OKR."
+    },
+    {
+      "profile": "equipamento",
+      "label": "Login exclusivo por equipamento",
+      "email_pattern": "admin@{equipamento_id}.sobral.ce.gov.br",
+      "password": "admin123",
+      "department_required": true,
+      "example": "admin@casa-cidadao.sobral.ce.gov.br"
+    }
+  ]
+}

@@ -830,6 +830,36 @@ const SobralData = {
   ]
 };
 
+const SobralSecretariaPortais = {
+  amma: 'https://ama.sobral.ce.gov.br/',
+  seagri: 'https://seagri.sobral.ce.gov.br',
+  scsp: 'https://sesep.sobral.ce.gov.br',
+  cagm: 'https://cgm.sobral.ce.gov.br/',
+  sdd: 'https://sedistri.sobral.ce.gov.br/',
+  sedhas: 'https://sedhas.sobral.ce.gov.br',
+  sme: 'https://educacao.sobral.ce.gov.br',
+  sespol: 'https://sespol.sobral.ce.gov.br',
+  sefin: 'https://sefin.sobral.ce.gov.br',
+  gvp: 'https://gabvice.sobral.ce.gov.br/',
+  segov: 'https://segov.sobral.ce.gov.br/',
+  seinfra: 'https://seinfra.sobral.ce.gov.br',
+  sejuc: 'https://sejuc.sobral.ce.gov.br/',
+  pecuaria: 'https://sepec.sobral.ce.gov.br/',
+  seplag: 'https://seplag.sobral.ce.gov.br/',
+  pgm: 'https://pgm.sobral.ce.gov.br',
+  sms: 'https://saude.sobral.ce.gov.br',
+  sesec: 'https://sesec.sobral.ce.gov.br',
+  saae: 'https://saae.sobral.ce.gov.br',
+  stde: 'https://stde.sobral.ce.gov.br',
+  setransp: 'https://setransp.sobral.ce.gov.br',
+  setur: 'https://setur.sobral.ce.gov.br/',
+  seuma: 'https://seuma.sobral.ce.gov.br'
+};
+
+SobralData.secretarias.forEach((secretaria) => {
+  secretaria.portal_url = SobralSecretariaPortais[secretaria.id] || 'https://sobral.ce.gov.br/';
+});
+
 // Integração com os dados raspados automaticamente
 if (typeof ScrapedEquipamentos !== 'undefined' && Array.isArray(ScrapedEquipamentos)) {
   ScrapedEquipamentos.forEach((eq, index) => {

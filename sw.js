@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agenda-sobral-v1';
+const CACHE_NAME = 'agenda-sobral-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,8 @@ const ASSETS = [
   './css/components.css',
   './css/layout.css',
   './css/pages.css',
+  './css/premium.css',
+  './js/scraped_data.js',
   './js/data.js',
   './js/utils.js',
   './js/storage.js',
@@ -15,6 +17,8 @@ const ASSETS = [
   './js/admin.js',
   './js/app.js',
   './assets/logo.png',
+  './assets/brasao-sobral.png',
+  './assets/logo-sobral-light.png',
   './manifest.json'
 ];
 

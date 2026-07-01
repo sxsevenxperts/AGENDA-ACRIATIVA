@@ -138,6 +138,13 @@ const Scheduling = (() => {
       /* Se não há config, o serviço é ativo por padrão */
       if (!cfg) return true;
       return cfg.ativo !== false;
+    }).map((servico) => {
+      const cfg = servicosConfig[servico.id] || {};
+      return Object.assign({}, servico, {
+        duracao: cfg.duracao_customizada || servico.duracao || 30,
+        documentos_necessarios: cfg.documentos_necessarios || [],
+        orientacoes: cfg.observacoes || ''
+      });
     });
   }
 
@@ -406,6 +413,7 @@ const Scheduling = (() => {
     }
 
     /* 5) Monta o objeto de agendamento */
+    const agoraIso = new Date().toISOString();
     const agendamento = {
       id: id,
       usuario_id: usuarioId,
@@ -420,8 +428,17 @@ const Scheduling = (() => {
       validado: false,
       status: 'confirmado',
       observacoes: dados.observacoes || '',
-      criado_em: new Date().toISOString(),
-      atualizado_em: new Date().toISOString()
+      historico: [
+        {
+          status: 'confirmado',
+          titulo: 'Agendamento criado',
+          detalhe: 'Senha virtual emitida para o cidadão.',
+          em: agoraIso,
+          por: 'cidadao'
+        }
+      ],
+      criado_em: agoraIso,
+      atualizado_em: agoraIso
     };
 
     /* Salva */
@@ -462,6 +479,13 @@ const Scheduling = (() => {
 
     agendamento.status = 'cancelado';
     agendamento.atualizado_em = new Date().toISOString();
+    _registrarHistorico(
+      agendamento,
+      'cancelado',
+      'Agendamento cancelado',
+      'Cancelamento solicitado pelo cidadão.',
+      'cidadao'
+    );
 
     if (Storage.saveAgendamentos) {
       Storage.saveAgendamentos(agendamentos);
@@ -539,6 +563,59 @@ const Scheduling = (() => {
   }
 
   /* ==========================================================
+     PESQUISA NPS
+     ========================================================== */
+
+  /**
+   * Registra a pesquisa NPS após a conclusão do atendimento.
+   * @param {string} agendamentoId - ID do agendamento.
+   * @param {number|string} nota - Nota de 0 a 10.
+   * @param {string} comentario - Comentário opcional.
+   * @returns {{success: boolean, agendamento?: Object, error?: string}}
+   */
+  function responderNps(agendamentoId, nota, comentario) {
+    const agendamentos = Storage.getAgendamentos
+      ? Storage.getAgendamentos()
+      : [];
+    const agendamento = agendamentos.find((a) => a.id === agendamentoId);
+
+    if (!agendamento) {
+      return { success: false, error: 'Agendamento não encontrado.' };
+    }
+
+    if (agendamento.status !== 'atendido') {
+      return { success: false, error: 'A pesquisa NPS só fica disponível após o atendimento ser concluído.' };
+    }
+
+    const notaNumero = Number(nota);
+    if (!Number.isInteger(notaNumero) || notaNumero < 0 || notaNumero > 10) {
+      return { success: false, error: 'Selecione uma nota de 0 a 10.' };
+    }
+
+    const tipo = notaNumero >= 9 ? 'promotor' : notaNumero >= 7 ? 'neutro' : 'detrator';
+    agendamento.nps = {
+      nota: notaNumero,
+      tipo: tipo,
+      comentario: (comentario || '').trim(),
+      respondido_em: new Date().toISOString()
+    };
+    agendamento.atualizado_em = new Date().toISOString();
+    _registrarHistorico(
+      agendamento,
+      'nps',
+      'Pesquisa NPS respondida',
+      `Nota ${notaNumero}/10 (${tipo}).`,
+      'cidadao'
+    );
+
+    if (Storage.saveAgendamentos) {
+      Storage.saveAgendamentos(agendamentos);
+    }
+
+    return { success: true, agendamento: _popularAgendamento(agendamento) };
+  }
+
+  /* ==========================================================
      FUNÇÕES AUXILIARES (privadas)
      ========================================================== */
 
@@ -565,7 +642,30 @@ const Scheduling = (() => {
       servico_duracao: servico ? servico.duracao : 30,
       secretaria_nome: secretaria ? secretaria.nome : 'Secretaria não encontrada',
       secretaria_sigla: secretaria ? secretaria.sigla : '',
-      secretaria_cor: secretaria ? secretaria.cor : '#718096'
+      secretaria_cor: secretaria ? secretaria.cor : '#718096',
+      desfecho: _obterDesfecho(agendamento)
+    });
+  }
+
+  function _obterDesfecho(agendamento) {
+    const mapa = {
+      confirmado: 'Aguardando atendimento',
+      chamado: 'Presença validada / em atendimento',
+      atendido: 'Atendimento concluído',
+      cancelado: 'Cancelado',
+      nao_compareceu: 'Não compareceu'
+    };
+    return mapa[agendamento.status] || agendamento.status || 'Sem desfecho';
+  }
+
+  function _registrarHistorico(agendamento, status, titulo, detalhe, por) {
+    if (!agendamento.historico) agendamento.historico = [];
+    agendamento.historico.push({
+      status: status,
+      titulo: titulo,
+      detalhe: detalhe || '',
+      em: new Date().toISOString(),
+      por: por || 'sistema'
     });
   }
 
@@ -672,6 +772,13 @@ const Scheduling = (() => {
     ag.validado_em = new Date().toISOString();
     ag.status = 'chamado';
     ag.atualizado_em = new Date().toISOString();
+    _registrarHistorico(
+      ag,
+      'chamado',
+      'Presença validada',
+      'Código virtual conferido no equipamento público.',
+      'gestor'
+    );
 
     if (Storage.saveAgendamentos) {
       Storage.saveAgendamentos(agendamentos);
@@ -703,6 +810,7 @@ const Scheduling = (() => {
     /* Operações de agendamento */
     criarAgendamento: criarAgendamento,
     cancelarAgendamento: cancelarAgendamento,
+    responderNps: responderNps,
 
     /* Validação no equipamento (Vapt Vupt) */
     getAgendamentoByCodigo: getAgendamentoByCodigo,
