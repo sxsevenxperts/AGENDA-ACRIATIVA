@@ -23,7 +23,8 @@ const App = (function() {
     '/admin/horarios': renderAdminHorarios,
     '/admin/fila': renderAdminFila,
     '/admin/relatorios': renderAdminRelatorios,
-    '/admin/queue-display': renderQueueDisplay
+    '/admin/queue-display': renderQueueDisplay,
+    '/ouvidoria': renderOuvidoria
   };
 
   /**
@@ -287,6 +288,13 @@ const App = (function() {
                   <input type="password" class="input-field" id="senha" placeholder="Sua senha" required>
                 </div>
                 
+                <div class="lgpd-consent mt-4" style="display: flex; align-items: flex-start; gap: 8px;">
+                  <input type="checkbox" id="termos-cidadao" required style="margin-top: 4px;">
+                  <label for="termos-cidadao" class="text-sm text-secondary" style="line-height: 1.4;">
+                    Li e concordo com os <a href="#" class="text-primary font-bold">Termos de Uso</a>, <a href="#" class="text-primary font-bold">Políticas de Privacidade</a> e autorizo o tratamento dos meus dados conforme a <strong>LGPD</strong>.
+                  </label>
+                </div>
+
                 <button type="submit" class="btn btn-primary w-full mt-4">Entrar</button>
                 
                 <div class="text-center mt-4">
@@ -315,6 +323,13 @@ const App = (function() {
                   <input type="password" class="input-field" id="senha-admin" placeholder="Sua senha" required>
                 </div>
                 
+                <div class="lgpd-consent mt-4" style="display: flex; align-items: flex-start; gap: 8px;">
+                  <input type="checkbox" id="termos-admin" required style="margin-top: 4px;">
+                  <label for="termos-admin" class="text-sm text-secondary" style="line-height: 1.4;">
+                    Li e concordo com os <a href="#" class="text-primary font-bold">Termos de Uso Institucionais</a> e comprometo-me a seguir as diretrizes da <strong>LGPD</strong>.
+                  </label>
+                </div>
+
                 <button type="submit" class="btn btn-secondary w-full mt-4">Entrar no Departamento</button>
               </form>
 
@@ -771,7 +786,7 @@ const App = (function() {
 
     container.innerHTML = servicos.map(servico => {
           const cfg = Admin.getServicoConfig(equipId, servico.id);
-          const docs = (cfg.documentos_necessarios || []).join('\\n');
+          const docs = (cfg.documentos_necessarios || []).join('\n');
           return `
             <div class="card p-5 admin-service-card">
               <div class="admin-service-head">
@@ -904,8 +919,45 @@ const App = (function() {
     `;
   }
 
+  function renderOuvidoria() {
+    appElement.innerHTML = `
+      <div class="page-header container mt-6">
+        <h1 class="page-title">Ouvidoria</h1>
+        <p class="page-subtitle">Envie sugestões, reclamações ou elogios.</p>
+      </div>
+      <div class="container mb-8">
+        <div class="card p-6">
+          <form onsubmit="App.submitOuvidoria(event)">
+            <div class="input-group">
+              <label class="input-label">Assunto</label>
+              <select class="select-field" id="ouvidoria-tipo" required>
+                <option value="sugestao">Sugestão</option>
+                <option value="reclamacao">Reclamação</option>
+                <option value="elogio">Elogio</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label">Mensagem</label>
+              <textarea class="textarea-field" id="ouvidoria-msg" required rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Enviar Manifestação</button>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+
+  function submitOuvidoria(e) {
+    e.preventDefault();
+    const msg = document.getElementById('ouvidoria-msg').value;
+    Utils.showToast('Ouvidoria enviada com sucesso!', 'success');
+    window.location.hash = '#/dashboard';
+  }
+
+  App.submitOuvidoria = submitOuvidoria;
+
   /* ========================================================================
-     WIZARD ACTIONS EXPOSED GLOBALLY
+     ROUTER & INITIALIZATIONS EXPOSED GLOBALLY
      ======================================================================== */
   
   function wizardGoTo(stepIndex) {
