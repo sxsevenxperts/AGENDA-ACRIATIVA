@@ -10,140 +10,119 @@ const SobralData = {
      ---------------------------------------- */
   secretarias: [
     {
-      id: 'sms',
-      nome: 'Secretaria Municipal da Saúde',
-      sigla: 'SMS',
-      icone: 'health',
-      cor: '#E53E3E',
+      id: 'sms', nome: 'Secretaria da Saúde', sigla: 'SMS',
+      icone: 'health', cor: '#E53E3E',
       descricao: 'Atendimento em saúde básica, especializada e de urgência.'
     },
     {
-      id: 'sme',
-      nome: 'Secretaria Municipal da Educação',
-      sigla: 'SME',
-      icone: 'school',
-      cor: '#3182CE',
+      id: 'sme', nome: 'Secretaria da Educação', sigla: 'SME',
+      icone: 'school', cor: '#3182CE',
       descricao: 'Matrículas, transferências e serviços educacionais.'
     },
     {
-      id: 'sedhas',
-      nome: 'Sec. Direitos Humanos, Habitação e Assistência Social',
-      sigla: 'SEDHAS',
-      icone: 'people',
-      cor: '#805AD5',
+      id: 'sedhas', nome: 'Sec. dos Direitos Humanos e Assistência Social', sigla: 'SEDHAS',
+      icone: 'people', cor: '#805AD5',
       descricao: 'Cadastro Único, Bolsa Família, assistência social e habitação.'
     },
     {
-      id: 'seplag',
-      nome: 'Secretaria do Planejamento e Gestão',
-      sigla: 'SEPLAG',
-      icone: 'analytics',
-      cor: '#0052A5',
+      id: 'seplag', nome: 'Secretaria do Planejamento e Gestão', sigla: 'SEPLAG',
+      icone: 'analytics', cor: '#0052A5',
       descricao: 'Planejamento estratégico, gestão pública e modernização.'
     },
     {
-      id: 'sefin',
-      nome: 'Secretaria das Finanças',
-      sigla: 'SEFIN',
-      icone: 'finance',
-      cor: '#00875A',
+      id: 'sefin', nome: 'Secretaria das Finanças', sigla: 'SEFIN',
+      icone: 'finance', cor: '#00875A',
       descricao: 'IPTU, ISS, taxas, certidões e tributos municipais.'
     },
     {
-      id: 'seinfra',
-      nome: 'Secretaria da Infraestrutura',
-      sigla: 'SEINFRA',
-      icone: 'build',
-      cor: '#DD6B20',
+      id: 'seinfra', nome: 'Secretaria da Infraestrutura', sigla: 'SEINFRA',
+      icone: 'build', cor: '#DD6B20',
       descricao: 'Obras públicas, pavimentação e infraestrutura urbana.'
     },
     {
-      id: 'seuma',
-      nome: 'Sec. Urbanismo, Habitação e Meio Ambiente',
-      sigla: 'SEUMA',
-      icone: 'nature',
-      cor: '#38A169',
+      id: 'seuma', nome: 'Sec. do Urbanismo, Habitação e Meio Ambiente', sigla: 'SEUMA',
+      icone: 'nature', cor: '#38A169',
       descricao: 'Licenciamento ambiental, alvarás, habite-se e urbanismo.'
     },
     {
-      id: 'sesec',
-      nome: 'Secretaria da Segurança Cidadã',
-      sigla: 'SESEC',
-      icone: 'shield',
-      cor: '#2D3748',
+      id: 'sesec', nome: 'Secretaria da Segurança Cidadã', sigla: 'SESEC',
+      icone: 'shield', cor: '#2D3748',
       descricao: 'Segurança pública, Guarda Municipal e videomonitoramento.'
     },
     {
-      id: 'setran',
-      nome: 'Secretaria do Trânsito',
-      sigla: 'SETRAN',
-      icone: 'traffic',
-      cor: '#E53E3E',
-      descricao: 'Multas, sinalização, licenciamento e trânsito.'
+      id: 'setransp', nome: 'Secretaria do Transporte', sigla: 'SETRANSP',
+      icone: 'bus', cor: '#4299E1',
+      descricao: 'Transporte público, mobilidade, trânsito e cartão estudantil.'
     },
     {
-      id: 'setransp',
-      nome: 'Secretaria do Transporte',
-      sigla: 'SETRANSP',
-      icone: 'bus',
-      cor: '#4299E1',
-      descricao: 'Transporte público, cartão estudantil e itinerários.'
-    },
-    {
-      id: 'stde',
-      nome: 'Sec. Trabalho e Desenvolvimento Econômico',
-      sigla: 'STDE',
-      icone: 'work',
-      cor: '#D69E2E',
+      id: 'stde', nome: 'Sec. do Trabalho e Desenvolvimento Econômico', sigla: 'STDE',
+      icone: 'work', cor: '#D69E2E',
       descricao: 'Emprego, capacitação profissional e microempreendedorismo.'
     },
     {
-      id: 'sejuc',
-      nome: 'Secretaria da Juventude e Cultura',
-      sigla: 'SEJUC',
-      icone: 'palette',
-      cor: '#9F7AEA',
+      id: 'sejuc', nome: 'Secretaria da Juventude e Cultura', sigla: 'SEJUC',
+      icone: 'palette', cor: '#9F7AEA',
       descricao: 'Programas culturais, eventos e políticas de juventude.'
     },
     {
-      id: 'sespol',
-      nome: 'Secretaria do Esporte e Lazer',
-      sigla: 'SESPOL',
-      icone: 'sports',
-      cor: '#F56565',
+      id: 'sespol', nome: 'Secretaria do Esporte e Lazer', sigla: 'SEEL',
+      icone: 'sports', cor: '#F56565',
       descricao: 'Equipamentos esportivos, areninhas e programas de lazer.'
     },
     {
-      id: 'seagri',
-      nome: 'Secretaria da Agricultura',
-      sigla: 'SEAGRI',
-      icone: 'agriculture',
-      cor: '#48BB78',
+      id: 'seagri', nome: 'Secretaria da Agricultura', sigla: 'SEAGRI',
+      icone: 'agriculture', cor: '#48BB78',
       descricao: 'Apoio ao produtor rural, DAP e programas agrícolas.'
     },
     {
-      id: 'setur',
-      nome: 'Secretaria do Turismo e Eventos',
-      sigla: 'SETUR',
-      icone: 'tour',
-      cor: '#ED8936',
+      id: 'pecuaria', nome: 'Secretaria da Pecuária', sigla: 'SEPEC',
+      icone: 'agriculture', cor: '#975A16',
+      descricao: 'Apoio à pecuária, sanidade animal e vacinação de rebanhos.'
+    },
+    {
+      id: 'setur', nome: 'Secretaria do Turismo e Eventos', sigla: 'SETUR',
+      icone: 'tour', cor: '#ED8936',
       descricao: 'Turismo, eventos culturais e promoção da cidade.'
     },
     {
-      id: 'pgm',
-      nome: 'Procuradoria Geral do Município',
-      sigla: 'PGM',
-      icone: 'gavel',
-      cor: '#4A5568',
+      id: 'pgm', nome: 'Procuradoria Geral do Município', sigla: 'PGM',
+      icone: 'gavel', cor: '#4A5568',
       descricao: 'Assessoria jurídica, processos e pareceres legais.'
     },
     {
-      id: 'saae',
-      nome: 'Serviço Autônomo de Água e Esgoto',
-      sigla: 'SAAE',
-      icone: 'water',
-      cor: '#0BC5EA',
+      id: 'saae', nome: 'Serviço Autônomo de Água e Esgoto', sigla: 'SAAE',
+      icone: 'water', cor: '#0BC5EA',
       descricao: 'Ligação de água, esgoto, segunda via e reparos.'
+    },
+    {
+      id: 'amma', nome: 'Agência Municipal do Meio Ambiente', sigla: 'AMMA',
+      icone: 'nature', cor: '#2F855A',
+      descricao: 'Fiscalização ambiental, licenças e educação ambiental.'
+    },
+    {
+      id: 'scsp', nome: 'Sec. da Conservação e Serviços Públicos', sigla: 'SCSP',
+      icone: 'build', cor: '#718096',
+      descricao: 'Limpeza urbana, iluminação pública e conservação de vias.'
+    },
+    {
+      id: 'cagm', nome: 'Controladoria e Auditoria Geral do Município', sigla: 'CAGM',
+      icone: 'shield', cor: '#4A5568',
+      descricao: 'Controle interno, auditoria e transparência pública.'
+    },
+    {
+      id: 'sdd', nome: 'Secretaria do Desenvolvimento Distrital', sigla: 'SDD',
+      icone: 'agriculture', cor: '#B7791F',
+      descricao: 'Atendimento e desenvolvimento dos distritos de Sobral.'
+    },
+    {
+      id: 'segov', nome: 'Secretaria do Governo', sigla: 'SEGOV',
+      icone: 'gavel', cor: '#1A365D',
+      descricao: 'Articulação institucional e apoio ao Gabinete do Prefeito.'
+    },
+    {
+      id: 'gvp', nome: 'Gabinete da Vice-Prefeita', sigla: 'GVP',
+      icone: 'people', cor: '#9B2C2C',
+      descricao: 'Atendimento e projetos do Gabinete da Vice-Prefeita.'
     }
   ],
 
@@ -447,8 +426,8 @@ const SobralData = {
     // --- TRÂNSITO (SETRAN) ---
     {
       id: 'sede-setran',
-      secretaria_id: 'setran',
-      nome: 'Sede da Secretaria do Trânsito',
+      secretaria_id: 'setransp',
+      nome: 'Central de Trânsito e Mobilidade',
       tipo: 'Sede Administrativa',
       endereco: 'Centro – Sobral',
       telefone: '(88) 3677-1800',

@@ -205,7 +205,7 @@ const Storage = (() => {
                         id: `admin_${equip.id}`,
                         nome: `Administrador - ${equip.nome.substring(0,30)}`,
                         email: adminEmail,
-                        senha: 'admin',
+                        senha: 'admin123',
                         role: 'admin',
                         equipamento_id: equip.id,
                         ativo: true,
@@ -220,7 +220,108 @@ const Storage = (() => {
             if (addedAdmin) set(KEYS.ADMINS, currentAdmins);
         }
 
+        // ── Semente de demonstração (cidadão + disponibilidade) ──
+        seedDemoData();
+
         console.log('[Storage] Inicialização concluída.');
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  SEMENTE DE DEMONSTRAÇÃO
+    // ══════════════════════════════════════════════════════════
+
+    /** CPF fictício válido usado na conta de demonstração. */
+    const DEMO_CPF = '529.982.247-25';
+
+    /**
+     * Garante que exista uma conta de cidadão de demonstração e
+     * que haja horários abertos nos próximos dias úteis para que
+     * o fluxo de agendamento funcione imediatamente na demo.
+     */
+    function seedDemoData() {
+        // 1) Cidadão demo
+        const users = getUsers();
+        let demo = users.find(u => u.cpf.replace(/\D/g, '') === DEMO_CPF.replace(/\D/g, ''));
+        if (!demo) {
+            demo = {
+                id: 'demo-cidadao',
+                nome: 'Maria da Demonstração',
+                cpf: DEMO_CPF,
+                telefone: '(88) 99999-0000',
+                email: 'demo@sobral.ce.gov.br',
+                senha: 'demo',
+                ativo: true,
+                demo: true,
+                criado_em: new Date().toISOString()
+            };
+            users.push(demo);
+            saveUsers(users);
+        }
+
+        // 2) Disponibilidade: abre uma grade padrão de horários para
+        //    todos os equipamentos nos próximos 21 dias úteis, apenas
+        //    quando a data ainda não foi configurada (não sobrescreve
+        //    o que o gestor fechar).
+        if (typeof SobralData === 'undefined' || !SobralData.equipamentos) return;
+
+        const gradePadrao = [
+            '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+            '11:00', '13:30', '14:00', '14:30', '15:00', '15:30'
+        ];
+        const datasUteis = _proximosDiasUteis(21);
+        const configs = getAllEquipamentoConfigs();
+        let alterou = false;
+
+        SobralData.equipamentos.forEach(eq => {
+            let cfg = configs[eq.id];
+            if (!cfg) {
+                cfg = {
+                    equipamento_id: eq.id,
+                    dias_disponiveis: [1, 2, 3, 4, 5],
+                    horario_inicio: '08:00',
+                    horario_fim: '16:00',
+                    intervalo: 30,
+                    slots_por_horario: 5,
+                    slots_abertos: {},
+                    servicos_config: {}
+                };
+                configs[eq.id] = cfg;
+                alterou = true;
+            }
+            if (!cfg.slots_abertos) cfg.slots_abertos = {};
+            datasUteis.forEach(d => {
+                if (!(d in cfg.slots_abertos)) {
+                    cfg.slots_abertos[d] = gradePadrao.slice();
+                    alterou = true;
+                }
+            });
+        });
+
+        if (alterou) set(KEYS.CONFIG_EQUIPAMENTOS, configs);
+    }
+
+    /**
+     * Retorna as próximas N datas úteis (seg-sex) a partir de amanhã,
+     * no formato 'YYYY-MM-DD'.
+     * @param {number} n - Quantidade de dias úteis desejada.
+     * @returns {string[]}
+     */
+    function _proximosDiasUteis(n) {
+        const datas = [];
+        const d = new Date();
+        let guarda = 0;
+        while (datas.length < n && guarda < n * 3) {
+            d.setDate(d.getDate() + 1);
+            const dow = d.getDay();
+            if (dow >= 1 && dow <= 5) {
+                const iso = d.getFullYear() + '-' +
+                    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(d.getDate()).padStart(2, '0');
+                datas.push(iso);
+            }
+            guarda++;
+        }
+        return datas;
     }
 
     // ══════════════════════════════════════════════════════════

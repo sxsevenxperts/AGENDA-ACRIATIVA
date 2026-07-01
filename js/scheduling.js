@@ -325,7 +325,8 @@ const Scheduling = (() => {
       return { success: false, error: 'Usuário não está autenticado.' };
     }
 
-    const usuarioId = session.id || session.usuario_id;
+    const usuario = session.user || session;
+    const usuarioId = usuario.id || session.userId || session.usuario_id;
     if (!usuarioId) {
       return { success: false, error: 'Sessão inválida — ID do usuário não encontrado.' };
     }
@@ -395,6 +396,10 @@ const Scheduling = (() => {
 
     const senha = sigla + '-' + String(senhaNumero).padStart(3, '0');
 
+    /* Código de validação virtual — chave única que o cidadão
+       apresenta e o equipamento valida no balcão (modelo Vapt Vupt). */
+    const codigoValidacao = _gerarCodigoValidacao();
+
     /* Incrementa contador de senha */
     if (Storage.incrementSenha) {
       Storage.incrementSenha(dados.equipamento_id, dados.data);
@@ -404,11 +409,15 @@ const Scheduling = (() => {
     const agendamento = {
       id: id,
       usuario_id: usuarioId,
+      usuario_nome: usuario.nome || '',
+      usuario_cpf: usuario.cpf || '',
       equipamento_id: dados.equipamento_id,
       servico_id: dados.servico_id,
       data: dados.data,
       hora: dados.hora,
       senha: senha,
+      codigo_validacao: codigoValidacao,
+      validado: false,
       status: 'confirmado',
       observacoes: dados.observacoes || '',
       criado_em: new Date().toISOString(),
@@ -585,6 +594,92 @@ const Scheduling = (() => {
     return 'agd-' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
   }
 
+  /**
+   * Gera um código de validação virtual de 6 caracteres (A-Z, 2-9),
+   * evitando caracteres ambíguos (0/O, 1/I). É a "senha virtual"
+   * apresentada pelo cidadão e validada no equipamento.
+   * @private
+   * @returns {string} Código no formato 'ABC-XYZ'.
+   */
+  function _gerarCodigoValidacao() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code.slice(0, 3) + '-' + code.slice(3);
+  }
+
+  /* ==========================================================
+     VALIDAÇÃO NO EQUIPAMENTO (modelo Vapt Vupt)
+     ========================================================== */
+
+  /**
+   * Localiza um agendamento pelo código de validação virtual.
+   * @param {string} codigo - Código apresentado pelo cidadão.
+   * @returns {Object|null} Agendamento populado ou null.
+   */
+  function getAgendamentoByCodigo(codigo) {
+    if (!codigo) return null;
+    const alvo = codigo.trim().toUpperCase().replace(/\s/g, '');
+    const agendamentos = Storage.getAgendamentos ? Storage.getAgendamentos() : [];
+    const ag = agendamentos.find(
+      (a) => (a.codigo_validacao || '').toUpperCase() === alvo
+    );
+    return ag ? _popularAgendamento(ag) : null;
+  }
+
+  /**
+   * Valida (faz o check-in de) um agendamento no equipamento.
+   * O operador informa o código virtual do cidadão. Regras:
+   *   - Código deve existir;
+   *   - Deve pertencer ao equipamento informado (isolamento);
+   *   - Não pode estar cancelado nem já validado.
+   *
+   * @param {string} codigo - Código de validação virtual.
+   * @param {string} equipamentoId - Equipamento do operador logado.
+   * @returns {{success: boolean, agendamento?: Object, error?: string}}
+   */
+  function validarCodigo(codigo, equipamentoId) {
+    const agendamentos = Storage.getAgendamentos ? Storage.getAgendamentos() : [];
+    const alvo = (codigo || '').trim().toUpperCase().replace(/\s/g, '');
+
+    if (!alvo) {
+      return { success: false, error: 'Informe o código de validação do cidadão.' };
+    }
+
+    const ag = agendamentos.find(
+      (a) => (a.codigo_validacao || '').toUpperCase() === alvo
+    );
+
+    if (!ag) {
+      return { success: false, error: 'Código não encontrado. Verifique os caracteres.' };
+    }
+
+    if (equipamentoId && ag.equipamento_id !== equipamentoId) {
+      return { success: false, error: 'Este código pertence a outro equipamento público.' };
+    }
+
+    if (ag.status === 'cancelado') {
+      return { success: false, error: 'Este agendamento foi cancelado pelo cidadão.' };
+    }
+
+    if (ag.validado) {
+      return { success: false, error: 'Este código já foi validado anteriormente.', agendamento: _popularAgendamento(ag) };
+    }
+
+    ag.validado = true;
+    ag.validado_em = new Date().toISOString();
+    ag.status = 'chamado';
+    ag.atualizado_em = new Date().toISOString();
+
+    if (Storage.saveAgendamentos) {
+      Storage.saveAgendamentos(agendamentos);
+    }
+
+    return { success: true, agendamento: _popularAgendamento(ag) };
+  }
+
   /* ==========================================================
      API PÚBLICA
      ========================================================== */
@@ -608,6 +703,10 @@ const Scheduling = (() => {
     /* Operações de agendamento */
     criarAgendamento: criarAgendamento,
     cancelarAgendamento: cancelarAgendamento,
+
+    /* Validação no equipamento (Vapt Vupt) */
+    getAgendamentoByCodigo: getAgendamentoByCodigo,
+    validarCodigo: validarCodigo,
 
     /* Consultas de agendamentos */
     getAgendamentosUsuario: getAgendamentosUsuario,

@@ -18,6 +18,7 @@ const App = (function() {
     '/agendar': renderSchedulingWizard,
     '/meus-agendamentos': renderMeusAgendamentos,
     '/admin': renderAdminDashboard,
+    '/admin/validar': renderAdminValidar,
     '/admin/servicos': renderAdminServicos,
     '/admin/horarios': renderAdminHorarios,
     '/admin/fila': renderAdminFila,
@@ -66,6 +67,9 @@ const App = (function() {
     // Close sidebar on navigation (mobile)
     if (appSidebar) appSidebar.classList.remove('open');
 
+    // Close any open modal (comprovante/ticket) on navigation
+    document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
+
     // Authentication guards
     const session = Auth.getSession();
     
@@ -113,16 +117,18 @@ const App = (function() {
     
     if (session) {
       const isCidadao = session.type === 'cidadao';
-      
+      const nome = (session.user && session.user.nome) || (isCidadao ? 'Cidadão' : 'Gestor');
+      const primeiroNome = nome.split(' ').slice(0, 2).join(' ');
+      const iniciais = nome.split(' ').filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+
       if (headerUser) {
         headerUser.style.display = 'flex';
-        // Mock user name for now, real app would fetch from Storage
         headerUser.innerHTML = `
           <div class="user-info">
-            <span class="user-name">${isCidadao ? 'Cidadão' : 'Administrador'}</span>
-            <span class="user-role">${isCidadao ? 'Usuário' : 'Gestão'}</span>
+            <span class="user-name">${Utils.sanitizeHTML(primeiroNome)}</span>
+            <span class="user-role">${isCidadao ? 'Cidadão' : 'Gestão do Equipamento'}</span>
           </div>
-          <div class="avatar">${Utils.getIcon('user')}</div>
+          <div class="avatar">${iniciais || Utils.getIcon('user')}</div>
         `;
         
         // Add logout listener
@@ -207,10 +213,8 @@ const App = (function() {
     secretariasGrid.innerHTML = secretarias.map(sec => `
       <div class="card secretaria-card" style="border-top: 4px solid ${sec.cor}" onclick="window.location.hash='#/login'">
         <div class="card-body text-center">
-          <div class="secretaria-icon" style="background-color: ${sec.cor}">
-            ${Utils.getIcon(sec.icone) || Utils.getIcon('building')}
-          </div>
-          <h3 class="text-md mb-2">${sec.sigla}</h3>
+          ${App.secretariaEmblem(sec, 60)}
+          <h3 class="text-md mb-1 mt-3">${sec.sigla}</h3>
           <p class="text-sm text-secondary">${sec.nome}</p>
         </div>
       </div>
@@ -229,7 +233,7 @@ const App = (function() {
       <div class="page-login">
         <div class="login-split">
           <div class="login-cover">
-            <img src="assets/logo.png" alt="Prefeitura de Sobral" onerror="this.src=''; this.alt='Prefeitura de Sobral'">
+            <img src="assets/logo-sobral-light.png" alt="Prefeitura de Sobral" onerror="this.onerror=null; this.src='assets/logo.png'">
             <h2>Agenda Sobral</h2>
             <p>Sistema oficial de agendamento de serviços públicos municipais.</p>
           </div>
@@ -279,6 +283,17 @@ const App = (function() {
                 
                 <button type="submit" class="btn btn-secondary w-full mt-4">Acesso Administrativo</button>
               </form>
+
+              <div class="demo-divider"><span>ou experimente a demonstração</span></div>
+              <div class="demo-actions">
+                <button type="button" class="btn btn-demo" onclick="App.loginDemo('cidadao')">
+                  ${Utils.getIcon('user')} Entrar como Cidadão (Demo)
+                </button>
+                <button type="button" class="btn btn-demo btn-demo-alt" onclick="App.loginDemo('gestor')">
+                  ${Utils.getIcon('settings')} Entrar como Gestor (Demo)
+                </button>
+              </div>
+              <p class="demo-hint">Contas de teste — nenhum dado real é utilizado.</p>
             </div>
           </div>
         </div>
@@ -394,7 +409,7 @@ const App = (function() {
     // Load upcoming appointments
     setTimeout(() => {
       const session = Auth.getSession();
-      const agendamentos = Scheduling.getAgendamentosUsuario(session.userId);
+      const agendamentos = Scheduling.getAgendamentosUsuario(session.user.id);
       const upcoming = agendamentos.filter(a => a.status === 'confirmado').slice(0, 3);
       
       const container = document.getElementById('upcoming-appointments');
@@ -426,9 +441,10 @@ const App = (function() {
                 </div>
                 <div class="badge badge-success">Confirmado</div>
               </div>
-              <p class="text-sm mt-2"><strong>Senha:</strong> <span class="font-mono text-lg">${a.senha}</span></p>
+              <p class="text-sm mt-2"><strong>Senha:</strong> <span class="font-mono text-lg">${a.senha}</span>
+                &nbsp;·&nbsp; <strong>Código:</strong> <span class="font-mono">${a.codigo_validacao || '—'}</span></p>
               <div class="mt-4 flex gap-2">
-                <button class="btn btn-sm btn-secondary" onclick="alert('Mostrar comprovante - Em desenvolvimento')">Ver Comprovante</button>
+                <button class="btn btn-sm btn-secondary" onclick="App.showComprovante('${a.id}')">Ver Comprovante</button>
                 <button class="btn btn-sm btn-danger btn-ghost" onclick="App.cancelAppointment('${a.id}')">Cancelar</button>
               </div>
             </div>
@@ -550,11 +566,9 @@ const App = (function() {
     // Load Step 1
     const secretarias = Scheduling.getSecretarias();
     document.getElementById('wizard-secretarias').innerHTML = secretarias.map(sec => `
-      <div class="card secretaria-card" style="border-top: 3px solid ${sec.cor}" onclick="App.selectSecretaria('${sec.id}')">
+      <div class="card secretaria-card secretaria-row" style="border-left: 3px solid ${sec.cor}" onclick="App.selectSecretaria('${sec.id}')">
         <div class="card-body flex items-center gap-4">
-          <div class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background-color: ${sec.cor}">
-            ${Utils.getIcon(sec.icone) || Utils.getIcon('building')}
-          </div>
+          ${App.secretariaEmblem(sec, 48)}
           <div>
             <h3 class="font-bold">${sec.sigla}</h3>
             <p class="text-xs text-secondary line-clamp-2">${sec.nome}</p>
@@ -579,20 +593,25 @@ const App = (function() {
     
     setTimeout(() => {
       const session = Auth.getSession();
-      const agendamentos = Scheduling.getAgendamentosUsuario(session.userId);
+      const agendamentos = Scheduling.getAgendamentosUsuario(session.user.id);
       const list = document.getElementById('agendamentos-list');
       
       if(agendamentos.length === 0) {
         list.innerHTML = '<p class="text-center text-secondary py-8">Nenhum agendamento encontrado.</p>';
       } else {
+        const statusLabel = { confirmado: 'Confirmado', chamado: 'Validado', atendido: 'Atendido', cancelado: 'Cancelado', nao_compareceu: 'Não compareceu' };
         list.innerHTML = agendamentos.map(a => `
-          <div class="p-4 border-b last:border-0 flex justify-between items-center">
+          <div class="p-4 border-b last:border-0 flex justify-between items-center gap-4 flex-wrap">
             <div>
               <div class="font-bold">${a.servico_nome}</div>
-              <div class="text-sm text-secondary">${Utils.formatDate(a.data)} às ${a.hora} - ${a.equipamento_nome}</div>
-              <div class="text-sm mt-1">Senha: <span class="font-mono font-bold">${a.senha}</span></div>
+              <div class="text-sm text-secondary">${Utils.formatDate(a.data)} às ${a.hora} · ${a.equipamento_nome}</div>
+              <div class="text-sm mt-1">Senha: <span class="font-mono font-bold">${a.senha}</span>
+                &nbsp;·&nbsp; Código: <span class="font-mono font-bold">${a.codigo_validacao || '—'}</span></div>
             </div>
-            <div class="badge badge-${a.status === 'confirmado' ? 'success' : a.status === 'cancelado' ? 'danger' : 'info'}">${a.status}</div>
+            <div class="flex items-center gap-2">
+              <div class="badge badge-${a.status === 'confirmado' ? 'success' : a.status === 'cancelado' ? 'danger' : 'info'}">${statusLabel[a.status] || a.status}</div>
+              ${a.status !== 'cancelado' ? `<button class="btn btn-sm btn-ghost" onclick="App.showComprovante('${a.id}')">Comprovante</button>` : ''}
+            </div>
           </div>
         `).join('');
       }
@@ -615,10 +634,33 @@ const App = (function() {
           <div class="text-sm text-secondary uppercase font-bold">Atendidos</div>
           <div class="text-3xl font-extrabold mt-2" id="stat-atendidos">-</div>
         </div>
+        <div class="card p-4 border-l-4 border-warning-500">
+          <div class="text-sm text-secondary uppercase font-bold">Ocupação</div>
+          <div class="text-3xl font-extrabold mt-2" id="stat-ocupacao">-</div>
+        </div>
         <div class="card p-4 border-l-4 border-danger-500">
           <div class="text-sm text-secondary uppercase font-bold">Cancelados/Faltas</div>
           <div class="text-3xl font-extrabold mt-2" id="stat-faltas">-</div>
         </div>
+      </div>
+
+      <div class="admin-cta-grid">
+        <a href="#/admin/validar" class="admin-cta admin-cta-primary">
+          <div class="admin-cta-icon">${Utils.getIcon('ticket') || Utils.getIcon('check')}</div>
+          <div>
+            <h3>Validar Senha Virtual</h3>
+            <p>Faça o check-in do cidadão pelo código apresentado no balcão.</p>
+          </div>
+          ${Utils.getIcon('chevronRight')}
+        </a>
+        <a href="#/admin/horarios" class="admin-cta">
+          <div class="admin-cta-icon">${Utils.getIcon('calendar')}</div>
+          <div>
+            <h3>Abrir Horários</h3>
+            <p>Defina os horários disponíveis para os cidadãos agendarem.</p>
+          </div>
+          ${Utils.getIcon('chevronRight')}
+        </a>
       </div>
     `;
     
@@ -631,7 +673,9 @@ const App = (function() {
          if(stats) {
             document.getElementById('stat-agendados').textContent = stats.agendamentosHoje;
             document.getElementById('stat-atendidos').textContent = stats.atendidosHoje;
-            document.getElementById('stat-faltas').textContent = stats.canceladosHoje;
+            const ocup = document.getElementById('stat-ocupacao');
+            if (ocup) ocup.textContent = stats.taxaOcupacao + '%';
+            document.getElementById('stat-faltas').textContent = stats.canceladosHoje + stats.naoCompareceuHoje;
          }
        }
     }, 100);
@@ -843,8 +887,8 @@ const App = (function() {
     });
     
     if(res.success) {
-      Utils.showToast('Agendamento realizado com sucesso!', 'success');
-      window.location.hash = '#/meus-agendamentos';
+      Utils.showToast('Agendamento confirmado!', 'success');
+      showComprovante(res.agendamento.id);
     } else {
       Utils.showToast(res.error, 'error');
     }
@@ -898,9 +942,227 @@ const App = (function() {
     `;
   }
 
+  /* ========================================================================
+     EMBLEMAS DE SECRETARIA (identidade visual premium)
+     ======================================================================== */
+
+  /**
+   * Gera o emblema branded de uma secretaria: monograma com a sigla
+   * sobre um disco com gradiente na cor institucional da pasta.
+   * @param {Object} sec - Secretaria.
+   * @param {number} [size=56] - Diâmetro em pixels.
+   * @returns {string} HTML do emblema.
+   */
+  function secretariaEmblem(sec, size = 56) {
+    const cor = sec.cor || '#1D467A';
+    const n = (sec.sigla || '').length || 3;
+    const fs = Math.max(10, Math.round(Math.min(size / 2.5, (size * 1.55) / n)));
+    return `
+      <div class="sec-emblem" style="width:${size}px;height:${size}px;
+        background:linear-gradient(145deg, ${cor}, ${_shade(cor, -28)});
+        font-size:${fs}px;" title="${Utils.sanitizeHTML(sec.nome)}">
+        <span>${sec.sigla}</span>
+      </div>`;
+  }
+
+  /** Escurece/clareia uma cor hex por um delta (-255..255). @private */
+  function _shade(hex, delta) {
+    const h = hex.replace('#', '');
+    const num = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+    let r = (num >> 16) + delta, g = ((num >> 8) & 0xff) + delta, b = (num & 0xff) + delta;
+    r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255, g)); b = Math.max(0, Math.min(255, b));
+    return '#' + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+
+  /* ========================================================================
+     DEMONSTRAÇÃO — LOGIN COM UM CLIQUE
+     ======================================================================== */
+
+  function loginDemo(tipo) {
+    let res;
+    if (tipo === 'gestor') {
+      res = Auth.loginAdmin('admin@sobral.ce.gov.br', 'admin123');
+      if (res.success) {
+        Utils.showToast('Bem-vindo(a) ao painel de gestão (demo)', 'success');
+        updateAuthUI();
+        window.location.hash = '#/admin';
+      }
+    } else {
+      res = Auth.loginCidadao('529.982.247-25', 'demo');
+      if (res.success) {
+        Utils.showToast('Bem-vindo(a), Maria! (demo)', 'success');
+        updateAuthUI();
+        window.location.hash = '#/dashboard';
+      }
+    }
+    if (res && !res.success) Utils.showToast(res.error, 'error');
+  }
+
+  /* ========================================================================
+     COMPROVANTE / SENHA VIRTUAL (modal premium com QR + código)
+     ======================================================================== */
+
+  function showComprovante(agendamentoId) {
+    const a = Scheduling.getAgendamentoById(agendamentoId);
+    if (!a) { Utils.showToast('Agendamento não encontrado.', 'error'); return; }
+
+    const cor = a.secretaria_cor || '#1D467A';
+    const qrPayload = `AGENDASOBRAL|${a.codigo_validacao}|${a.equipamento_id}|${a.data}|${a.hora}`;
+    const qr = Utils.generateQRCodeSVG(qrPayload, 172);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="ticket" role="dialog" aria-modal="true">
+        <div class="ticket-top" style="background:linear-gradient(135deg, ${cor}, ${_shade(cor, -40)})">
+          <div class="ticket-badge">${a.secretaria_sigla || 'PMS'}</div>
+          <div class="ticket-top-info">
+            <div class="ticket-eyebrow">Comprovante de Agendamento</div>
+            <h3>${Utils.sanitizeHTML(a.servico_nome)}</h3>
+            <p>${Utils.sanitizeHTML(a.equipamento_nome)}</p>
+          </div>
+          <button class="ticket-close" aria-label="Fechar" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+
+        <div class="ticket-body">
+          <div class="ticket-cols">
+            <div class="ticket-datetime">
+              <div class="ticket-field">
+                <span class="ticket-label">Data</span>
+                <span class="ticket-value">${Utils.formatDate(a.data)}</span>
+              </div>
+              <div class="ticket-field">
+                <span class="ticket-label">Horário</span>
+                <span class="ticket-value">${a.hora}</span>
+              </div>
+              <div class="ticket-field">
+                <span class="ticket-label">Senha de atendimento</span>
+                <span class="ticket-value ticket-senha">${a.senha}</span>
+              </div>
+            </div>
+            <div class="ticket-qr">
+              ${qr}
+              <span class="ticket-qr-hint">Apresente no equipamento</span>
+            </div>
+          </div>
+
+          <div class="ticket-code">
+            <span class="ticket-label">Código de validação virtual</span>
+            <div class="ticket-code-value">${a.codigo_validacao}</div>
+            <p class="ticket-code-hint">
+              ${Utils.getIcon('shield') || ''}
+              Informe este código (ou o QR) no balcão do equipamento para validar sua presença.
+              Ele é exclusivo e pessoal.
+            </p>
+          </div>
+
+          <div class="ticket-actions">
+            <button class="btn btn-primary w-full" onclick="window.print()">
+              ${Utils.getIcon('printer')} Imprimir / Salvar PDF
+            </button>
+            <button class="btn btn-ghost w-full" onclick="this.closest('.modal-overlay').remove(); window.location.hash='#/meus-agendamentos'">
+              Ver meus agendamentos
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+
+  /* ========================================================================
+     VALIDAÇÃO NO EQUIPAMENTO (painel do gestor)
+     ======================================================================== */
+
+  function renderAdminValidar() {
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Validação de Senha Virtual</h1>
+        <p class="page-subtitle">Confira o código apresentado pelo cidadão e registre a presença (check-in).</p>
+      </div>
+
+      <div class="validar-grid">
+        <div class="card p-6 validar-panel">
+          <div class="validar-icon">${Utils.getIcon('ticket') || Utils.getIcon('check')}</div>
+          <label class="input-label">Código de validação do cidadão</label>
+          <input type="text" id="validar-input" class="input-field validar-input"
+                 placeholder="Ex.: ABC-XYZ" maxlength="7" autocomplete="off"
+                 oninput="this.value=this.value.toUpperCase()">
+          <button class="btn btn-primary btn-lg w-full mt-4" onclick="App.validarCodigoAdmin()">
+            ${Utils.getIcon('check')} Validar Presença
+          </button>
+          <div id="validar-resultado" class="validar-resultado"></div>
+        </div>
+
+        <div class="card p-6">
+          <h3 class="font-bold mb-3">Como funciona</h3>
+          <ol class="validar-steps">
+            <li><span>1</span> O cidadão agenda pelo app e recebe um <strong>código virtual</strong> exclusivo + QR.</li>
+            <li><span>2</span> No dia, ele apresenta o código no balcão do equipamento.</li>
+            <li><span>3</span> O operador digita o código aqui e <strong>valida a presença</strong>.</li>
+            <li><span>4</span> O atendimento entra automaticamente na fila de chamada.</li>
+          </ol>
+          <div class="alert alert-info mt-4">
+            ${Utils.getIcon('info')} Cada código só pode ser validado uma vez e apenas no equipamento correto.
+          </div>
+        </div>
+      </div>
+    `;
+    setTimeout(() => {
+      const input = document.getElementById('validar-input');
+      if (input) {
+        input.focus();
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') validarCodigoAdmin(); });
+      }
+    }, 60);
+  }
+
+  function validarCodigoAdmin() {
+    const input = document.getElementById('validar-input');
+    const box = document.getElementById('validar-resultado');
+    if (!input || !box) return;
+
+    const equipIds = Auth.getAdminEquipamentos();
+    // Super admin (todos os equipamentos) → não restringe por equipamento.
+    const session = Auth.getSession();
+    const isSuper = session && session.user && session.user.role === 'super_admin';
+    const equipId = isSuper ? null : (equipIds[0] || null);
+
+    const res = Scheduling.validarCodigo(input.value, equipId);
+
+    if (res.success) {
+      const a = res.agendamento;
+      box.className = 'validar-resultado ok';
+      box.innerHTML = `
+        <div class="validar-check">${Utils.getIcon('check')}</div>
+        <h3>Presença validada!</h3>
+        <div class="validar-info">
+          <p><strong>${Utils.sanitizeHTML(a.usuario_nome || 'Cidadão')}</strong></p>
+          <p>${Utils.sanitizeHTML(a.servico_nome)} — <strong>${a.hora}</strong></p>
+          <p>${Utils.sanitizeHTML(a.equipamento_nome)}</p>
+          <p class="validar-senha-tag">Senha ${a.senha}</p>
+        </div>`;
+      Utils.showToast('Presença validada com sucesso', 'success');
+      input.value = '';
+    } else {
+      box.className = 'validar-resultado erro';
+      box.innerHTML = `
+        <div class="validar-x">${Utils.getIcon('x')}</div>
+        <h3>Não validado</h3>
+        <p>${Utils.sanitizeHTML(res.error)}</p>
+        ${res.agendamento ? `<p class="text-sm text-secondary mt-2">Cidadão: ${Utils.sanitizeHTML(res.agendamento.usuario_nome || '—')}</p>` : ''}`;
+      Utils.showToast(res.error, 'error');
+    }
+  }
+
   // Public API
   return {
     init,
+    secretariaEmblem,
+    loginDemo,
+    showComprovante,
+    validarCodigoAdmin,
     wizardGoTo,
     selectSecretaria,
     selectEquipamento,
