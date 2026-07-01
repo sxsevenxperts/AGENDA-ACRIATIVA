@@ -850,3 +850,20 @@ const SobralData = {
     }
   ]
 };
+
+// Integração com os dados raspados automaticamente
+if (typeof ScrapedEquipamentos !== 'undefined' && Array.isArray(ScrapedEquipamentos)) {
+  ScrapedEquipamentos.forEach((eq, index) => {
+    // Adiciona o equipamento na lista
+    SobralData.equipamentos.push(eq);
+    
+    // Cria um serviço genérico de atendimento para cada equipamento raspado
+    SobralData.servicos.push({
+      id: `srv_scraped_${index}`,
+      equipamento_id: eq.id,
+      nome: 'Atendimento ao Cidadão - ' + eq.nome.substring(0, 30),
+      duracao: 30,
+      descricao: 'Atendimento geral presencial para orientações e solicitações.'
+    });
+  });
+}

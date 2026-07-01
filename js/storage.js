@@ -167,6 +167,59 @@ const Storage = (() => {
             set(KEYS.SENHAS, {});
         }
 
+        // ── Sincroniza novos dados injetados dinamicamente ──
+        if (SobralData.servicos) {
+            let currentServicos = get(KEYS.SERVICOS) || [];
+            let currentIds = new Set(currentServicos.map(s => s.id));
+            let newServicos = SobralData.servicos.filter(s => !currentIds.has(s.id));
+            if (newServicos.length > 0) {
+                currentServicos.push(...newServicos);
+                set(KEYS.SERVICOS, currentServicos);
+            }
+        }
+        if (SobralData.equipamentos) {
+            let currentConfigs = get(KEYS.CONFIG_EQUIPAMENTOS) || {};
+            let currentAdmins = get(KEYS.ADMINS) || [];
+            let adminEmails = new Set(currentAdmins.map(a => a.email));
+            let addedConfig = false;
+            let addedAdmin = false;
+            
+            SobralData.equipamentos.forEach(equip => {
+                if (!currentConfigs[equip.id]) {
+                    currentConfigs[equip.id] = {
+                        equipamento_id: equip.id,
+                        dias_disponiveis: [1, 2, 3, 4, 5],
+                        horario_inicio: '08:00',
+                        horario_fim: '14:00',
+                        intervalo: 30,
+                        slots_por_horario: 10,
+                        slots_abertos: {},
+                        servicos_config: {}
+                    };
+                    addedConfig = true;
+                }
+                
+                let adminEmail = `admin@${equip.id}.sobral.ce.gov.br`;
+                if (!adminEmails.has(adminEmail)) {
+                    currentAdmins.push({
+                        id: `admin_${equip.id}`,
+                        nome: `Administrador - ${equip.nome.substring(0,30)}`,
+                        email: adminEmail,
+                        senha: 'admin',
+                        role: 'admin',
+                        equipamento_id: equip.id,
+                        ativo: true,
+                        criado_em: new Date().toISOString()
+                    });
+                    adminEmails.add(adminEmail);
+                    addedAdmin = true;
+                }
+            });
+            
+            if (addedConfig) set(KEYS.CONFIG_EQUIPAMENTOS, currentConfigs);
+            if (addedAdmin) set(KEYS.ADMINS, currentAdmins);
+        }
+
         console.log('[Storage] Inicialização concluída.');
     }
 
