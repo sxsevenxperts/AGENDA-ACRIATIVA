@@ -39,6 +39,22 @@ O acesso Departamento/Secretaria é institucional, escolhido em caixa de seleç�
 - Seed script criado para sincronizar departamentos, equipamentos e serviços do scraper/local data para o Supabase.
 - Documentação operacional do Supabase/EasyPanel criada em `SUPABASE_AGENDA_SOBRAL.md`.
 
+### Correção crítica de cache/deploy (versão presa no servidor)
+
+Sintoma: localhost mostrava a versão nova, mas o servidor (produção) mostrava versão antiga mesmo após redeploy.
+
+Causa raiz: o site está atrás do **Cloudflare**, que cacheava a URL `/sw.js` (sem query) por `max-age=14400` (4h). O navegador nunca recebia o service worker novo e o SW antigo (cache-first) servia `index.html`/`app.js` velhos do próprio cache. O **origin estava correto (v9)** — confirmado furando o cache com `?nocache=`.
+
+Correção definitiva (no código): o registro do service worker agora usa **URL versionada** `sw.js?v=<SW_VERSION>`. Cada bump de versão vira uma URL nova (cache-miss no CDN), forçando a troca do SW — mesma técnica do `app.js?v=N`. Também recarrega a página uma vez quando um SW novo assume (sem loop na primeira instalação).
+
+**Procedimento de release (SEMPRE que publicar mudança de CSS/JS):**
+1. Incrementar o `?v=N` de todos os CSS/JS no `index.html`.
+2. Atualizar `SW_VERSION` no script de registro do `index.html` (mesmo N).
+3. Atualizar `CACHE_NAME = 'agenda-sobral-vN'` no `sw.js`.
+4. Commit + push (deploy).
+
+**Uma vez, para destravar quem já está preso na versão antiga:** no Cloudflare, *Caching → Purge Everything* (ou purgar `/sw.js`). Recomendado também criar uma *Cache Rule* que faz **Bypass cache** para `/sw.js`, `/index.html` e `/`. Sem o purge, os navegadores presos se recuperam sozinhos em ≤4h (expiração do cache do CDN).
+
 ### Entregas desta sessão (tipografia, rodapé login)
 
 - **Tipografia premium** alinhada à identidade institucional: **Montserrat** (títulos/display) + **Inter** (texto/UI), substituindo Open Sans. Confirmado que o portal oficial `sobral.ce.gov.br` usa Open Sans; a escolha eleva o acabamento mantendo o caráter humanista/governamental. Aplicado via `--font-family` e `--font-display`.
