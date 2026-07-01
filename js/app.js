@@ -24,7 +24,12 @@ const App = (function() {
     '/admin/fila': renderAdminFila,
     '/admin/relatorios': renderAdminRelatorios,
     '/admin/queue-display': renderQueueDisplay,
-    '/ouvidoria': renderOuvidoria
+    '/ouvidoria': renderOuvidoria,
+    '/termos': renderTermos,
+    '/privacidade': renderPrivacidade,
+    '/lgpd': renderLGPD,
+    '/esqueceu-senha': renderEsqueciSenha,
+    '/criar-conta': renderCriarConta
   };
 
   /**
@@ -291,7 +296,7 @@ const App = (function() {
                 <div class="lgpd-consent mt-4" style="display: flex; align-items: flex-start; gap: 8px;">
                   <input type="checkbox" id="termos-cidadao" required style="margin-top: 4px;">
                   <label for="termos-cidadao" class="text-sm text-secondary" style="line-height: 1.4;">
-                    Li e concordo com os <a href="#" class="text-primary font-bold">Termos de Uso</a>, <a href="#" class="text-primary font-bold">Políticas de Privacidade</a> e autorizo o tratamento dos meus dados conforme a <strong>LGPD</strong>.
+                    Li e concordo com os <a href="#/termos" class="text-primary font-bold">Termos de Uso</a>, <a href="#/privacidade" class="text-primary font-bold">Políticas de Privacidade</a> e autorizo o tratamento dos meus dados conforme a <a href="#/lgpd" class="text-primary font-bold">LGPD</a>.
                   </label>
                 </div>
 
@@ -302,9 +307,10 @@ const App = (function() {
                 </div>
 
                 <button type="submit" class="btn btn-primary w-full mt-4">Entrar</button>
-                
-                <div class="text-center mt-4">
-                  <p class="text-sm">Não tem conta? <a href="#" onclick="alert('Funcionalidade de cadastro em desenvolvimento'); return false;" class="text-primary font-bold">Cadastre-se</a></p>
+
+                <div class="text-center mt-4" style="display: flex; flex-direction: column; gap: 8px;">
+                  <p class="text-sm"><a href="#/esqueceu-senha" class="text-primary font-bold">Esqueceu a senha?</a></p>
+                  <p class="text-sm">Não tem conta? <a href="#/criar-conta" class="text-primary font-bold">Cadastre-se agora</a></p>
                 </div>
               </form>
               
@@ -332,7 +338,7 @@ const App = (function() {
                 <div class="lgpd-consent mt-4" style="display: flex; align-items: flex-start; gap: 8px;">
                   <input type="checkbox" id="termos-admin" required style="margin-top: 4px;">
                   <label for="termos-admin" class="text-sm text-secondary" style="line-height: 1.4;">
-                    Li e concordo com os <a href="#" class="text-primary font-bold">Termos de Uso Institucionais</a> e comprometo-me a seguir as diretrizes da <strong>LGPD</strong>.
+                    Li e concordo com os <a href="#/termos" class="text-primary font-bold">Termos de Uso Institucionais</a> e comprometo-me a seguir as diretrizes da <a href="#/lgpd" class="text-primary font-bold">LGPD</a>.
                   </label>
                 </div>
 
@@ -934,26 +940,59 @@ const App = (function() {
   function renderOuvidoria() {
     appElement.innerHTML = `
       <div class="page-header container mt-6">
-        <h1 class="page-title">Ouvidoria</h1>
-        <p class="page-subtitle">Envie sugestões, reclamações ou elogios.</p>
+        <h1 class="page-title">Ouvidoria Municipal</h1>
+        <p class="page-subtitle">Sua voz importa! Envie sugestões, reclamações ou elogios de forma confidencial.</p>
       </div>
       <div class="container mb-8">
-        <div class="card p-6">
-          <form onsubmit="App.submitOuvidoria(event)">
+        <div class="card p-6" style="max-width: 600px; margin: 0 auto;">
+          <div style="background: #f0f4f8; border-left: 4px solid var(--primary); padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+            <p style="font-size: 0.9rem; color: #333; margin: 0;">🔒 <strong>Acesso Anônimo:</strong> Você não precisa se identificar. Todas as mensagens são confidenciais.</p>
+          </div>
+
+          <form id="form-ouvidoria" onsubmit="App.submitOuvidoria(event)">
             <div class="input-group">
-              <label class="input-label">Assunto</label>
+              <label class="input-label">Tipo de Manifestação</label>
               <select class="select-field" id="ouvidoria-tipo" required>
-                <option value="sugestao">Sugestão</option>
-                <option value="reclamacao">Reclamação</option>
-                <option value="elogio">Elogio</option>
+                <option value="">Selecione...</option>
+                <option value="sugestao">💡 Sugestão de Melhoria</option>
+                <option value="reclamacao">⚠️ Reclamação</option>
+                <option value="elogio">👍 Elogio</option>
+                <option value="outro">❓ Outro</option>
               </select>
             </div>
+
             <div class="input-group">
-              <label class="input-label">Mensagem</label>
-              <textarea class="textarea-field" id="ouvidoria-msg" required rows="5"></textarea>
+              <label class="input-label">Tema (opcional)</label>
+              <input type="text" class="input-field" id="ouvidoria-tema" placeholder="Selecione o tema relacionado">
             </div>
-            <button type="submit" class="btn btn-primary mt-4">Enviar Manifestação</button>
+
+            <div class="input-group">
+              <label class="input-label">Sua Mensagem *</label>
+              <textarea class="textarea-field" id="ouvidoria-msg" placeholder="Descreva sua manifestação em detalhes..." required rows="6"></textarea>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Email para Resposta (opcional)</label>
+              <input type="email" class="input-field" id="ouvidoria-email" placeholder="seu@email.com — deixe em branco para ser anônimo">
+              <small style="color: #666; margin-top: 4px; display: block;">Se fornecer um email, poderemos acompanhar sua manifestação de forma confidencial.</small>
+            </div>
+
+            <div class="lgpd-consent mt-4" style="display: flex; align-items: flex-start; gap: 8px;">
+              <input type="checkbox" id="ouvidoria-lgpd" required style="margin-top: 4px;">
+              <label for="ouvidoria-lgpd" class="text-sm text-secondary" style="line-height: 1.4;">
+                Li e autorizo que meus dados sejam tratados conforme as <a href="#/lgpd" class="text-primary font-bold">políticas LGPD</a> para responder minha manifestação.
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full mt-6">Enviar Manifestação</button>
           </form>
+
+          <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="font-size: 0.85rem; color: #666;">
+              <strong>Tempo de Resposta:</strong> Manifestações anônimas serão avaliadas em até 30 dias úteis.<br>
+              <strong>Contato Direto:</strong> (88) 3677-1100 | <a href="mailto:ouvidoria@sobral.ce.gov.br" class="text-primary">ouvidoria@sobral.ce.gov.br</a>
+            </p>
+          </div>
         </div>
       </div>
     `;
@@ -964,6 +1003,249 @@ const App = (function() {
     const msg = document.getElementById('ouvidoria-msg').value;
     Utils.showToast('Ouvidoria enviada com sucesso!', 'success');
     window.location.hash = '#/dashboard';
+  }
+
+  /* ========================================================================
+     PÁGINAS LEGAIS & SUPORTE
+     ======================================================================== */
+
+  function renderTermos() {
+    appElement.innerHTML = `
+      <div class="page-header container mt-6">
+        <a href="#/login" class="btn btn-sm btn-ghost">← Voltar</a>
+        <h1 class="page-title mt-4">Termos de Uso</h1>
+      </div>
+      <div class="container mb-8">
+        <div class="card p-6" style="max-width: 800px; margin: 0 auto;">
+          <div class="legal-content">
+            <h2>1. Aceitação dos Termos</h2>
+            <p>Ao acessar e usar a plataforma Agenda Sobral, você concorda em estar vinculado por estes Termos de Uso. Se você não concorda com qualquer parte destes termos, interrompa o uso imediatamente.</p>
+
+            <h2>2. Uso Autorizado</h2>
+            <p>Você concorda em usar esta plataforma apenas para fins legítimos e de acordo com todas as leis e regulamentações aplicáveis. É proibido:</p>
+            <ul>
+              <li>Usar dados de terceiros sem consentimento</li>
+              <li>Tentar contornar mecanismos de segurança</li>
+              <li>Disseminar conteúdo ilegal ou ofensivo</li>
+              <li>Realizar atividades que prejudiquem o serviço</li>
+            </ul>
+
+            <h2>3. Responsabilidades do Usuário</h2>
+            <p>Você é responsável por manter a confidencialidade de suas credenciais de login e por todas as atividades realizadas em sua conta. Notifique-nos imediatamente sobre qualquer uso não autorizado.</p>
+
+            <h2>4. Isenção de Responsabilidade</h2>
+            <p>A Prefeitura de Sobral não se responsabiliza por danos indiretos, incidentais ou consequentes relacionados ao uso desta plataforma.</p>
+
+            <h2>5. Modificações</h2>
+            <p>Reservamos o direito de modificar estes termos a qualquer momento. O uso continuado implica aceitação das modificações.</p>
+          </div>
+          <button onclick="history.back()" class="btn btn-primary mt-6 w-full">Entendi e Aceito</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPrivacidade() {
+    appElement.innerHTML = `
+      <div class="page-header container mt-6">
+        <a href="#/login" class="btn btn-sm btn-ghost">← Voltar</a>
+        <h1 class="page-title mt-4">Política de Privacidade</h1>
+      </div>
+      <div class="container mb-8">
+        <div class="card p-6" style="max-width: 800px; margin: 0 auto;">
+          <div class="legal-content">
+            <h2>1. Informações Coletadas</h2>
+            <p>Coletamos dados pessoais como CPF, nome, email e telefone apenas para fins de agendamento e comunicação sobre seus compromissos.</p>
+
+            <h2>2. Uso de Dados</h2>
+            <p>Seus dados são utilizados exclusivamente para:</p>
+            <ul>
+              <li>Gerenciar seus agendamentos</li>
+              <li>Enviar confirmações e lembretes</li>
+              <li>Melhorar nossos serviços</li>
+              <li>Cumprir obrigações legais</li>
+            </ul>
+
+            <h2>3. Proteção de Dados</h2>
+            <p>Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações contra acesso não autorizado, alteração ou divulgação.</p>
+
+            <h2>4. Compartilhamento de Dados</h2>
+            <p>Seus dados não são compartilhados com terceiros sem seu consentimento, exceto quando exigido por lei.</p>
+
+            <h2>5. Direitos do Usuário</h2>
+            <p>Você tem direito a acessar, corrigir ou solicitar a exclusão de seus dados pessoais. Entre em contato através da ouvidoria.</p>
+
+            <h2>6. Cookies</h2>
+            <p>Utilizamos cookies para melhorar sua experiência. Você pode desabilitá-los nas configurações do seu navegador.</p>
+          </div>
+          <button onclick="history.back()" class="btn btn-primary mt-6 w-full">Entendi</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderLGPD() {
+    appElement.innerHTML = `
+      <div class="page-header container mt-6">
+        <a href="#/login" class="btn btn-sm btn-ghost">← Voltar</a>
+        <h1 class="page-title mt-4">LGPD - Lei Geral de Proteção de Dados</h1>
+      </div>
+      <div class="container mb-8">
+        <div class="card p-6" style="max-width: 800px; margin: 0 auto;">
+          <div class="legal-content">
+            <h2>Conformidade com a LGPD</h2>
+            <p>A Prefeitura de Sobral está totalmente alinhada com a Lei Geral de Proteção de Dados (Lei 13.709/2018) e seus regulamentos.</p>
+
+            <h2>Seus Direitos LGPD</h2>
+            <p>Você possui os seguintes direitos sobre seus dados pessoais:</p>
+            <ul>
+              <li><strong>Direito de confirmação:</strong> Confirmar se seus dados são tratados</li>
+              <li><strong>Direito de acesso:</strong> Acessar seus dados pessoais</li>
+              <li><strong>Direito de retificação:</strong> Corrigir dados imprecisos</li>
+              <li><strong>Direito de exclusão:</strong> Solicitar a "morte digital"</li>
+              <li><strong>Direito de portabilidade:</strong> Receber seus dados em formato aberto</li>
+              <li><strong>Direito de oposição:</strong> Opor-se ao tratamento de seus dados</li>
+            </ul>
+
+            <h2>Encarregado de Proteção de Dados</h2>
+            <p>Para exercer qualquer direito LGPD ou fazer reclamações sobre o tratamento de seus dados, entre em contato através da ouvidoria municipal.</p>
+
+            <h2>Retenção de Dados</h2>
+            <p>Seus dados pessoais serão retidos pelo período necessário para cumprir o propósito do agendamento e conforme exigido por lei.</p>
+          </div>
+          <button onclick="history.back()" class="btn btn-primary mt-6 w-full">Entendi</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderEsqueciSenha() {
+    appElement.innerHTML = `
+      <div class="page-login">
+        <div class="login-split">
+          <div class="login-cover">
+            <img src="assets/logo-sobral-light.png" alt="Prefeitura de Sobral" onerror="this.onerror=null; this.src='assets/logo.png'">
+            <h2>Recuperar Acesso</h2>
+            <p>Receba um link de recuperação de senha em seu email.</p>
+          </div>
+
+          <div class="login-form-container">
+            <div class="login-card">
+              <div class="login-header">
+                <h3>Esqueceu a Senha?</h3>
+              </div>
+
+              <form id="form-reset" class="auth-form">
+                <p class="login-mode-copy">Insira o CPF ou email cadastrado. Enviaremos um link para redefinir sua senha.</p>
+
+                <div class="input-group">
+                  <label class="input-label">CPF ou Email</label>
+                  <input type="text" class="input-field" id="reset-cpf-email" placeholder="CPF ou email" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full mt-4">Enviar Link de Recuperação</button>
+
+                <div class="text-center mt-4">
+                  <p class="text-sm">Lembrou a senha? <a href="#/login" class="text-primary font-bold">Voltar ao login</a></p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('form-reset').addEventListener('submit', function(e) {
+      e.preventDefault();
+      Utils.showToast('Link de recuperação enviado! Verifique seu email.', 'success');
+      setTimeout(() => window.location.hash = '#/login', 2000);
+    });
+  }
+
+  function renderCriarConta() {
+    appElement.innerHTML = `
+      <div class="page-login">
+        <div class="login-split">
+          <div class="login-cover">
+            <img src="assets/logo-sobral-light.png" alt="Prefeitura de Sobral" onerror="this.onerror=null; this.src='assets/logo.png'">
+            <h2>Criar Conta</h2>
+            <p>Cadastre-se para agendar seus serviços.</p>
+          </div>
+
+          <div class="login-form-container">
+            <div class="login-card">
+              <div class="login-header">
+                <h3>Novo Cadastro</h3>
+              </div>
+
+              <form id="form-register" class="auth-form">
+                <div class="input-group">
+                  <label class="input-label">Nome Completo</label>
+                  <input type="text" class="input-field" id="reg-nome" placeholder="Seu nome completo" required>
+                </div>
+
+                <div class="input-group">
+                  <label class="input-label">CPF</label>
+                  <input type="text" class="input-field" id="reg-cpf" placeholder="000.000.000-00" required>
+                </div>
+
+                <div class="input-group">
+                  <label class="input-label">Email</label>
+                  <input type="email" class="input-field" id="reg-email" placeholder="seu.email@example.com" required>
+                </div>
+
+                <div class="input-group">
+                  <label class="input-label">Senha</label>
+                  <input type="password" class="input-field" id="reg-senha" placeholder="Mínimo 8 caracteres" required>
+                </div>
+
+                <div class="input-group">
+                  <label class="input-label">Confirmar Senha</label>
+                  <input type="password" class="input-field" id="reg-senha-confirm" placeholder="Confirme sua senha" required>
+                </div>
+
+                <div class="lgpd-consent mt-4" style="display: flex; align-items: flex-start; gap: 8px;">
+                  <input type="checkbox" id="aceitar-termos" required style="margin-top: 4px;">
+                  <label for="aceitar-termos" class="text-sm text-secondary" style="line-height: 1.4;">
+                    Li e concordo com os <a href="#/termos" target="_blank" class="text-primary font-bold">Termos de Uso</a>, <a href="#/privacidade" target="_blank" class="text-primary font-bold">Políticas de Privacidade</a> e a <a href="#/lgpd" target="_blank" class="text-primary font-bold">LGPD</a>. Autorizo o tratamento de meus dados.
+                  </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full mt-4">Criar Conta</button>
+
+                <div class="text-center mt-4">
+                  <p class="text-sm">Já tem conta? <a href="#/login" class="text-primary font-bold">Entre aqui</a></p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('form-register').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nome = document.getElementById('reg-nome').value;
+      const cpf = document.getElementById('reg-cpf').value;
+      const email = document.getElementById('reg-email').value;
+      const senha = document.getElementById('reg-senha').value;
+      const confirmar = document.getElementById('reg-senha-confirm').value;
+
+      if (senha !== confirmar) {
+        Utils.showToast('As senhas não correspondem!', 'error');
+        return;
+      }
+
+      // Create user via Storage
+      const result = Storage.createCidadao({ nome, cpf, email, senha });
+      if (result.success) {
+        Utils.showToast('Conta criada com sucesso! Faça login.', 'success');
+        setTimeout(() => window.location.hash = '#/login', 2000);
+      } else {
+        Utils.showToast(result.error || 'Erro ao criar conta', 'error');
+      }
+    });
   }
 
   /* ========================================================================

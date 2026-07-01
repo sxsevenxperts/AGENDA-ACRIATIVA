@@ -356,6 +356,51 @@ const Storage = (() => {
         set(KEYS.USERS, users);
     }
 
+    /**
+     * Cria um novo cidadão (registro de conta).
+     * @param {Object} dados - { nome, cpf, email, senha }
+     * @returns {Object} { success, error?, userId? }
+     */
+    function createCidadao(dados) {
+        const { nome, cpf, email, senha } = dados;
+
+        if (!nome || !cpf || !email || !senha) {
+            return { success: false, error: 'Todos os campos são obrigatórios.' };
+        }
+
+        if (senha.length < 8) {
+            return { success: false, error: 'A senha deve ter no mínimo 8 caracteres.' };
+        }
+
+        const cpfLimpo = cpf.replace(/\D/g, '');
+        const users = getUsers();
+
+        // Verifica se CPF já existe
+        if (users.some(u => u.cpf === cpfLimpo)) {
+            return { success: false, error: 'Este CPF já está cadastrado.' };
+        }
+
+        // Verifica se email já existe
+        if (users.some(u => u.email === email)) {
+            return { success: false, error: 'Este email já está cadastrado.' };
+        }
+
+        // Cria novo usuário
+        const newUser = {
+            id: 'user_' + Date.now(),
+            nome,
+            cpf: cpfLimpo,
+            email,
+            senha, // Em produção, criptografar!
+            criadoEm: new Date().toISOString()
+        };
+
+        users.push(newUser);
+        saveUsers(users);
+
+        return { success: true, userId: newUser.id };
+    }
+
     // ══════════════════════════════════════════════════════════
     //  GESTÃO DE ADMINISTRADORES
     // ══════════════════════════════════════════════════════════
@@ -624,6 +669,7 @@ const Storage = (() => {
         // Cidadãos
         getUsers,
         saveUsers,
+        createCidadao,
 
         // Administradores
         getAdmins,
