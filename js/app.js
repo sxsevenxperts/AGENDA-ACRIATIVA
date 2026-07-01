@@ -19,6 +19,7 @@ const App = (function() {
     '/meus-agendamentos': renderMeusAgendamentos,
     '/perfil': renderPerfil,
     '/historico': renderHistorico,
+    '/historico-buscas': renderHistoricoBuscas,
     '/admin': renderAdminDashboard,
     '/admin/validar': renderAdminValidar,
     '/admin/servicos': renderAdminServicos,
@@ -61,30 +62,121 @@ const App = (function() {
     // Listen for hash changes for routing
     window.addEventListener('hashchange', handleRoute);
 
-    // Fechar o menu público ao clicar fora dele (mobile)
+    // Fechar o menu ao clicar fora dele
     document.addEventListener('click', (e) => {
-      const headerNav = document.querySelector('.header-nav');
+      const panel = document.getElementById('app-menu-panel');
       const menuBtn = document.querySelector('.header-menu-btn');
-      if (!headerNav || !headerNav.classList.contains('mobile-open')) return;
-      if (headerNav.contains(e.target) || (menuBtn && menuBtn.contains(e.target))) return;
-      headerNav.classList.remove('mobile-open');
+      if (!panel) return;
+      if (panel.contains(e.target) || (menuBtn && menuBtn.contains(e.target))) return;
+      closeMobileMenu();
+    });
+
+    // Fechar o menu com ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMobileMenu();
     });
   }
 
   /**
-   * Alterna o menu de navegação no mobile.
-   * - Gestor (admin): abre/fecha a sidebar administrativa off-canvas.
-   * - Cidadão/anônimo: abre/fecha o dropdown com os links públicos do header.
-   * Um único handler evita o "double toggle" que anulava o clique.
+   * Abre/fecha o menu contextual (botão ☰).
+   * Contém, conforme o perfil: Navegação, Conta, Métricas (gestor),
+   * Ajuda e Sair. Um único handler evita o "double toggle".
    */
   function toggleMobileMenu() {
-    const session = Auth.getSession();
-    if (session && session.type === 'admin' && appSidebar) {
-      appSidebar.classList.toggle('open');
+    if (document.getElementById('app-menu-panel')) {
+      closeMobileMenu();
       return;
     }
-    const headerNav = document.querySelector('.header-nav');
-    if (headerNav) headerNav.classList.toggle('mobile-open');
+    const header = document.getElementById('app-header');
+    if (!header) return;
+    const panel = buildMenuPanel(Auth.getSession());
+    header.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add('open'));
+  }
+
+  function closeMobileMenu() {
+    const panel = document.getElementById('app-menu-panel');
+    if (!panel) return;
+    panel.classList.remove('open');
+    setTimeout(() => panel.remove(), 180);
+  }
+
+  /**
+   * Monta o painel do menu ☰ de acordo com o perfil da sessão.
+   */
+  function buildMenuPanel(session) {
+    const panel = document.createElement('div');
+    panel.id = 'app-menu-panel';
+    panel.className = 'app-menu-panel';
+    panel.setAttribute('role', 'menu');
+
+    const item = (href, label, icon) =>
+      `<a href="${href}" class="app-menu-item" role="menuitem">${Utils.getIcon(icon, 18) || ''}<span>${label}</span></a>`;
+    const group = (titulo, itens) =>
+      `<div class="app-menu-group"><div class="app-menu-group-title">${titulo}</div>${itens.join('')}</div>`;
+
+    let html = '';
+
+    if (!session) {
+      // Anônimo
+      html += group('Navegação', [
+        item('#/', 'Início', 'home'),
+        item('#/agendar', 'Agendar', 'calendar'),
+        item('#/meus-agendamentos', 'Consultar', 'search')
+      ]);
+      html += group('Ajuda', [
+        item('#/duvidas', 'Dúvidas Comuns', 'help'),
+        item('#/ouvidoria', 'Ouvidoria / Sugestões', 'message')
+      ]);
+      html += `<div class="app-menu-group"><a href="#/login" class="app-menu-item app-menu-cta" role="menuitem">${Utils.getIcon('user', 18) || ''}<span>Entrar / Criar conta</span></a></div>`;
+    } else if (session.type === 'cidadao') {
+      const nome = (session.user && session.user.nome) || 'Usuário';
+      html += `<div class="app-menu-header"><div class="app-menu-name">${Utils.sanitizeHTML(nome)}</div><div class="app-menu-sub">Cidadão</div></div>`;
+      html += group('Navegação', [
+        item('#/dashboard', 'Painel', 'home'),
+        item('#/agendar', 'Agendar', 'calendar'),
+        item('#/meus-agendamentos', 'Meus Agendamentos', 'search')
+      ]);
+      html += group('Conta', [
+        item('#/perfil', 'Meu Perfil', 'user'),
+        item('#/historico', 'Histórico de Atendimentos', 'clock'),
+        item('#/historico-buscas', 'Histórico de Buscas', 'search')
+      ]);
+      html += group('Ajuda', [
+        item('#/duvidas', 'Dúvidas Comuns', 'help'),
+        item('#/ouvidoria', 'Ouvidoria / Sugestões', 'message')
+      ]);
+      html += `<div class="app-menu-group"><button class="app-menu-item app-menu-exit" onclick="App.handleLogout()" role="menuitem">${Utils.getIcon('exit', 18) || ''}<span>Sair do acesso</span></button></div>`;
+    } else {
+      // Gestor / departamento
+      const nome = (session.user && session.user.nome) || 'Gestor';
+      const escopo = (session.user && session.user.escopo_secretaria_nome) || 'Departamento/Secretaria';
+      html += `<div class="app-menu-header"><div class="app-menu-name">${Utils.sanitizeHTML(nome)}</div><div class="app-menu-sub">${Utils.sanitizeHTML(escopo)}</div></div>`;
+      html += group('Navegação', [
+        item('#/admin', 'Dashboard', 'grid'),
+        item('#/admin/validar', 'Validar Senha', 'check'),
+        item('#/admin/fila', 'Fila de Atendimento', 'users'),
+        item('#/admin/horarios', 'Agenda', 'calendar'),
+        item('#/admin/horarios', 'Gestão de Horários', 'clock'),
+        item('#/admin/servicos', 'Serviços Ofertados', 'file')
+      ]);
+      html += group('Métricas & Relatórios', [
+        item('#/admin/metricas', 'Métricas (KPI/OKR)', 'chart'),
+        item('#/admin/relatorio-departamento', 'Relatório por Departamento', 'chart'),
+        item('#/admin/avaliacoes', 'Avaliações de Serviço', 'star'),
+        item('#/admin/duvidas', 'Dúvidas Comuns', 'help')
+      ]);
+      html += group('Conta', [
+        item('#/perfil', 'Meu Perfil', 'user')
+      ]);
+      html += `<div class="app-menu-group"><button class="app-menu-item app-menu-exit" onclick="App.handleLogout()" role="menuitem">${Utils.getIcon('exit', 18) || ''}<span>Sair do acesso</span></button></div>`;
+    }
+
+    panel.innerHTML = html;
+    // Fechar ao clicar em qualquer link (a navegação por hash cuida do resto)
+    panel.querySelectorAll('a.app-menu-item').forEach(a =>
+      a.addEventListener('click', () => closeMobileMenu()));
+    return panel;
   }
 
   /**
@@ -97,7 +189,7 @@ const App = (function() {
     
     // Close sidebar / mobile menu on navigation (mobile)
     if (appSidebar) appSidebar.classList.remove('open');
-    document.querySelector('.header-nav')?.classList.remove('mobile-open');
+    closeMobileMenu();
 
     // Close any open modal (comprovante/ticket) on navigation
     document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
@@ -1057,6 +1149,16 @@ const App = (function() {
         </div>
       </div>
     `;
+
+    // Pré-preenche a mensagem quando o usuário veio de "reportar serviço em falta"
+    const prefill = sessionStorage.getItem('sobral_ouvidoria_prefill');
+    if (prefill) {
+      const msgEl = document.getElementById('ouvidoria-msg');
+      const temaEl = document.getElementById('ouvidoria-tema');
+      if (msgEl) msgEl.value = prefill;
+      if (temaEl) temaEl.value = 'Solicitação de novo serviço';
+      sessionStorage.removeItem('sobral_ouvidoria_prefill');
+    }
   }
 
   function submitOuvidoria(e) {
@@ -1727,9 +1829,117 @@ const App = (function() {
     if (event) event.preventDefault();
     const input = document.getElementById('hero-search-input');
     const termo = input ? input.value.trim() : '';
-    if (termo) sessionStorage.setItem('sobral_hero_search', termo);
-    else sessionStorage.removeItem('sobral_hero_search');
+
+    if (!termo) {
+      sessionStorage.removeItem('sobral_hero_search');
+      goToAgendamento();
+      return;
+    }
+
+    const matches = buscarServicos(termo);
+    const exato = matches.find(m => m.score >= 100);
+
+    // Registra a busca no histórico (para o cidadão e para análise do departamento).
+    // "encontrou" reflete correspondência exata — buscas só com similares contam
+    // como demanda não atendida para o departamento analisar.
+    const session = Auth.getSession();
+    if (typeof Analytics !== 'undefined' && Analytics.registrarBusca) {
+      Analytics.registrarBusca({
+        termo,
+        usuario_id: session && session.type === 'cidadao' ? session.user.id : null,
+        encontrou: !!exato,
+        resultados: matches.length
+      });
+    }
+
+    if (exato) {
+      sessionStorage.setItem('sobral_hero_search', termo);
+      goToAgendamento();
+    } else {
+      // Sem correspondência exata: sugere similares ou oferece reportar falta
+      showSugestaoServicos(termo, matches.slice(0, 6));
+    }
+  }
+
+  /**
+   * Busca serviços no catálogo por termo, com pontuação:
+   * 100 = o termo aparece por completo; <100 = casamento parcial por tokens.
+   * Retorna [{ servico, equipamento, secretaria, score }] ordenado por score.
+   */
+  function buscarServicos(termo) {
+    const query = normalizeText(termo);
+    if (!query) return [];
+    const tokens = query.split(/\s+/).filter(t => t.length > 1);
+    const equipamentos = SobralData.equipamentos || [];
+    const matches = [];
+
+    equipamentos.forEach(eq => {
+      const sec = Scheduling.getSecretariaById(eq.secretaria_id);
+      Scheduling.getServicosByEquipamento(eq.id).forEach(s => {
+        const hay = normalizeText(`${s.nome} ${s.descricao || ''} ${s.orientacoes || ''} ${eq.nome} ${sec ? sec.nome : ''}`);
+        let score = 0;
+        if (hay.includes(query)) {
+          score = 100;
+        } else if (tokens.length) {
+          const hits = tokens.filter(t => hay.includes(t)).length;
+          if (hits) score = Math.round((hits / tokens.length) * 80);
+        }
+        if (score > 0) matches.push({ servico: s, equipamento: eq, secretaria: sec, score });
+      });
+    });
+
+    return matches.sort((a, b) => b.score - a.score);
+  }
+
+  /**
+   * Modal de sugestão de serviços quando a busca não tem correspondência exata.
+   */
+  function showSugestaoServicos(termo, sugestoes) {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+
+    const listaHtml = sugestoes.length
+      ? `
+        <p class="text-sm text-secondary mb-3">Não encontramos exatamente <strong>"${Utils.sanitizeHTML(termo)}"</strong>. Você quis dizer:</p>
+        <div class="sugestao-list">
+          ${sugestoes.map(m => `
+            <button class="sugestao-item" onclick="App.irParaServicoSugerido('${m.secretaria ? m.secretaria.id : ''}', '${m.equipamento.id}', '${Utils.sanitizeHTML(m.servico.nome).replace(/'/g, '&#39;')}')">
+              <div class="sugestao-nome">${Utils.sanitizeHTML(m.servico.nome)}</div>
+              <div class="sugestao-meta">${Utils.sanitizeHTML(m.equipamento.nome)}${m.secretaria ? ' · ' + Utils.sanitizeHTML(m.secretaria.sigla) : ''}</div>
+            </button>
+          `).join('')}
+        </div>
+      `
+      : `<p class="text-sm text-secondary mb-3">O serviço <strong>"${Utils.sanitizeHTML(termo)}"</strong> está indisponível para agendamento neste momento.</p>`;
+
+    overlay.innerHTML = `
+      <div class="card p-6" role="dialog" aria-modal="true" style="max-width: 480px; width: 100%;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <h3 class="font-bold text-lg">${Utils.getIcon('search', 20) || ''} Resultado da busca</h3>
+          <button class="btn btn-icon btn-ghost" aria-label="Fechar" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+        ${listaHtml}
+        <div class="mt-4" style="border-top:1px solid var(--border-color); padding-top:16px;">
+          <p class="text-xs text-secondary mb-2">Não é isso que procura?</p>
+          <button class="btn btn-secondary w-full" onclick="this.closest('.modal-overlay').remove(); App.reportarServicoFalta('${Utils.sanitizeHTML(termo).replace(/'/g, '&#39;')}')">
+            ${Utils.getIcon('message', 16) || ''} Reportar serviço em falta à Ouvidoria
+          </button>
+        </div>
+      </div>
+    `;
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+
+  function irParaServicoSugerido(secretariaId, equipamentoId, servicoNome) {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
+    if (servicoNome) sessionStorage.setItem('sobral_hero_search', servicoNome);
     goToAgendamento();
+  }
+
+  function reportarServicoFalta(termo) {
+    sessionStorage.setItem('sobral_ouvidoria_prefill', `Solicitação de novo serviço: "${termo}". Não encontrei este serviço disponível para agendamento e gostaria de solicitá-lo.`);
+    window.location.hash = '#/ouvidoria';
   }
 
   /* ========================================================================
@@ -2631,6 +2841,71 @@ const App = (function() {
   }
 
   /* ========================================================================
+     HISTÓRICO DE BUSCAS (cidadão)
+     ======================================================================== */
+
+  function renderHistoricoBuscas() {
+    const session = Auth.getSession();
+    if (!session || session.type !== 'cidadao') {
+      window.location.hash = '#/login';
+      return;
+    }
+
+    const buscas = (typeof Analytics !== 'undefined' && Analytics.getBuscasUsuario)
+      ? Analytics.getBuscasUsuario(session.user.id, 100)
+      : [];
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Histórico de Buscas</h1>
+        <p class="page-subtitle">Assuntos e serviços que você pesquisou no Agenda Sobral.</p>
+      </div>
+
+      ${buscas.length ? `
+        <div class="card p-0" style="overflow:hidden;">
+          <table class="data-table" style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding:12px 16px;">Termo buscado</th>
+                <th style="text-align:center; padding:12px 16px;">Resultados</th>
+                <th style="text-align:right; padding:12px 16px;">Data</th>
+                <th style="text-align:right; padding:12px 16px;">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${buscas.map(b => `
+                <tr style="border-top:1px solid var(--border-color);">
+                  <td style="padding:12px 16px;">${Utils.sanitizeHTML(b.termo)}</td>
+                  <td style="text-align:center; padding:12px 16px;">
+                    ${b.encontrou === false
+                      ? '<span class="badge badge-warning">Sem resultado</span>'
+                      : `<span class="badge badge-success">${b.resultados != null ? b.resultados : '—'}</span>`}
+                  </td>
+                  <td style="text-align:right; padding:12px 16px; color:var(--text-secondary); font-size:13px;">${new Date(b.buscado_em).toLocaleString('pt-BR')}</td>
+                  <td style="text-align:right; padding:12px 16px;">
+                    <button class="btn btn-sm btn-ghost" onclick="App.buscarNovamente('${Utils.sanitizeHTML(b.termo).replace(/'/g, '&#39;')}')">Buscar de novo</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : `
+        <div class="card p-6 text-center">
+          <div style="opacity:0.6; margin-bottom:8px;">${Utils.getIcon('search', 40) || ''}</div>
+          <p class="text-secondary">Você ainda não realizou buscas. Use a barra de pesquisa na página inicial para encontrar serviços.</p>
+          <button class="btn btn-primary mt-4" onclick="window.location.hash='#/'">Ir para a busca</button>
+        </div>
+      `}
+    `;
+  }
+
+  function buscarNovamente(termo) {
+    sessionStorage.setItem('sobral_hero_search', termo);
+    goToAgendamento();
+  }
+
+  /* ========================================================================
      DASHBOARD GESTOR - MÉTRICAS
      ======================================================================== */
 
@@ -3167,30 +3442,62 @@ const App = (function() {
         </div>
       </div>
 
+      <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4">Assuntos Buscados (demanda)</h2>
+        <div class="grid-3 gap-4 mb-4">
+          <div class="p-3" style="background: var(--primary-50); border-radius: 8px;">
+            <div class="text-sm text-secondary">Total de buscas</div>
+            <div class="text-2xl font-extrabold">${relatorio.assuntos_buscados}</div>
+          </div>
+          <div class="p-3" style="background: #FFF3E0; border-radius: 8px;">
+            <div class="text-sm text-secondary">Buscas sem resultado</div>
+            <div class="text-2xl font-extrabold" style="color:#E65100;">${relatorio.buscas_sem_resultado}</div>
+          </div>
+          <div class="p-3" style="background: #E8F5E9; border-radius: 8px;">
+            <div class="text-sm text-secondary">Atendimentos resolvidos</div>
+            <div class="text-2xl font-extrabold" style="color:#2E7D32;">${relatorio.resolvidos}</div>
+          </div>
+        </div>
+        ${relatorio.top_buscas && relatorio.top_buscas.length ? `
+          <div class="text-sm font-bold mb-2">Top assuntos pesquisados</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            ${relatorio.top_buscas.map(b => `<span class="badge" style="background:var(--primary-50); color:var(--primary-700); padding:4px 10px; border-radius:12px;">${Utils.sanitizeHTML(b.termo)} · ${b.total}${b.semResultado ? ' ⚠️' : ''}</span>`).join('')}
+          </div>
+        ` : '<p class="text-sm text-secondary">Nenhuma busca registrada no período.</p>'}
+      </div>
+
       <div class="card p-6">
-        <h2 class="text-lg font-bold mb-4">Performance por Equipamento</h2>
-        <table style="width: 100%; border-collapse: collapse;">
+        <h2 class="text-lg font-bold mb-1">Performance por Equipamento</h2>
+        <p class="text-xs text-secondary mb-4">Cada equipamento vê apenas seus próprios dados; o departamento consolida todos.</p>
+        <div style="overflow-x:auto;">
+        <table style="width: 100%; border-collapse: collapse; min-width: 640px;">
           <thead>
             <tr style="border-bottom: 2px solid #e0e0e0;">
               <th style="text-align: left; padding: 12px; font-weight: bold;">Equipamento</th>
               <th style="text-align: center; padding: 12px; font-weight: bold;">Total</th>
               <th style="text-align: center; padding: 12px; font-weight: bold;">Senhas</th>
               <th style="text-align: center; padding: 12px; font-weight: bold;">Validações</th>
-              <th style="text-align: center; padding: 12px; font-weight: bold;">Taxa Comparecimento</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Concluídos</th>
+              <th style="text-align: center; padding: 12px; font-weight: bold;">Comparecimento</th>
             </tr>
           </thead>
           <tbody>
-            ${relatorio.equipamentos.map(eq => `
+            ${relatorio.equipamentos.map(eq => {
+              const eqObj = Scheduling.getEquipamentoById(eq.equipamento_id);
+              const nome = eqObj ? eqObj.nome : eq.equipamento_id;
+              return `
               <tr style="border-bottom: 1px solid #f0f0f0;">
-                <td style="padding: 12px;">${Utils.sanitizeHTML(eq.equipamento_id)}</td>
-                <td style="text-align: center; padding: 12px;">${eq.total_agendamentos}</td>
+                <td style="padding: 12px;">${Utils.sanitizeHTML(nome)}</td>
+                <td style="text-align: center; padding: 12px;">${eq.total_atendimentos}</td>
                 <td style="text-align: center; padding: 12px;">${eq.senhas_emitidas}</td>
                 <td style="text-align: center; padding: 12px;">${eq.validacoes}</td>
+                <td style="text-align: center; padding: 12px;">${eq.atendimentos_concluidos}</td>
                 <td style="text-align: center; padding: 12px; font-weight: bold; color: ${eq.taxa_comparecimento >= 80 ? '#4CAF50' : '#FF9800'};">${eq.taxa_comparecimento}%</td>
               </tr>
-            `).join('')}
+            `;}).join('')}
           </tbody>
         </table>
+        </div>
       </div>
     `;
   }
@@ -3203,6 +3510,9 @@ const App = (function() {
     loginDemo,
     goToAgendamento,
     handleHeroSearch,
+    irParaServicoSugerido,
+    reportarServicoFalta,
+    buscarNovamente,
     showComprovante,
     submitOuvidoria,
     showNpsModal,

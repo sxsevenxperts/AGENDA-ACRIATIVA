@@ -17,8 +17,67 @@ const Analytics = (() => {
     DUVIDAS: 'sobral_duvidas',
     AVALIACOES: 'sobral_avaliacoes_servico',
     RASTREAMENTO: 'sobral_rastreamento_atendimento',
-    MOTIVOS_CANCELAMENTO: 'sobral_motivos_cancelamento'
+    MOTIVOS_CANCELAMENTO: 'sobral_motivos_cancelamento',
+    BUSCAS: 'sobral_historico_buscas'
   };
+
+  /* ══════════════════════════════════════════════════════════
+     HISTÓRICO DE BUSCAS (assuntos pesquisados)
+     ══════════════════════════════════════════════════════════ */
+
+  function getBuscas() {
+    return localStorage.getItem(KEYS.BUSCAS) ? JSON.parse(localStorage.getItem(KEYS.BUSCAS)) : [];
+  }
+
+  /**
+   * Registra um termo buscado pelo cidadão (ou anônimo).
+   * @param {Object} dados - { termo, usuario_id?, encontrou?, resultados? }
+   */
+  function registrarBusca(dados) {
+    const termo = (dados && dados.termo ? String(dados.termo).trim() : '');
+    if (!termo) return { success: false, error: 'Termo vazio.' };
+
+    const buscas = getBuscas();
+    buscas.push({
+      id: 'busca_' + Date.now(),
+      termo,
+      termo_norm: termo.toLowerCase(),
+      usuario_id: (dados && dados.usuario_id) || null,
+      encontrou: (dados && typeof dados.encontrou === 'boolean') ? dados.encontrou : null,
+      resultados: (dados && typeof dados.resultados === 'number') ? dados.resultados : null,
+      buscado_em: new Date().toISOString()
+    });
+    // Mantém no máximo 500 registros globais para não crescer indefinidamente.
+    const trimmed = buscas.slice(-500);
+    localStorage.setItem(KEYS.BUSCAS, JSON.stringify(trimmed));
+    return { success: true };
+  }
+
+  function getBuscasUsuario(usuario_id, limit = 50) {
+    return getBuscas()
+      .filter(b => b.usuario_id === usuario_id)
+      .sort((a, b) => new Date(b.buscado_em) - new Date(a.buscado_em))
+      .slice(0, limit);
+  }
+
+  /**
+   * Ranking de assuntos mais buscados (para análise do departamento).
+   * Opcionalmente filtra por termos que NÃO encontraram resultado.
+   */
+  function getRankingBuscas(limit = 20, apenasSemResultado = false) {
+    const buscas = getBuscas().filter(b => !apenasSemResultado || b.encontrou === false);
+    const contagem = {};
+    buscas.forEach(b => {
+      const key = b.termo_norm;
+      if (!contagem[key]) contagem[key] = { termo: b.termo, total: 0, semResultado: 0 };
+      contagem[key].total += 1;
+      if (b.encontrou === false) contagem[key].semResultado += 1;
+    });
+    return Object.values(contagem)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, limit)
+      .map((c, idx) => ({ rank: idx + 1, ...c }));
+  }
 
   /* ══════════════════════════════════════════════════════════
      FAQ (Dúvidas Comuns)
@@ -289,10 +348,11 @@ const Analytics = (() => {
       return data >= new Date(dataInicio) && data <= new Date(dataFim);
     });
 
-    const agendados = filtrados.filter(a => ['agendado', 'chamado'].includes(a.status)).length;
+    const agendados = filtrados.filter(a => ['confirmado', 'agendado', 'chamado'].includes(a.status)).length;
     const atendidos = filtrados.filter(a => a.status === 'atendido').length;
     const cancelados = filtrados.filter(a => a.status === 'cancelado').length;
     const naoCompareceu = filtrados.filter(a => a.status === 'nao_compareceu').length;
+    const validados = filtrados.filter(a => a.validado === true).length;
 
     const temposRastreamento = rastreamento
       .filter(r => filtrados.some(a => a.id === r.agendamento_id))
@@ -310,8 +370,8 @@ const Analytics = (() => {
       equipamento_id,
       periodo: { inicio: dataInicio, fim: dataFim },
       agendados,
-      senhas_emitidas: atendidos + cancelados + naoCompareceu,
-      validacoes: atendidos,
+      senhas_emitidas: filtrados.filter(a => a.status !== 'cancelado').length,
+      validacoes: validados,
       atendimentos_concluidos: atendidos,
       taxa_comparecimento: filtrados.length ? ((atendidos / filtrados.length) * 100).toFixed(1) : 0,
       taxa_cancelamento: filtrados.length ? (((cancelados + naoCompareceu) / filtrados.length) * 100).toFixed(1) : 0,
@@ -332,23 +392,35 @@ const Analytics = (() => {
       return data >= new Date(dataInicio) && data <= new Date(dataFim);
     });
 
-    const agendados = filtrados.filter(a => ['agendado', 'chamado'].includes(a.status)).length;
+    const agendados = filtrados.filter(a => ['confirmado', 'agendado', 'chamado'].includes(a.status)).length;
     const atendidos = filtrados.filter(a => a.status === 'atendido').length;
     const cancelados = filtrados.filter(a => a.status === 'cancelado').length;
     const naoCompareceu = filtrados.filter(a => a.status === 'nao_compareceu').length;
+    const validados = filtrados.filter(a => a.validado === true).length;
 
     const porEquipamento = equipamentos.map(eq => getRelatorioAtendimento(eq.id, dataInicio, dataFim));
+
+    // Assuntos buscados no período (demanda) — as buscas são citywide (não por equipamento)
+    const buscasPeriodo = getBuscas().filter(b => {
+      const data = new Date(b.buscado_em);
+      return data >= new Date(dataInicio) && data <= new Date(dataFim);
+    });
+    const buscasSemResultado = buscasPeriodo.filter(b => b.encontrou === false).length;
 
     return {
       secretaria_id,
       periodo: { inicio: dataInicio, fim: dataFim },
       total_agendamentos: filtrados.length,
       agendados,
-      senhas_emitidas: atendidos + cancelados + naoCompareceu,
-      validacoes: atendidos,
+      senhas_emitidas: filtrados.filter(a => a.status !== 'cancelado').length,
+      validacoes: validados,
       atendimentos_concluidos: atendidos,
+      resolvidos: atendidos,
       taxa_comparecimento: filtrados.length ? ((atendidos / filtrados.length) * 100).toFixed(1) : 0,
       taxa_cancelamento: filtrados.length ? (((cancelados + naoCompareceu) / filtrados.length) * 100).toFixed(1) : 0,
+      assuntos_buscados: buscasPeriodo.length,
+      buscas_sem_resultado: buscasSemResultado,
+      top_buscas: getRankingBuscas(10),
       equipamentos: porEquipamento
     };
   }
@@ -376,6 +448,12 @@ const Analytics = (() => {
     // Cancelamentos
     registrarCancelamento,
     getMotivosCancelamentoPorPeriodo,
+
+    // Buscas
+    registrarBusca,
+    getBuscas,
+    getBuscasUsuario,
+    getRankingBuscas,
 
     // Relatórios
     getRelatorioAtendimento,

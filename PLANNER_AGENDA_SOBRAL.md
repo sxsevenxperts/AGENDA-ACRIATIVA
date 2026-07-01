@@ -12,9 +12,13 @@ O acesso Departamento/Secretaria é institucional, escolhido em caixa de seleç�
 
 - Identidade visual aplicada com logomarca da Prefeitura de Sobral e paleta institucional.
 - Hero e barra de pesquisa corrigidos, responsivos e funcionais.
+- Barra de busca do hero reorganizada no mobile, sem sobreposição com header ou botão de agendamento.
 - Busca por serviço, secretaria, equipamento, unidade, bairro ou assunto.
+- Busca com sugestão de serviços similares e opção de reportar serviço em falta à Ouvidoria.
+- Histórico de buscas do cidadão em `#/historico-buscas`.
 - Fluxo de usuário com agendamento em qualquer secretaria/equipamento.
 - Fluxo Departamento/Secretaria com escolha em caixa de seleção no login.
+- Menu contextual no botão de menu com navegação, conta, ajuda, métricas e saída conforme perfil.
 - Escopo administrativo por departamento, com equipamentos separados.
 - Seletor de equipamento em dashboard, agenda, serviços e fila.
 - Agendamento com secretaria, equipamento, serviço, data, hora e senha virtual.
@@ -26,6 +30,7 @@ O acesso Departamento/Secretaria é institucional, escolhido em caixa de seleç�
 - Relatórios NPS por setor/equipamento e colaborador.
 - Relatório de agendamentos por pessoa.
 - KPIs operacionais e OKRs de gestão.
+- Relatório por departamento com performance por equipamento e ranking de assuntos buscados.
 - Acesso demo documentado em `DEMO_ACCESS.json`.
 - Scraper do portal oficial de Sobral executado e base local atualizada.
 - Service worker revisado com cache versionado.
@@ -61,13 +66,24 @@ O projeto atual é um PWA estático. A camada de back-end funcional está simula
 - Tela de horários deixou de abrir agenda automaticamente ao carregar.
 - Abertura e fechamento de dia agora exigem ação explícita do gestor.
 - Cache PWA atualizado para entregar a versão mais recente.
+- Menu mobile corrigido para evitar double toggle e rotas inexistentes.
+- Histórico do cidadão corrigido para usar `usuario_id`, status `confirmado` e senha correta.
+- Relatório por departamento corrigido para exibir nome do equipamento, total correto e validações por `validado`.
+- Histórico de buscas adicionado ao Analytics local para apoiar leitura de demanda não atendida.
+
+### Validação final antes da sincronização
+
+- `node --check js/*.js` executado sem erros de sintaxe.
+- Smoke test mobile no Chrome local: app carregou, busca ficou clicável, modal de sugestões/serviço em falta abriu, histórico de buscas do cidadão carregou e menu gestor exibiu métricas/relatórios.
+- Smoke test desktop no Chrome local: busca carregou alinhada e fluxo de agendamento redirecionou corretamente para login.
+- Servidor local validado em `http://127.0.0.1:4173/`.
 
 ## Estado funcional atual
 
 - O app funciona localmente como protótipo avançado/PWA.
 - Os dados ficam no navegador do usuário por `localStorage`.
 - O fluxo de UX e as regras de escopo já estão alinhados com o produto desejado.
-- Para operação real multiusuário, a base Supabase já está modelada em migration. O próximo passo é aplicar a migration no banco remoto do EasyPanel, expor `agenda_sobral` no PostgREST e trocar gradualmente os fluxos de tela para o adapter Supabase.
+- Para operação real multiusuário, a base Supabase já está modelada em migration. O próximo passo é manter a evolução gradual dos fluxos de tela para o adapter Supabase, preservando fallback local até a virada completa.
 
 ## Plano para ficar 100% funcional em produção
 
