@@ -966,8 +966,6 @@ const App = (function() {
     window.location.hash = '#/dashboard';
   }
 
-  App.submitOuvidoria = submitOuvidoria;
-
   /* ========================================================================
      ROUTER & INITIALIZATIONS EXPOSED GLOBALLY
      ======================================================================== */
@@ -1944,6 +1942,7 @@ const App = (function() {
     goToAgendamento,
     handleHeroSearch,
     showComprovante,
+    submitOuvidoria,
     showNpsModal,
     selectNpsScore,
     submitNps,

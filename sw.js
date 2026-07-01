@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agenda-sobral-v4';
+const CACHE_NAME = 'agenda-sobral-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -46,25 +46,26 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Estratégia network-first: sempre busca a versão mais recente e usa o
+// cache apenas como fallback offline. Evita servir código desatualizado.
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        return response || fetch(event.request).then((fetchResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            // Only cache valid responses from the same origin to avoid caching errors
-            if (event.request.url.startsWith(self.location.origin) && fetchResponse.ok) {
-              cache.put(event.request, fetchResponse.clone());
-            }
-            return fetchResponse;
-          });
-        });
-      })
-      .catch(() => {
-        // Fallback for offline if something isn't in cache
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
+    fetch(event.request)
+      .then((fetchResponse) => {
+        if (event.request.url.startsWith(self.location.origin) && fetchResponse.ok) {
+          const clone = fetchResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
+        return fetchResponse;
       })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') return caches.match('./index.html');
+          return Response.error();
+        })
+      )
   );
 });
