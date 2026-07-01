@@ -17,12 +17,15 @@ const App = (function() {
     '/dashboard': renderCidadaoDashboard,
     '/agendar': renderSchedulingWizard,
     '/meus-agendamentos': renderMeusAgendamentos,
+    '/perfil': renderPerfil,
+    '/historico': renderHistorico,
     '/admin': renderAdminDashboard,
     '/admin/validar': renderAdminValidar,
     '/admin/servicos': renderAdminServicos,
     '/admin/horarios': renderAdminHorarios,
     '/admin/fila': renderAdminFila,
     '/admin/relatorios': renderAdminRelatorios,
+    '/admin/metricas': renderAdminMetricas,
     '/admin/queue-display': renderQueueDisplay,
     '/ouvidoria': renderOuvidoria,
     '/termos': renderTermos,
@@ -121,31 +124,67 @@ const App = (function() {
 
   function updateAuthUI() {
     const session = Auth.getSession();
-    
+
     if (session) {
       const isCidadao = session.type === 'cidadao';
       const nome = (session.user && session.user.nome) || (isCidadao ? 'Usuário' : 'Gestor');
       const primeiroNome = nome.split(' ').slice(0, 2).join(' ');
       const iniciais = nome.split(' ').filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+      const userFoto = session.user?.foto || null;
 
       if (headerUser) {
         headerUser.style.display = 'flex';
         headerUser.innerHTML = `
-          <div class="user-info">
-            <span class="user-name">${Utils.sanitizeHTML(primeiroNome)}</span>
-            <span class="user-role">${isCidadao ? 'Usuário' : (session.user.escopo_secretaria_nome || 'Departamento/Secretaria')}</span>
+          <div class="user-menu" style="position: relative;">
+            <div class="user-info" style="cursor: pointer;">
+              <span class="user-name">${Utils.sanitizeHTML(primeiroNome)}</span>
+              <span class="user-role">${isCidadao ? 'Usuário' : (session.user.escopo_secretaria_nome || 'Departamento/Secretaria')}</span>
+            </div>
+            <div class="avatar" style="cursor: pointer;">
+              ${userFoto ? `<img src="${userFoto}" alt="${nome}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` : (iniciais || Utils.getIcon('user'))}
+            </div>
+            <div class="user-dropdown" style="display: none; position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px;">
+              <a href="#/perfil" class="dropdown-item" style="display: block; padding: 12px 16px; color: #1D467A; text-decoration: none; border-bottom: 1px solid #f0f0f0;">
+                ${Utils.getIcon('user', 16)} Meu Perfil
+              </a>
+              ${!isCidadao ? `<a href="#/admin/metricas" class="dropdown-item" style="display: block; padding: 12px 16px; color: #1D467A; text-decoration: none; border-bottom: 1px solid #f0f0f0;">
+                ${Utils.getIcon('chart', 16)} Métricas
+              </a>` : ''}
+              <a href="#/historico" class="dropdown-item" style="display: block; padding: 12px 16px; color: #1D467A; text-decoration: none; border-bottom: 1px solid #f0f0f0;">
+                ${Utils.getIcon('clock', 16)} Histórico
+              </a>
+              <button class="dropdown-item" onclick="App.handleLogout()" style="display: block; width: 100%; text-align: left; padding: 12px 16px; color: #D32F2F; border: none; background: none; cursor: pointer; font-size: 14px;">
+                ${Utils.getIcon('exit', 16)} Sair
+              </button>
+            </div>
           </div>
-          <div class="avatar">${iniciais || Utils.getIcon('user')}</div>
         `;
-        
-        // Add logout listener
-        headerUser.onclick = () => {
-          if (confirm('Deseja sair do sistema?')) {
-            Auth.logout();
-            window.location.hash = '#/';
-            location.reload();
+
+        // Toggle dropdown on click
+        const userMenuEl = headerUser.querySelector('.user-menu');
+        const dropdownEl = headerUser.querySelector('.user-dropdown');
+        const userInfoEl = headerUser.querySelector('.user-info');
+        const avatarEl = headerUser.querySelector('.avatar');
+
+        if (userInfoEl && dropdownEl) {
+          userInfoEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownEl.style.display = dropdownEl.style.display === 'none' ? 'block' : 'none';
+          });
+
+          if (avatarEl) {
+            avatarEl.addEventListener('click', (e) => {
+              e.stopPropagation();
+              dropdownEl.style.display = dropdownEl.style.display === 'none' ? 'block' : 'none';
+            });
           }
-        };
+
+          document.addEventListener('click', (e) => {
+            if (!userMenuEl.contains(e.target) && dropdownEl.style.display === 'block') {
+              dropdownEl.style.display = 'none';
+            }
+          });
+        }
       }
 
       // Toggle layout elements based on role
@@ -2216,6 +2255,513 @@ const App = (function() {
     `;
   }
 
+  /* ========================================================================
+     PERFIL DO USUÁRIO
+     ======================================================================== */
+
+  function renderPerfil() {
+    const session = Auth.getSession();
+    if (!session) {
+      window.location.hash = '#/login';
+      return;
+    }
+
+    const user = session.user || {};
+    const isCidadao = session.type === 'cidadao';
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Meu Perfil</h1>
+        <p class="page-subtitle">${isCidadao ? 'Atualize seus dados e preferências' : 'Informações da conta de administração'}</p>
+      </div>
+
+      <div class="grid-2 gap-6">
+        <!-- Foto do Perfil -->
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Foto de Perfil</h2>
+          <div class="profile-photo-container" style="text-align: center; padding: 20px;">
+            <div class="avatar-large" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #1D467A, #4CAF50); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; margin: 0 auto 16px; overflow: hidden;">
+              ${user.foto ? `<img src="${user.foto}" alt="Sua foto" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
+              ${!user.foto ? (user.nome || 'Usuário').split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase() : ''}
+            </div>
+            <input type="file" id="profile-photo-input" accept="image/*" style="display: none;" onchange="App.handlePhotoUpload(event)">
+            <button class="btn btn-primary btn-sm" onclick="document.getElementById('profile-photo-input').click()">
+              ${Utils.getIcon('camera', 16)} Alterar Foto
+            </button>
+            ${user.foto ? `<button class="btn btn-secondary btn-sm mt-2" onclick="App.removeProfilePhoto()">Remover</button>` : ''}
+          </div>
+        </div>
+
+        <!-- Dados Pessoais -->
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Dados Pessoais</h2>
+          <form id="form-perfil">
+            <div class="input-group mb-4">
+              <label class="input-label">Nome Completo</label>
+              <input type="text" class="input-field" id="perfil-nome" value="${Utils.sanitizeHTML(user.nome || '')}" required>
+            </div>
+
+            <div class="input-group mb-4">
+              <label class="input-label">${isCidadao ? 'CPF' : 'Email'}</label>
+              <input type="text" class="input-field" value="${Utils.sanitizeHTML(isCidadao ? (user.cpf || '') : (user.email || ''))}" disabled style="background: #f5f5f5;">
+            </div>
+
+            ${isCidadao ? `
+              <div class="input-group mb-4">
+                <label class="input-label">Email</label>
+                <input type="email" class="input-field" id="perfil-email" value="${Utils.sanitizeHTML(user.email || '')}" placeholder="seu@email.com">
+              </div>
+
+              <div class="input-group mb-4">
+                <label class="input-label">Telefone</label>
+                <input type="tel" class="input-field" id="perfil-telefone" value="${Utils.sanitizeHTML(user.telefone || '')}" placeholder="(88) 98888-8888">
+              </div>
+            ` : ''}
+
+            <div class="flex gap-2 justify-end">
+              <button type="button" class="btn btn-secondary" onclick="window.history.back()">Voltar</button>
+              <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Informações da Conta -->
+      <div class="card p-6 mt-6">
+        <h2 class="text-lg font-bold mb-4">Informações da Conta</h2>
+        <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <div>
+            <span class="text-sm text-secondary uppercase font-bold">Tipo de Acesso</span>
+            <p class="text-lg font-semibold mt-1">${isCidadao ? 'Usuário / Cidadão' : 'Gestor / Departamento'}</p>
+          </div>
+          <div>
+            <span class="text-sm text-secondary uppercase font-bold">Membro desde</span>
+            <p class="text-lg font-semibold mt-1">${user.data_criacao ? Utils.formatDate(user.data_criacao) : 'Recentemente'}</p>
+          </div>
+          ${!isCidadao ? `
+            <div>
+              <span class="text-sm text-secondary uppercase font-bold">Departamento</span>
+              <p class="text-lg font-semibold mt-1">${Utils.sanitizeHTML(user.escopo_secretaria_nome || 'N/A')}</p>
+            </div>
+            <div>
+              <span class="text-sm text-secondary uppercase font-bold">Equipamentos</span>
+              <p class="text-lg font-semibold mt-1">${Auth.getAdminEquipamentos().length || 0}</p>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Segurança -->
+      <div class="card p-6 mt-6">
+        <h2 class="text-lg font-bold mb-4">Segurança</h2>
+        <button class="btn btn-secondary" onclick="App.openChangePassword()">
+          ${Utils.getIcon('lock', 16)} Alterar Senha
+        </button>
+      </div>
+    `;
+
+    // Handle form submission
+    const form = document.getElementById('form-perfil');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nome = document.getElementById('perfil-nome').value.trim();
+        const email = document.getElementById('perfil-email')?.value.trim() || user.email;
+        const telefone = document.getElementById('perfil-telefone')?.value.trim() || '';
+
+        if (!nome) {
+          Utils.showToast('Nome é obrigatório.', 'error');
+          return;
+        }
+
+        // Update storage
+        const updatedUser = { ...user, nome, email, telefone };
+        Storage.updateUser(updatedUser);
+
+        // Update session
+        if (session.type === 'cidadao') {
+          Auth.loginCidadao(user.cpf, user.senha_hash);
+        }
+
+        Utils.showToast('Perfil atualizado com sucesso!', 'success');
+        setTimeout(() => window.location.hash = '#/dashboard', 1000);
+      });
+    }
+  }
+
+  function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      Utils.showToast('Selecione uma imagem válida.', 'error');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      Utils.showToast('Imagem muito grande (máx: 2MB).', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const session = Auth.getSession();
+      if (session && session.user) {
+        const user = { ...session.user, foto: dataUrl };
+        Storage.updateUser(user);
+        Auth.updateSessionUser(user);
+        updateAuthUI();
+        Utils.showToast('Foto atualizada!', 'success');
+        renderPerfil();
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeProfilePhoto() {
+    const session = Auth.getSession();
+    if (session && session.user) {
+      const user = { ...session.user };
+      delete user.foto;
+      Storage.updateUser(user);
+      Auth.updateSessionUser(user);
+      updateAuthUI();
+      Utils.showToast('Foto removida.', 'success');
+      renderPerfil();
+    }
+  }
+
+  function openChangePassword() {
+    const novaAcha = prompt('Deseja alterar sua senha?\n\nDigite a nova senha (mínimo 8 caracteres):');
+    if (novaAcha && novaAcha.length >= 8) {
+      const session = Auth.getSession();
+      if (session && session.user) {
+        const user = { ...session.user, senha_hash: novaAcha };
+        Storage.updateUser(user);
+        Utils.showToast('Senha alterada com sucesso!', 'success');
+      }
+    } else if (novaAcha) {
+      Utils.showToast('Senha deve ter no mínimo 8 caracteres.', 'error');
+    }
+  }
+
+  function handleLogout() {
+    if (confirm('Tem certeza que deseja sair?')) {
+      Auth.logout();
+      window.location.hash = '#/';
+      setTimeout(() => location.reload(), 100);
+    }
+  }
+
+  /* ========================================================================
+     HISTÓRICO DE ATENDIMENTOS
+     ======================================================================== */
+
+  function renderHistorico() {
+    const session = Auth.getSession();
+    if (!session) {
+      window.location.hash = '#/login';
+      return;
+    }
+
+    const isCidadao = session.type === 'cidadao';
+    const userId = session.user?.id;
+
+    let agendamentos = [];
+    if (isCidadao) {
+      agendamentos = Storage.getAgendamentos().filter(a => a.cidadao_id === userId);
+    } else {
+      // Gestor: histórico de seu equipamento
+      const equipIds = new Set(Auth.getAdminEquipamentos());
+      agendamentos = Storage.getAgendamentos().filter(a => equipIds.has(a.equipamento_id));
+    }
+
+    const agendadosList = agendamentos.filter(a => ['agendado', 'chamado'].includes(a.status));
+    const atendidosList = agendamentos.filter(a => a.status === 'atendido');
+    const canceladosList = agendamentos.filter(a => a.status === 'cancelado');
+    const naoCompareceuList = agendamentos.filter(a => a.status === 'nao_compareceu');
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">${isCidadao ? 'Meus Agendamentos' : 'Histórico de Atendimentos'}</h1>
+        <p class="page-subtitle">${isCidadao ? 'Visualize seus agendamentos passados e futuros' : 'Acompanhamento de atendimentos do seu equipamento'}</p>
+      </div>
+
+      <div class="tabs-container mb-6">
+        <div class="tabs">
+          <div class="tab-item active" onclick="App.switchHistoricoTab('agendado')" data-tab="agendado">
+            Próximos (${agendadosList.length})
+          </div>
+          <div class="tab-item" onclick="App.switchHistoricoTab('atendido')" data-tab="atendido">
+            Atendidos (${atendidosList.length})
+          </div>
+          <div class="tab-item" onclick="App.switchHistoricoTab('cancelado')" data-tab="cancelado">
+            Cancelados (${canceladosList.length})
+          </div>
+          <div class="tab-item" onclick="App.switchHistoricoTab('nao_compareceu')" data-tab="nao_compareceu">
+            Faltas (${naoCompareceuList.length})
+          </div>
+        </div>
+      </div>
+
+      <div id="historico-content" class="historico-container">
+        ${renderHistoricoTab(agendadosList, 'agendado', isCidadao)}
+      </div>
+    `;
+  }
+
+  function renderHistoricoTab(agendamentos, status, isCidadao) {
+    if (!agendamentos.length) {
+      return `<div class="empty-state">Nenhum agendamento neste status.</div>`;
+    }
+
+    return `
+      <div class="agendamentos-list">
+        ${agendamentos.map(a => `
+          <div class="card agendamento-card mb-4 p-4 border-l-4" style="border-left-color: ${getStatusColor(a.status)}">
+            <div class="grid-2 gap-4 items-start">
+              <div>
+                <h3 class="font-bold text-lg mb-2">${Utils.sanitizeHTML(a.servico_nome)}</h3>
+                <p class="text-sm text-secondary mb-2">${Utils.sanitizeHTML(a.equipamento_nome)}</p>
+                <div class="agendamento-meta" style="display: flex; gap: 16px; font-size: 14px; margin-top: 8px;">
+                  <span>${Utils.getIcon('calendar', 14)} ${Utils.formatDate(a.data)}</span>
+                  <span>${Utils.getIcon('clock', 14)} ${a.hora}</span>
+                  <span class="status-badge" style="background: ${getStatusColor(a.status)}20; color: ${getStatusColor(a.status)}; padding: 4px 8px; border-radius: 4px;">
+                    ${getStatusLabel(a.status)}
+                  </span>
+                </div>
+                ${a.observacoes ? `<p class="text-xs text-secondary mt-3">📝 ${Utils.sanitizeHTML(a.observacoes)}</p>` : ''}
+              </div>
+              <div style="text-align: right;">
+                <div class="ticket-code" style="background: #f5f5f5; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 8px;">
+                  <div class="text-xs text-secondary uppercase">Senha Virtual</div>
+                  <div class="text-2xl font-bold font-mono" style="letter-spacing: 2px; margin-top: 4px;">${a.senha_virtual}</div>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="App.showComprovante('${a.id}')">Ver Comprovante</button>
+                ${status === 'agendado' && isCidadao ? `<button class="btn btn-sm btn-secondary mt-2" onclick="App.cancelAppointment('${a.id}')">Cancelar</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function switchHistoricoTab(status) {
+    const session = Auth.getSession();
+    if (!session) return;
+
+    const isCidadao = session.type === 'cidadao';
+    const userId = session.user?.id;
+
+    let agendamentos = [];
+    if (isCidadao) {
+      agendamentos = Storage.getAgendamentos().filter(a => a.cidadao_id === userId);
+    } else {
+      const equipIds = new Set(Auth.getAdminEquipamentos());
+      agendamentos = Storage.getAgendamentos().filter(a => equipIds.has(a.equipamento_id));
+    }
+
+    const filtered = agendamentos.filter(a => a.status === status);
+
+    // Update tab active state
+    document.querySelectorAll('.tab-item').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.tab === status);
+    });
+
+    // Update content
+    const content = document.getElementById('historico-content');
+    if (content) {
+      content.innerHTML = renderHistoricoTab(filtered, status, isCidadao);
+    }
+  }
+
+  function getStatusColor(status) {
+    const colors = {
+      'agendado': '#4CAF50',
+      'chamado': '#2196F3',
+      'atendido': '#673AB7',
+      'cancelado': '#FF9800',
+      'nao_compareceu': '#D32F2F'
+    };
+    return colors[status] || '#999';
+  }
+
+  function getStatusLabel(status) {
+    const labels = {
+      'agendado': 'Agendado',
+      'chamado': 'Chamado',
+      'atendido': 'Atendido',
+      'cancelado': 'Cancelado',
+      'nao_compareceu': 'Não compareceu'
+    };
+    return labels[status] || status;
+  }
+
+  /* ========================================================================
+     DASHBOARD GESTOR - MÉTRICAS
+     ======================================================================== */
+
+  function renderAdminMetricas() {
+    const equipIds = Auth.getAdminEquipamentos();
+    const agendamentos = Storage.getAgendamentos().filter(a => equipIds.includes(a.equipamento_id));
+
+    const totalAgendamentos = agendamentos.length;
+    const atendidos = agendamentos.filter(a => a.status === 'atendido').length;
+    const cancelados = agendamentos.filter(a => a.status === 'cancelado').length;
+    const naoCompareceu = agendamentos.filter(a => a.status === 'nao_compareceu').length;
+    const taxaComparecimento = totalAgendamentos > 0 ? Math.round((atendidos / totalAgendamentos) * 100) : 0;
+
+    // Serviços mais solicitados
+    const servicoMap = {};
+    agendamentos.forEach(a => {
+      const key = a.servico_nome || 'Desconhecido';
+      servicoMap[key] = (servicoMap[key] || 0) + 1;
+    });
+    const servicosTopo = Object.entries(servicoMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    // Hora de pico
+    const horaMap = {};
+    agendamentos.forEach(a => {
+      const hora = a.hora ? a.hora.split(':')[0] : '00';
+      horaMap[hora] = (horaMap[hora] || 0) + 1;
+    });
+    const horaPico = Object.entries(horaMap)
+      .sort((a, b) => b[1] - a[1])[0];
+
+    // Dia da semana de pico
+    const diaMap = {};
+    agendamentos.forEach(a => {
+      const dia = new Date(a.data).toLocaleDateString('pt-BR', { weekday: 'short' });
+      diaMap[dia] = (diaMap[dia] || 0) + 1;
+    });
+    const diaPico = Object.entries(diaMap)
+      .sort((a, b) => b[1] - a[1])[0];
+
+    appElement.innerHTML = `
+      <div class="page-header mb-6">
+        <h1 class="page-title">Métricas & Relatórios</h1>
+        <p class="page-subtitle">Análise estratégica de agendamentos e atendimentos</p>
+      </div>
+
+      <!-- KPIs Principais -->
+      <div class="grid-4 mb-6">
+        <div class="card p-4 border-l-4 border-primary-500">
+          <div class="text-sm text-secondary uppercase font-bold">Total de Agendamentos</div>
+          <div class="text-3xl font-extrabold mt-2">${totalAgendamentos}</div>
+        </div>
+        <div class="card p-4 border-l-4 border-success-500">
+          <div class="text-sm text-secondary uppercase font-bold">Atendidos</div>
+          <div class="text-3xl font-extrabold mt-2">${atendidos}</div>
+        </div>
+        <div class="card p-4 border-l-4 border-danger-500">
+          <div class="text-sm text-secondary uppercase font-bold">Taxa de Comparecimento</div>
+          <div class="text-3xl font-extrabold mt-2">${taxaComparecimento}%</div>
+        </div>
+        <div class="card p-4 border-l-4 border-warning-500">
+          <div class="text-sm text-secondary uppercase font-bold">Cancelamentos + Faltas</div>
+          <div class="text-3xl font-extrabold mt-2">${cancelados + naoCompareceu}</div>
+        </div>
+      </div>
+
+      <!-- Análises Detalhadas -->
+      <div class="grid-2 gap-6 mb-6">
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Serviços Mais Solicitados</h2>
+          <div class="service-ranking">
+            ${servicosTopo.length ? servicosTopo.map((s, i) => `
+              <div class="ranking-item mb-3">
+                <div class="flex justify-between items-center mb-1">
+                  <span>${i + 1}. ${Utils.sanitizeHTML(s[0])}</span>
+                  <span class="font-bold">${s[1]}</span>
+                </div>
+                <div class="progress-bar" style="background: #e0e0e0; height: 6px; border-radius: 3px; overflow: hidden;">
+                  <div style="background: #4CAF50; height: 100%; width: ${(s[1] / servicosTopo[0][1]) * 100}%;"></div>
+                </div>
+              </div>
+            `).join('') : '<p class="text-secondary">Sem dados</p>'}
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="text-lg font-bold mb-4">Padrões de Atendimento</h2>
+          <div class="patterns-list">
+            ${horaPico ? `
+              <div class="pattern-item mb-3">
+                <span>⏰ Hora de Pico</span>
+                <span class="font-bold">${horaPico[0]}:00 (${horaPico[1]} agendamentos)</span>
+              </div>
+            ` : ''}
+            ${diaPico ? `
+              <div class="pattern-item mb-3">
+                <span>📅 Dia de Pico</span>
+                <span class="font-bold">${diaPico[0]} (${diaPico[1]} agendamentos)</span>
+              </div>
+            ` : ''}
+            <div class="pattern-item mb-3">
+              <span>❌ Taxa de Não Comparecimento</span>
+              <span class="font-bold">${totalAgendamentos > 0 ? Math.round((naoCompareceu / totalAgendamentos) * 100) : 0}%</span>
+            </div>
+            <div class="pattern-item">
+              <span>🚫 Taxa de Cancelamento</span>
+              <span class="font-bold">${totalAgendamentos > 0 ? Math.round((cancelados / totalAgendamentos) * 100) : 0}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de Equipamentos -->
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-4">Performance por Equipamento</h2>
+        <div class="table-responsive">
+          <table class="data-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 2px solid #e0e0e0;">
+                <th style="text-align: left; padding: 12px; font-weight: bold;">Equipamento</th>
+                <th style="text-align: center; padding: 12px; font-weight: bold;">Total</th>
+                <th style="text-align: center; padding: 12px; font-weight: bold;">Atendidos</th>
+                <th style="text-align: center; padding: 12px; font-weight: bold;">Faltas</th>
+                <th style="text-align: center; padding: 12px; font-weight: bold;">Taxa</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${equipIds.map(equipId => {
+                const equip = SobralData.equipamentos.find(e => e.id === equipId);
+                const equipAgendamentos = agendamentos.filter(a => a.equipamento_id === equipId);
+                const equipAtendidos = equipAgendamentos.filter(a => a.status === 'atendido').length;
+                const equipFaltas = equipAgendamentos.filter(a => a.status === 'nao_compareceu').length;
+                const equipTaxa = equipAgendamentos.length > 0 ? Math.round((equipAtendidos / equipAgendamentos.length) * 100) : 0;
+
+                return `
+                  <tr style="border-bottom: 1px solid #f0f0f0;">
+                    <td style="padding: 12px;">${Utils.sanitizeHTML(equip?.nome || 'N/A')}</td>
+                    <td style="text-align: center; padding: 12px;">${equipAgendamentos.length}</td>
+                    <td style="text-align: center; padding: 12px;">${equipAtendidos}</td>
+                    <td style="text-align: center; padding: 12px;">${equipFaltas}</td>
+                    <td style="text-align: center; padding: 12px; font-weight: bold;">${equipTaxa}%</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recomendações Estratégicas -->
+      <div class="card p-6 mt-6 bg-info-light" style="background: #e3f2fd; border-left: 4px solid #2196F3;">
+        <h3 class="font-bold mb-2">💡 Recomendações Estratégicas</h3>
+        <ul style="font-size: 14px; line-height: 1.6;">
+          ${taxaComparecimento < 80 ? `<li>⚠️ Taxa de comparecimento abaixo de 80%. Considere enviar lembretes via SMS/Email.</li>` : ''}
+          ${horaPico && parseInt(horaPico[0]) > 14 ? `<li>📍 Picos de agendamento ocorrem à tarde. Reforçar equipe nesse período.</li>` : ''}
+          ${servicosTopo[0] && servicosTopo[0][1] > (totalAgendamentos / 2) ? `<li>📊 Um serviço concentra mais de 50% dos agendamentos. Verificar capacidade.</li>` : ''}
+        </ul>
+      </div>
+    `;
+  }
+
   // Public API
   return {
     init,
@@ -2246,7 +2792,12 @@ const App = (function() {
     adminChamarProxima,
     adminMarcarAtendido,
     adminMarcarFalta,
-    adminSalvarServicoConfig
+    adminSalvarServicoConfig,
+    handlePhotoUpload,
+    removeProfilePhoto,
+    openChangePassword,
+    handleLogout,
+    switchHistoricoTab
   };
 })();
 

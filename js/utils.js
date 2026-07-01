@@ -551,9 +551,13 @@ const Utils = (() => {
      * @param {string} name - Nome do ícone
      * @returns {string} String HTML do SVG, ou string vazia se não encontrado
      */
-    function getIcon(name) {
+    function getIcon(name, size) {
         if (typeof SobralData === 'undefined' || !SobralData.icones) return '';
-        return SobralData.icones[name] || '';
+        let svg = SobralData.icones[name] || '';
+        if (size && svg) {
+            svg = svg.replace('viewBox=', `width="${size}" height="${size}" viewBox=`);
+        }
+        return svg;
     }
 
     /**

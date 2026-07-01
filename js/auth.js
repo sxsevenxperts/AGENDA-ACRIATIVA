@@ -591,6 +591,17 @@ const Auth = (() => {
         return sec ? sec.nome : secretariaId;
     }
 
+    /**
+     * Atualiza os dados do usuário na sessão atual.
+     * @param {Object} updatedUser - Dados atualizados do usuário
+     * @returns {void}
+     */
+    function updateSessionUser(updatedUser) {
+        if (currentSession && currentSession.user) {
+            currentSession.user = _sanitizeUser(updatedUser);
+        }
+    }
+
     // ══════════════════════════════════════════════════════════
     //  API PÚBLICA
     // ══════════════════════════════════════════════════════════
@@ -619,6 +630,7 @@ const Auth = (() => {
 
         // Perfil
         updateProfile,
-        changePassword
+        changePassword,
+        updateSessionUser
     };
 })();

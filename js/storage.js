@@ -401,6 +401,25 @@ const Storage = (() => {
         return { success: true, userId: newUser.id };
     }
 
+    /**
+     * Atualiza um usuário existente.
+     * @param {Object} user - Usuário com seus dados atualizados
+     * @returns {Object} { success, error? }
+     */
+    function updateUser(user) {
+        const users = getUsers();
+        const index = users.findIndex(u => u.id === user.id);
+
+        if (index === -1) {
+            return { success: false, error: 'Usuário não encontrado.' };
+        }
+
+        users[index] = { ...users[index], ...user, atualizadoEm: new Date().toISOString() };
+        saveUsers(users);
+
+        return { success: true };
+    }
+
     // ══════════════════════════════════════════════════════════
     //  GESTÃO DE ADMINISTRADORES
     // ══════════════════════════════════════════════════════════
@@ -670,6 +689,7 @@ const Storage = (() => {
         getUsers,
         saveUsers,
         createCidadao,
+        updateUser,
 
         // Administradores
         getAdmins,
