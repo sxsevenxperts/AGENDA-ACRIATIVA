@@ -71,6 +71,10 @@ const Admin = (() => {
    */
   function salvarConfigEquipamento(equipamentoId, config) {
     try {
+      if (!_adminCanAccessEquipamento(equipamentoId)) {
+        return { success: false, error: 'Sem permissão para alterar este equipamento.' };
+      }
+
       /* Preserva dados existentes que não foram passados */
       const atual = getEquipamentoConfig(equipamentoId);
       const novaConfig = Object.assign({}, atual, config, {
@@ -101,6 +105,10 @@ const Admin = (() => {
    * @returns {{success: boolean, slotsAbertos: number, error?: string}}
    */
   function abrirSlots(equipamentoId, data, horarios) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return { success: false, error: 'Sem permissão para abrir agenda deste equipamento.' };
+    }
+
     if (!data || !horarios || horarios.length === 0) {
       return { success: false, error: 'Data e horários são obrigatórios.' };
     }
@@ -139,6 +147,10 @@ const Admin = (() => {
    * @returns {{success: boolean, error?: string}}
    */
   function fecharSlot(equipamentoId, data, hora) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return { success: false, error: 'Sem permissão para fechar agenda deste equipamento.' };
+    }
+
     /* Verifica se há agendamentos confirmados nesse slot */
     const agendamentos = Storage.getAgendamentos
       ? Storage.getAgendamentos()
@@ -191,6 +203,10 @@ const Admin = (() => {
    * @returns {{success: boolean, slotsAbertos: number, horarios: string[], error?: string}}
    */
   function abrirDiaCompleto(equipamentoId, data) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return { success: false, error: 'Sem permissão para abrir agenda deste equipamento.' };
+    }
+
     if (!data) {
       return { success: false, error: 'Data é obrigatória.' };
     }
@@ -220,6 +236,10 @@ const Admin = (() => {
    * @returns {{success: boolean, slotsFechados: number, slotsPreservados: number}}
    */
   function fecharDia(equipamentoId, data) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return { success: false, error: 'Sem permissão para fechar agenda deste equipamento.' };
+    }
+
     const config = getEquipamentoConfig(equipamentoId);
 
     if (!config.slots_abertos || !config.slots_abertos[data]) {
@@ -310,6 +330,10 @@ const Admin = (() => {
    */
   function salvarServicoConfig(equipamentoId, servicoId, configServico) {
     try {
+      if (!_adminCanAccessEquipamento(equipamentoId)) {
+        return { success: false, error: 'Sem permissão para alterar serviços deste equipamento.' };
+      }
+
       const config = getEquipamentoConfig(equipamentoId);
 
       if (!config.servicos_config) {
@@ -352,6 +376,8 @@ const Admin = (() => {
    *   Dados da próxima senha chamada ou null se não houver.
    */
   function chamarProximaSenha(equipamentoId) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) return null;
+
     const hoje = _dataHoje();
     const agendamentos = Storage.getAgendamentos
       ? Storage.getAgendamentos()
@@ -437,6 +463,8 @@ const Admin = (() => {
    *   - 'nao_compareceu'
    */
   function getFilaHoje(equipamentoId) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) return [];
+
     const hoje = _dataHoje();
     const agendamentos = Storage.getAgendamentos
       ? Storage.getAgendamentos()
@@ -528,6 +556,18 @@ const Admin = (() => {
    *   - servicosMaisProcurados {Array} Top 5 serviços
    */
   function getDashboardStats(equipamentoId) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return {
+        agendamentosHoje: 0,
+        atendidosHoje: 0,
+        canceladosHoje: 0,
+        naoCompareceuHoje: 0,
+        taxaOcupacao: 0,
+        proximosAgendamentos: [],
+        servicosMaisProcurados: []
+      };
+    }
+
     const hoje = _dataHoje();
     const agendamentos = Storage.getAgendamentos
       ? Storage.getAgendamentos()
@@ -638,6 +678,8 @@ const Admin = (() => {
    * @returns {string} Conteúdo CSV pronto para download.
    */
   function exportarCSV(equipamentoId, dataInicio, dataFim) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) return '';
+
     const agendamentos = Storage.getAgendamentos
       ? Storage.getAgendamentos()
       : [];
@@ -709,6 +751,10 @@ const Admin = (() => {
    * @returns {{success: boolean, servico?: Object, error?: string}}
    */
   function adicionarServico(equipamentoId, servico) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return { success: false, error: 'Sem permissão para adicionar serviço neste equipamento.' };
+    }
+
     if (!servico.nome) {
       return { success: false, error: 'O nome do serviço é obrigatório.' };
     }
@@ -751,6 +797,10 @@ const Admin = (() => {
       return { success: false, error: 'Serviço não encontrado.' };
     }
 
+    if (!_adminCanAccessEquipamento(servico.equipamento_id)) {
+      return { success: false, error: 'Sem permissão para editar este serviço.' };
+    }
+
     /* Atualiza apenas os campos fornecidos */
     if (dados.nome !== undefined) servico.nome = dados.nome;
     if (dados.duracao !== undefined) servico.duracao = dados.duracao;
@@ -786,6 +836,10 @@ const Admin = (() => {
       return { success: false, error: 'Serviço não encontrado.' };
     }
 
+    if (!_adminCanAccessEquipamento(servico.equipamento_id)) {
+      return { success: false, error: 'Sem permissão para remover este serviço.' };
+    }
+
     /* Marca como inativo na config do equipamento */
     const resultado = salvarServicoConfig(
       servico.equipamento_id,
@@ -817,6 +871,10 @@ const Admin = (() => {
 
     if (!agendamento) {
       return { success: false, error: 'Agendamento não encontrado.' };
+    }
+
+    if (!_adminCanAccessEquipamento(agendamento.equipamento_id)) {
+      return { success: false, error: 'Sem permissão para alterar este atendimento.' };
     }
 
     agendamento.status = novoStatus;
@@ -870,6 +928,12 @@ const Admin = (() => {
       em: new Date().toISOString(),
       por: por || 'gestor'
     });
+  }
+
+  function _adminCanAccessEquipamento(equipamentoId) {
+    if (!Auth.isAdmin || !Auth.isAdmin()) return false;
+    const equipamentos = Auth.getAdminEquipamentos ? Auth.getAdminEquipamentos() : [];
+    return equipamentos.includes(equipamentoId);
   }
 
   /**

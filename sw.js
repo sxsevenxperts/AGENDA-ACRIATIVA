@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agenda-sobral-v2';
+const CACHE_NAME = 'agenda-sobral-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,8 @@ const ASSETS = [
   './js/scraped_data.js',
   './js/data.js',
   './js/utils.js',
+  './js/config.example.js',
+  './js/supabaseClient.js',
   './js/storage.js',
   './js/auth.js',
   './js/scheduling.js',

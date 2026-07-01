@@ -220,7 +220,7 @@ const Storage = (() => {
             if (addedAdmin) set(KEYS.ADMINS, currentAdmins);
         }
 
-        // ── Semente de demonstração (cidadão + disponibilidade) ──
+        // ── Semente de demonstração (apenas conta demo; horários são ativados sob demanda) ──
         seedDemoData();
 
         console.log('[Storage] Inicialização concluída.');
@@ -234,9 +234,10 @@ const Storage = (() => {
     const DEMO_CPF = '529.982.247-25';
 
     /**
-     * Garante que exista uma conta de cidadão de demonstração e
-     * que haja horários abertos nos próximos dias úteis para que
-     * o fluxo de agendamento funcione imediatamente na demo.
+     * Garante que exista uma conta de cidadão de demonstração.
+     * A disponibilidade de horários demo é ativada explicitamente
+     * por `seedDemoAvailability`, para preservar a regra de negócio:
+     * agenda real só abre quando o departamento/equipamento abrir.
      */
     function seedDemoData() {
         // 1) Cidadão demo
@@ -258,10 +259,14 @@ const Storage = (() => {
             saveUsers(users);
         }
 
-        // 2) Disponibilidade: abre uma grade padrão de horários para
-        //    todos os equipamentos nos próximos 21 dias úteis, apenas
-        //    quando a data ainda não foi configurada (não sobrescreve
-        //    o que o gestor fechar).
+    }
+
+    /**
+     * Abre uma grade de horários de demonstração. Esta função deve ser
+     * chamada apenas pelo fluxo de demo, nunca pela inicialização padrão.
+     * @param {string[]} [equipamentoIds] - Lista opcional de equipamentos.
+     */
+    function seedDemoAvailability(equipamentoIds) {
         if (typeof SobralData === 'undefined' || !SobralData.equipamentos) return;
 
         const gradePadrao = [
@@ -270,25 +275,32 @@ const Storage = (() => {
         ];
         const datasUteis = _proximosDiasUteis(21);
         const configs = getAllEquipamentoConfigs();
+        const idsPermitidos = Array.isArray(equipamentoIds) && equipamentoIds.length
+            ? new Set(equipamentoIds)
+            : null;
         let alterou = false;
 
         SobralData.equipamentos.forEach(eq => {
+            if (idsPermitidos && !idsPermitidos.has(eq.id)) return;
+
             let cfg = configs[eq.id];
             if (!cfg) {
                 cfg = {
                     equipamento_id: eq.id,
                     dias_disponiveis: [1, 2, 3, 4, 5],
-                    horario_inicio: '08:00',
-                    horario_fim: '16:00',
-                    intervalo: 30,
-                    slots_por_horario: 5,
-                    slots_abertos: {},
-                    servicos_config: {}
-                };
+                        horario_inicio: '08:00',
+                        horario_fim: '16:00',
+                        intervalo: 30,
+                        slots_por_horario: 5,
+                        slots_abertos: {},
+                        servicos_config: {},
+                        demo_seeded: true
+                    };
                 configs[eq.id] = cfg;
                 alterou = true;
             }
             if (!cfg.slots_abertos) cfg.slots_abertos = {};
+            cfg.demo_seeded = true;
             datasUteis.forEach(d => {
                 if (!(d in cfg.slots_abertos)) {
                     cfg.slots_abertos[d] = gradePadrao.slice();
@@ -645,6 +657,9 @@ const Storage = (() => {
         clearSession,
 
         // Reset
-        resetStorage
+        resetStorage,
+
+        // Demo
+        seedDemoAvailability
     };
 })();

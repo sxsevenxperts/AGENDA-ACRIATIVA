@@ -106,6 +106,10 @@ const Auth = (() => {
             return { success: false, error: 'CPF não encontrado. Verifique os dados ou realize o cadastro.' };
         }
 
+        if (user.ativo === false) {
+            return { success: false, error: 'Conta de usuário inativa. Procure o suporte.' };
+        }
+
         // Verifica a senha
         if (user.senha !== senha) {
             return { success: false, error: 'Senha incorreta. Tente novamente.' };

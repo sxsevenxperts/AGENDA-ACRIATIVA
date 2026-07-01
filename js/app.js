@@ -1107,19 +1107,25 @@ const App = (function() {
     if(!equipId) return;
     
     const config = Admin.getEquipamentoConfig(equipId);
-    
-    // For demo purposes, we'll just open all slots for the day if none exist
-    if(!config.slots_abertos[data]) {
-      Admin.abrirDiaCompleto(equipId, data);
-    }
-    
     const openSlots = Storage.getOpenSlots(equipId, data);
     const container = document.getElementById('admin-horarios-container');
+
+    if (!openSlots.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          Nenhum horário aberto para ${Utils.formatDate(data)} neste equipamento.
+          <div class="mt-4">
+            <button class="btn btn-primary" onclick="App.adminAbrirDiaCompleto()">Abrir dia com grade de 30 minutos</button>
+          </div>
+        </div>
+      `;
+      return;
+    }
     
     container.innerHTML = `
       <div class="flex justify-between items-center mb-4">
         <h3 class="font-bold">Horários Abertos (${Utils.formatDate(data)})</h3>
-        <button class="btn btn-danger btn-sm" onclick="alert('Funcionalidade Fechar Dia em desenvolvimento')">Fechar Dia Todo</button>
+        <button class="btn btn-danger btn-sm" onclick="App.adminFecharDia()">Fechar Dia Todo</button>
       </div>
       <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
         ${openSlots.map(hora => `
@@ -1130,6 +1136,31 @@ const App = (function() {
         `).join('')}
       </div>
     `;
+  }
+
+  function adminAbrirDiaCompleto() {
+    const data = document.getElementById('admin-date-picker')?.value;
+    const equipId = getSelectedEquipamentoId('admin-horarios-equip');
+    const res = Admin.abrirDiaCompleto(equipId, data);
+    if (res.success) {
+      Utils.showToast(`${res.slotsAbertos} horários abertos para o dia.`, 'success');
+      adminCarregarHorarios();
+    } else {
+      Utils.showToast(res.error || 'Não foi possível abrir a agenda.', 'error');
+    }
+  }
+
+  function adminFecharDia() {
+    const data = document.getElementById('admin-date-picker')?.value;
+    const equipId = getSelectedEquipamentoId('admin-horarios-equip');
+    if (!confirm('Fechar todos os horários sem agendamento confirmado neste dia?')) return;
+    const res = Admin.fecharDia(equipId, data);
+    if (res.success) {
+      Utils.showToast(`${res.slotsFechados} horários fechados. ${res.slotsPreservados} preservados com agendamento.`, 'info');
+      adminCarregarHorarios();
+    } else {
+      Utils.showToast(res.error || 'Não foi possível fechar o dia.', 'error');
+    }
   }
 
   function adminCarregarFila() {
@@ -1256,6 +1287,10 @@ const App = (function() {
     let res;
     if (tipo === 'gestor') {
       const secretariaId = document.getElementById('admin-secretaria')?.value || 'sedhas';
+      const equipamentosDemo = (SobralData.equipamentos || [])
+        .filter(eq => eq.secretaria_id === secretariaId)
+        .map(eq => eq.id);
+      if (Storage.seedDemoAvailability) Storage.seedDemoAvailability(equipamentosDemo);
       res = Auth.loginAdmin('admin@sobral.ce.gov.br', 'admin123', secretariaId);
       if (res.success) {
         Utils.showToast(`Bem-vindo(a) ao painel ${res.admin.escopo_secretaria_nome} (demo)`, 'success');
@@ -1263,6 +1298,7 @@ const App = (function() {
         window.location.hash = '#/admin';
       }
     } else {
+      if (Storage.seedDemoAvailability) Storage.seedDemoAvailability();
       res = Auth.loginCidadao('529.982.247-25', 'demo');
       if (res.success) {
         Utils.showToast('Bem-vindo(a), Maria! (demo)', 'success');
@@ -1857,6 +1893,8 @@ const App = (function() {
     selectTime,
     cancelAppointment,
     adminCarregarHorarios,
+    adminAbrirDiaCompleto,
+    adminFecharDia,
     adminAtualizarDashboardStats,
     renderAdminServicosEquipamento,
     adminCarregarFila,

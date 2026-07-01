@@ -332,6 +332,10 @@ const Scheduling = (() => {
       return { success: false, error: 'Usuário não está autenticado.' };
     }
 
+    if (session.type !== 'cidadao') {
+      return { success: false, error: 'Somente usuários podem criar agendamentos.' };
+    }
+
     const usuario = session.user || session;
     const usuarioId = usuario.id || session.userId || session.usuario_id;
     if (!usuarioId) {
@@ -341,6 +345,16 @@ const Scheduling = (() => {
     /* Validações básicas */
     if (!dados.equipamento_id || !dados.servico_id || !dados.data || !dados.hora) {
       return { success: false, error: 'Todos os campos obrigatórios devem ser preenchidos.' };
+    }
+
+    const servicoSelecionado = getServicoById(dados.servico_id);
+    if (!servicoSelecionado || servicoSelecionado.equipamento_id !== dados.equipamento_id) {
+      return { success: false, error: 'Serviço inválido para o equipamento selecionado.' };
+    }
+
+    const servicosAtivos = getServicosByEquipamento(dados.equipamento_id);
+    if (!servicosAtivos.some((s) => s.id === dados.servico_id)) {
+      return { success: false, error: 'Este serviço está indisponível para agendamento.' };
     }
 
     /* 2) Verifica disponibilidade do slot */
@@ -473,6 +487,10 @@ const Scheduling = (() => {
       return { success: false, error: 'Agendamento não encontrado.' };
     }
 
+    if (!_canAccessAgendamento(agendamento)) {
+      return { success: false, error: 'Você não tem permissão para cancelar este agendamento.' };
+    }
+
     if (agendamento.status === 'cancelado') {
       return { success: false, error: 'Este agendamento já está cancelado.' };
     }
@@ -530,6 +548,10 @@ const Scheduling = (() => {
    * @returns {Array<Object>} Agendamentos do equipamento na data.
    */
   function getAgendamentosEquipamento(equipamentoId, data) {
+    if (!_adminCanAccessEquipamento(equipamentoId)) {
+      return [];
+    }
+
     const agendamentos = Storage.getAgendamentos
       ? Storage.getAgendamentos()
       : [];
@@ -558,6 +580,7 @@ const Scheduling = (() => {
 
     const agendamento = agendamentos.find((a) => a.id === id);
     if (!agendamento) return null;
+    if (!_canAccessAgendamento(agendamento)) return null;
 
     return _popularAgendamento(agendamento);
   }
@@ -583,8 +606,17 @@ const Scheduling = (() => {
       return { success: false, error: 'Agendamento não encontrado.' };
     }
 
+    const session = Auth.getSession ? Auth.getSession() : null;
+    if (!session || session.type !== 'cidadao' || !session.user || session.user.id !== agendamento.usuario_id) {
+      return { success: false, error: 'Você não tem permissão para responder esta pesquisa.' };
+    }
+
     if (agendamento.status !== 'atendido') {
       return { success: false, error: 'A pesquisa NPS só fica disponível após o atendimento ser concluído.' };
+    }
+
+    if (agendamento.nps) {
+      return { success: false, error: 'A pesquisa NPS deste atendimento já foi respondida.' };
     }
 
     const notaNumero = Number(nota);
@@ -669,6 +701,24 @@ const Scheduling = (() => {
     });
   }
 
+  function _canAccessAgendamento(agendamento) {
+    const session = Auth.getSession ? Auth.getSession() : null;
+    if (!session || !session.user) return false;
+    if (session.type === 'cidadao') {
+      return agendamento.usuario_id === session.user.id;
+    }
+    if (session.type === 'admin') {
+      return _adminCanAccessEquipamento(agendamento.equipamento_id);
+    }
+    return false;
+  }
+
+  function _adminCanAccessEquipamento(equipamentoId) {
+    if (!Auth.isAdmin || !Auth.isAdmin()) return false;
+    const equipamentos = Auth.getAdminEquipamentos ? Auth.getAdminEquipamentos() : [];
+    return equipamentos.includes(equipamentoId);
+  }
+
   /**
    * Formata um objeto Date em string 'YYYY-MM-DD'.
    *
@@ -741,6 +791,10 @@ const Scheduling = (() => {
    * @returns {{success: boolean, agendamento?: Object, error?: string}}
    */
   function validarCodigo(codigo, equipamentoId) {
+    if (!Auth.isAdmin || !Auth.isAdmin()) {
+      return { success: false, error: 'Apenas departamentos/secretarias podem validar senhas virtuais.' };
+    }
+
     const agendamentos = Storage.getAgendamentos ? Storage.getAgendamentos() : [];
     const alvo = (codigo || '').trim().toUpperCase().replace(/\s/g, '');
 
@@ -758,6 +812,10 @@ const Scheduling = (() => {
 
     if (equipamentoId && ag.equipamento_id !== equipamentoId) {
       return { success: false, error: 'Este código pertence a outro equipamento público.' };
+    }
+
+    if (!_adminCanAccessEquipamento(ag.equipamento_id)) {
+      return { success: false, error: 'Este código pertence a outro departamento ou equipamento público.' };
     }
 
     if (ag.status === 'cancelado') {

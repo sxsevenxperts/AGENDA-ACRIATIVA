@@ -7,6 +7,8 @@
       "label": "Usuário demo",
       "cpf": "529.982.247-25",
       "password": "demo",
+      "supabase_email": "demo@sobral.ce.gov.br",
+      "supabase_password": "demo123",
       "notes": "Acesso para agendar em qualquer departamento, secretaria ou equipamento público disponível, gerando dados isolados para o departamento/equipamento atendente."
     },
     {
@@ -14,6 +16,10 @@
       "label": "Departamento/Secretaria demo",
       "email": "admin@sobral.ce.gov.br",
       "password": "admin123",
+      "supabase_scope_examples": [
+        "admin@sedhas.sobral.ce.gov.br / admin123",
+        "admin@sefin.sobral.ce.gov.br / admin123"
+      ],
       "department_required": true,
       "default_department_for_demo_button": "sedhas",
       "notes": "Acesso institucional exige escolher um departamento/secretaria. A sessão fica limitada aos equipamentos desse departamento, com dados separados por equipamento para horários, serviços, validação, fila, desfechos e relatórios NPS/KPI/OKR."
@@ -24,7 +30,8 @@
       "email_pattern": "admin@{equipamento_id}.sobral.ce.gov.br",
       "password": "admin123",
       "department_required": true,
-      "example": "admin@casa-cidadao.sobral.ce.gov.br"
+      "example": "admin@casa-cidadao.sobral.ce.gov.br",
+      "supabase_example": "admin@casa-cidadao.sobral.ce.gov.br / admin123"
     }
   ]
 }

@@ -17,3 +17,7 @@ node_modules/
 # Temporary
 tmp/
 temp/
+
+# Local infrastructure clones / CLI state
+supabase-easypanel/
+supabase/.temp/
