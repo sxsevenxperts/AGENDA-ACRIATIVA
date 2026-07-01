@@ -2794,7 +2794,7 @@ const App = (function() {
                   </div>
                 </div>
               </div>
-            `).join('') : '<p class="text-secondary">Nenhuma dúvida registrada ainda.</p>}
+            `).join('') : '<p class="text-secondary">Nenhuma dúvida registrada ainda.</p>'}
           </div>
         </div>
 
@@ -2831,7 +2831,7 @@ const App = (function() {
                 <span>${d.status === 'respondida' ? '✓ Respondida' : '⏳ Aguardando resposta'}</span>
               </div>
             </div>
-          `).join('') : '<p class="text-secondary">Nenhuma dúvida ainda. Seja o primeiro a perguntar!</p>}
+          `).join('') : '<p class="text-secondary">Nenhuma dúvida ainda. Seja o primeiro a perguntar!</p>'}
         </div>
       </div>
     `;
