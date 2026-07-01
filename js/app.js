@@ -295,6 +295,10 @@ const App = (function() {
                   </label>
                 </div>
 
+                <div class="mt-3 text-center">
+                  <span class="text-xs text-secondary bg-gray-100 px-2 py-1 rounded">Acesso Demo: CPF <b>529.982.247-25</b> / Senha: <b>demo</b></span>
+                </div>
+
                 <button type="submit" class="btn btn-primary w-full mt-4">Entrar</button>
                 
                 <div class="text-center mt-4">
@@ -328,6 +332,10 @@ const App = (function() {
                   <label for="termos-admin" class="text-sm text-secondary" style="line-height: 1.4;">
                     Li e concordo com os <a href="#" class="text-primary font-bold">Termos de Uso Institucionais</a> e comprometo-me a seguir as diretrizes da <strong>LGPD</strong>.
                   </label>
+                </div>
+
+                <div class="mt-3 text-center">
+                  <span class="text-xs text-secondary bg-gray-100 px-2 py-1 rounded">Acesso Demo: Email <b>admin@sobral.ce.gov.br</b> / Senha: <b>admin123</b></span>
                 </div>
 
                 <button type="submit" class="btn btn-secondary w-full mt-4">Entrar no Departamento</button>
