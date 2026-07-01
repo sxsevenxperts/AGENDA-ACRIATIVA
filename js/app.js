@@ -61,13 +61,30 @@ const App = (function() {
     // Listen for hash changes for routing
     window.addEventListener('hashchange', handleRoute);
 
-    // Sidebar toggle
-    const menuBtn = document.querySelector('.header-menu-btn');
-    if (menuBtn && appSidebar) {
-      menuBtn.addEventListener('click', () => {
-        appSidebar.classList.toggle('open');
-      });
+    // Fechar o menu público ao clicar fora dele (mobile)
+    document.addEventListener('click', (e) => {
+      const headerNav = document.querySelector('.header-nav');
+      const menuBtn = document.querySelector('.header-menu-btn');
+      if (!headerNav || !headerNav.classList.contains('mobile-open')) return;
+      if (headerNav.contains(e.target) || (menuBtn && menuBtn.contains(e.target))) return;
+      headerNav.classList.remove('mobile-open');
+    });
+  }
+
+  /**
+   * Alterna o menu de navegação no mobile.
+   * - Gestor (admin): abre/fecha a sidebar administrativa off-canvas.
+   * - Cidadão/anônimo: abre/fecha o dropdown com os links públicos do header.
+   * Um único handler evita o "double toggle" que anulava o clique.
+   */
+  function toggleMobileMenu() {
+    const session = Auth.getSession();
+    if (session && session.type === 'admin' && appSidebar) {
+      appSidebar.classList.toggle('open');
+      return;
     }
+    const headerNav = document.querySelector('.header-nav');
+    if (headerNav) headerNav.classList.toggle('mobile-open');
   }
 
   /**
@@ -78,8 +95,9 @@ const App = (function() {
     // Get route without query params
     const path = hash.replace('#', '').split('?')[0] || '/';
     
-    // Close sidebar on navigation (mobile)
+    // Close sidebar / mobile menu on navigation (mobile)
     if (appSidebar) appSidebar.classList.remove('open');
+    document.querySelector('.header-nav')?.classList.remove('mobile-open');
 
     // Close any open modal (comprovante/ticket) on navigation
     document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
@@ -2474,14 +2492,14 @@ const App = (function() {
 
     let agendamentos = [];
     if (isCidadao) {
-      agendamentos = Storage.getAgendamentos().filter(a => a.cidadao_id === userId);
+      agendamentos = Storage.getAgendamentos().filter(a => a.usuario_id === userId);
     } else {
       // Gestor: histórico de seu equipamento
       const equipIds = new Set(Auth.getAdminEquipamentos());
       agendamentos = Storage.getAgendamentos().filter(a => equipIds.has(a.equipamento_id));
     }
 
-    const agendadosList = agendamentos.filter(a => ['agendado', 'chamado'].includes(a.status));
+    const agendadosList = agendamentos.filter(a => ['confirmado', 'agendado', 'chamado'].includes(a.status));
     const atendidosList = agendamentos.filter(a => a.status === 'atendido');
     const canceladosList = agendamentos.filter(a => a.status === 'cancelado');
     const naoCompareceuList = agendamentos.filter(a => a.status === 'nao_compareceu');
@@ -2540,7 +2558,7 @@ const App = (function() {
               <div style="text-align: right;">
                 <div class="ticket-code" style="background: #f5f5f5; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 8px;">
                   <div class="text-xs text-secondary uppercase">Senha Virtual</div>
-                  <div class="text-2xl font-bold font-mono" style="letter-spacing: 2px; margin-top: 4px;">${a.senha_virtual}</div>
+                  <div class="text-2xl font-bold font-mono" style="letter-spacing: 2px; margin-top: 4px;">${a.senha}</div>
                 </div>
                 <button class="btn btn-sm btn-primary" onclick="App.showComprovante('${a.id}')">Ver Comprovante</button>
                 ${status === 'agendado' && isCidadao ? `<button class="btn btn-sm btn-secondary mt-2" onclick="App.cancelAppointment('${a.id}')">Cancelar</button>` : ''}
@@ -2561,13 +2579,20 @@ const App = (function() {
 
     let agendamentos = [];
     if (isCidadao) {
-      agendamentos = Storage.getAgendamentos().filter(a => a.cidadao_id === userId);
+      agendamentos = Storage.getAgendamentos().filter(a => a.usuario_id === userId);
     } else {
       const equipIds = new Set(Auth.getAdminEquipamentos());
       agendamentos = Storage.getAgendamentos().filter(a => equipIds.has(a.equipamento_id));
     }
 
-    const filtered = agendamentos.filter(a => a.status === status);
+    const tabStatusMap = {
+      agendado: ['confirmado', 'agendado', 'chamado'],
+      atendido: ['atendido'],
+      cancelado: ['cancelado'],
+      nao_compareceu: ['nao_compareceu']
+    };
+    const allowedStatuses = tabStatusMap[status] || [status];
+    const filtered = agendamentos.filter(a => allowedStatuses.includes(a.status));
 
     // Update tab active state
     document.querySelectorAll('.tab-item').forEach(tab => {
@@ -2583,6 +2608,7 @@ const App = (function() {
 
   function getStatusColor(status) {
     const colors = {
+      'confirmado': '#4CAF50',
       'agendado': '#4CAF50',
       'chamado': '#2196F3',
       'atendido': '#673AB7',
@@ -2594,6 +2620,7 @@ const App = (function() {
 
   function getStatusLabel(status) {
     const labels = {
+      'confirmado': 'Confirmado',
       'agendado': 'Agendado',
       'chamado': 'Chamado',
       'atendido': 'Atendido',
@@ -3171,6 +3198,7 @@ const App = (function() {
   // Public API
   return {
     init,
+    toggleMobileMenu,
     secretariaEmblem,
     loginDemo,
     goToAgendamento,
