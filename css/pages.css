@@ -1,0 +1,604 @@
+/* ============================================
+   AGENDA SOBRAL — Pages
+   ============================================ */
+
+/* --- Landing Page --- */
+.hero-section {
+  background: var(--gradient-hero);
+  color: var(--text-inverse);
+  padding: var(--space-16) 0 var(--space-24);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: var(--font-extrabold);
+  margin-bottom: var(--space-4);
+  line-height: 1.1;
+  color: var(--neutral-0);
+}
+
+.hero-subtitle {
+  font-size: var(--text-lg);
+  opacity: 0.9;
+  margin-bottom: var(--space-8);
+}
+
+.hero-search {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-6);
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  margin: 0 auto var(--space-8);
+}
+
+.hero-search input {
+  flex: 1;
+  border: none;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  padding: var(--space-3) 0;
+  outline: none;
+}
+
+.hero-search .btn {
+  border-radius: var(--radius-full);
+}
+
+.hero-wave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.hero-wave svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 60px;
+}
+
+@media (min-width: 768px) {
+  .hero-wave svg {
+    height: 120px;
+  }
+}
+
+.hero-wave .shape-fill {
+  fill: var(--bg-secondary);
+}
+
+/* Secretarias Grid */
+.secretaria-card {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.secretaria-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-300);
+}
+
+.secretaria-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  color: white;
+}
+
+.secretaria-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* --- Login Page --- */
+.page-login {
+  min-height: 100vh;
+  display: flex;
+}
+
+.login-split {
+  display: flex;
+  width: 100%;
+}
+
+.login-cover {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .login-cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    background: var(--gradient-hero);
+    color: var(--text-inverse);
+    padding: var(--space-12);
+    text-align: center;
+  }
+  
+  .login-cover img {
+    max-width: 250px;
+    margin-bottom: var(--space-8);
+  }
+  
+  .login-cover h2 {
+    color: var(--accent-500);
+    margin-bottom: var(--space-4);
+  }
+}
+
+.login-form-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background-color: var(--bg-secondary);
+}
+
+@media (min-width: 768px) {
+  .login-form-container {
+    width: 50%;
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 450px;
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-xl);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.login-header img {
+  height: 60px;
+  margin: 0 auto var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .login-header img {
+    display: none; /* Only show on mobile, desktop has cover image */
+  }
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-6);
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-3);
+  color: var(--text-secondary);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.auth-tab.active {
+  color: var(--primary-600);
+  border-bottom-color: var(--primary-500);
+}
+
+.auth-tab:hover:not(.active) {
+  color: var(--primary-500);
+  background-color: var(--primary-50);
+}
+
+/* --- Dashboard --- */
+.dashboard-welcome {
+  margin-bottom: var(--space-8);
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.action-card {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-300);
+  background-color: var(--primary-50);
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-100);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* --- Scheduling Wizard --- */
+.wizard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.wizard-step-content {
+  display: none;
+  animation: fadeIn var(--transition-base);
+}
+
+.wizard-step-content.active {
+  display: block;
+}
+
+/* Step 1: Secretarias */
+.secretaria-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-4);
+}
+
+/* Step 2: Equipamentos */
+.equipamento-card {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 2px solid transparent;
+}
+
+.equipamento-card:hover {
+  border-color: var(--primary-300);
+  background-color: var(--primary-50);
+}
+
+.equipamento-card.selected {
+  border-color: var(--primary-500);
+  background-color: var(--primary-50);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Step 3: Servicos */
+.servico-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.servico-item:hover {
+  border-color: var(--primary-300);
+  background-color: var(--bg-tertiary);
+}
+
+.servico-item.selected {
+  border-color: var(--primary-500);
+  background-color: var(--primary-50);
+}
+
+.servico-info h4 {
+  margin-bottom: var(--space-1);
+}
+
+.servico-meta {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.servico-meta span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Step 4: Data e Hora */
+.datetime-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .datetime-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.calendar-section, .timeslot-section {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.timeslot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+}
+
+/* --- Appointments Page --- */
+.appointment-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-2);
+  overflow-x: auto;
+}
+
+.appointment-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.appointment-tab.active {
+  background-color: var(--primary-500);
+  color: var(--text-inverse);
+}
+
+.appointment-card {
+  display: flex;
+  flex-direction: column;
+  border-left: 4px solid var(--primary-500);
+}
+
+.appointment-card.status-confirmado { border-left-color: var(--success-500); }
+.appointment-card.status-cancelado { border-left-color: var(--danger-500); }
+.appointment-card.status-atendido { border-left-color: var(--info-500); }
+
+@media (min-width: 768px) {
+  .appointment-card {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .appointment-date {
+    width: 150px;
+    text-align: center;
+    border-right: 1px solid var(--border-color);
+    padding-right: var(--space-4);
+  }
+  
+  .appointment-details {
+    flex: 1;
+    padding-left: var(--space-4);
+  }
+}
+
+.appointment-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.appointment-date .day {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--primary-700);
+  line-height: 1;
+}
+
+.appointment-date .month {
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.appointment-date .time {
+  margin-top: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--primary-50);
+  color: var(--primary-700);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-bold);
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-2);
+}
+
+/* --- Admin Queue Page (TV Display) --- */
+.page-admin-queue {
+  min-height: 100vh;
+  background-color: var(--primary-900);
+  color: var(--text-inverse);
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: var(--space-4) var(--space-8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.queue-logo img {
+  height: 50px;
+}
+
+.queue-time {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  font-family: monospace;
+}
+
+.queue-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+.queue-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.queue-label {
+  font-size: var(--text-3xl);
+  text-transform: uppercase;
+  color: var(--accent-500);
+  margin-bottom: var(--space-4);
+}
+
+.queue-ticket {
+  font-size: 8rem;
+  font-weight: var(--font-extrabold);
+  line-height: 1;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+  margin-bottom: var(--space-8);
+}
+
+.queue-desk {
+  font-size: var(--text-4xl);
+  background-color: var(--primary-700);
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-full);
+}
+
+.queue-history {
+  padding: var(--space-8);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.queue-history h3 {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+  font-size: var(--text-xl);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+}
+
+.history-item.blink {
+  animation: bg-blink 1s 3;
+}
+
+@keyframes bg-blink {
+  0%, 100% { background-color: rgba(255, 255, 255, 0.05); }
+  50% { background-color: var(--accent-500); color: var(--primary-900); }
+}
+
+/* --- Print Styles --- */
+@media print {
+  body {
+    background-color: white;
+  }
+  
+  #app-header, .topbar, #mobile-nav, #app-footer, .btn:not(.print-btn) {
+    display: none !important;
+  }
+  
+  .main-content {
+    padding: 0 !important;
+  }
+  
+  .ticket {
+    box-shadow: none !important;
+    border: 2px solid black !important;
+    width: 100% !important;
+    max-width: none !important;
+    break-inside: avoid;
+  }
+  
+  .ticket-cutline {
+    display: none;
+  }
+}
