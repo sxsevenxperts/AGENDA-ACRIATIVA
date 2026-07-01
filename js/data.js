@@ -193,6 +193,36 @@ const SobralData = {
       bairro: 'Dom Expedito'
     },
     {
+      id: 'csf-junco',
+      secretaria_id: 'sms',
+      nome: 'CSF Bairro Junco',
+      tipo: 'Centro de Saúde da Família',
+      endereco: 'Rua John Sanford, 1500 – Junco',
+      telefone: '(88) 3677-1204',
+      horario: 'Seg a Sex: 07h às 17h',
+      bairro: 'Junco'
+    },
+    {
+      id: 'csf-terrenos-novos',
+      secretaria_id: 'sms',
+      nome: 'CSF Terrenos Novos',
+      tipo: 'Centro de Saúde da Família',
+      endereco: 'Rua José da Matta, s/n – Terrenos Novos',
+      telefone: '(88) 3677-1205',
+      horario: 'Seg a Sex: 07h às 17h',
+      bairro: 'Terrenos Novos'
+    },
+    {
+      id: 'csf-pedrinhas',
+      secretaria_id: 'sms',
+      nome: 'CSF Pedrinhas',
+      tipo: 'Centro de Saúde da Família',
+      endereco: 'Rua Raimundo Alves, s/n – Pedrinhas',
+      telefone: '(88) 3677-1206',
+      horario: 'Seg a Sex: 07h às 17h',
+      bairro: 'Pedrinhas'
+    },
+    {
       id: 'upa-sobral',
       secretaria_id: 'sms',
       nome: 'UPA Dr. Hugo Mendes Parente',
@@ -233,7 +263,6 @@ const SobralData = {
       bairro: 'Centro'
     },
 
-    // --- EDUCAÇÃO (SME) ---
     {
       id: 'sede-sme',
       secretaria_id: 'sme',
@@ -242,6 +271,36 @@ const SobralData = {
       endereco: 'Rua Viriato de Medeiros – Centro',
       telefone: '(88) 3677-1300',
       horario: 'Seg a Sex: 08h às 14h',
+      bairro: 'Centro'
+    },
+    {
+      id: 'escola-osmar',
+      secretaria_id: 'sme',
+      nome: 'Escola Osmar de Sá Ponte',
+      tipo: 'Escola Municipal',
+      endereco: 'Av. John Sanford – Junco',
+      telefone: '(88) 3677-1301',
+      horario: 'Seg a Sex: 07h às 17h',
+      bairro: 'Junco'
+    },
+    {
+      id: 'escola-jose-matta',
+      secretaria_id: 'sme',
+      nome: 'Escola José da Matta e Silva',
+      tipo: 'Escola Municipal',
+      endereco: 'Rua Dom Pedro II – Terrenos Novos',
+      telefone: '(88) 3677-1302',
+      horario: 'Seg a Sex: 07h às 17h',
+      bairro: 'Terrenos Novos'
+    },
+    {
+      id: 'cei-domingos',
+      secretaria_id: 'sme',
+      nome: 'CEI Domingos Olímpio',
+      tipo: 'Centro de Educação Infantil',
+      endereco: 'Rua 15 de Novembro – Centro',
+      telefone: '(88) 3677-1303',
+      horario: 'Seg a Sex: 07h às 17h',
       bairro: 'Centro'
     },
 
@@ -542,6 +601,13 @@ const SobralData = {
     { id: 's016', equipamento_id: 'csf-dom-expedito', nome: 'Vacinação', duracao: 15, descricao: 'Aplicação de vacinas do calendário' },
     { id: 's017', equipamento_id: 'csf-dom-expedito', nome: 'Pré-natal', duracao: 30, descricao: 'Acompanhamento de gestantes' },
 
+    { id: 's017a', equipamento_id: 'csf-junco', nome: 'Consulta Médica', duracao: 30, descricao: 'Consulta médica com clínico geral' },
+    { id: 's017b', equipamento_id: 'csf-junco', nome: 'Vacinação', duracao: 15, descricao: 'Aplicação de vacinas' },
+    { id: 's017c', equipamento_id: 'csf-terrenos-novos', nome: 'Consulta Médica', duracao: 30, descricao: 'Consulta médica com clínico geral' },
+    { id: 's017d', equipamento_id: 'csf-terrenos-novos', nome: 'Curativo', duracao: 15, descricao: 'Realização de curativos' },
+    { id: 's017e', equipamento_id: 'csf-pedrinhas', nome: 'Consulta Médica', duracao: 30, descricao: 'Consulta médica com clínico geral' },
+    { id: 's017f', equipamento_id: 'csf-pedrinhas', nome: 'Coleta de Exames', duracao: 15, descricao: 'Exames laboratoriais' },
+
     // --- CEO ---
     { id: 's018', equipamento_id: 'ceo-sobral', nome: 'Endodontia', duracao: 60, descricao: 'Tratamento de canal' },
     { id: 's019', equipamento_id: 'ceo-sobral', nome: 'Cirurgia Oral', duracao: 45, descricao: 'Procedimentos cirúrgicos odontológicos' },
@@ -563,6 +629,13 @@ const SobralData = {
     { id: 's029', equipamento_id: 'sede-sme', nome: 'Transferência Escolar', duracao: 20, descricao: 'Solicitação de transferência entre escolas' },
     { id: 's030', equipamento_id: 'sede-sme', nome: 'Declaração de Escolaridade', duracao: 15, descricao: 'Emissão de declarações e certidões' },
     { id: 's031', equipamento_id: 'sede-sme', nome: 'Transporte Escolar', duracao: 20, descricao: 'Cadastro no transporte escolar municipal' },
+
+    { id: 's031a', equipamento_id: 'escola-osmar', nome: 'Matrícula', duracao: 30, descricao: 'Matrícula presencial' },
+    { id: 's031b', equipamento_id: 'escola-osmar', nome: 'Reunião Pedagógica', duracao: 45, descricao: 'Reunião com coordenação' },
+    { id: 's031c', equipamento_id: 'escola-jose-matta', nome: 'Matrícula', duracao: 30, descricao: 'Matrícula presencial' },
+    { id: 's031d', equipamento_id: 'escola-jose-matta', nome: 'Reunião Pedagógica', duracao: 45, descricao: 'Reunião com coordenação' },
+    { id: 's031e', equipamento_id: 'cei-domingos', nome: 'Matrícula Infantil', duracao: 30, descricao: 'Matrícula no CEI' },
+    { id: 's031f', equipamento_id: 'cei-domingos', nome: 'Atendimento Psicológico (Alunos)', duracao: 40, descricao: 'Acompanhamento com psicólogo escolar' },
 
     // --- CASA DO CIDADÃO ---
     { id: 's032', equipamento_id: 'casa-cidadao', nome: 'Cadastro Único (CadÚnico)', duracao: 45, descricao: 'Inscrição e atualização do Cadastro Único' },

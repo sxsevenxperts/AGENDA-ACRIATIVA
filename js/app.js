@@ -229,7 +229,7 @@ const App = (function() {
       <div class="page-login">
         <div class="login-split">
           <div class="login-cover">
-            <img src="https://sobral.ce.gov.br/assets/images/logo_sobral.png" alt="Prefeitura de Sobral" onerror="this.src=''; this.alt='Prefeitura de Sobral'">
+            <img src="assets/logo.png" alt="Prefeitura de Sobral" onerror="this.src=''; this.alt='Prefeitura de Sobral'">
             <h2>Agenda Sobral</h2>
             <p>Sistema oficial de agendamento de serviços públicos municipais.</p>
           </div>
@@ -237,7 +237,7 @@ const App = (function() {
           <div class="login-form-container">
             <div class="login-card">
               <div class="login-header">
-                <img src="https://sobral.ce.gov.br/assets/images/logo_sobral.png" alt="Prefeitura de Sobral" onerror="this.style.display='none'">
+                <img src="assets/logo.png" alt="Prefeitura de Sobral" onerror="this.style.display='none'" style="object-fit: contain;">
                 <h3>Acesso ao Sistema</h3>
               </div>
               

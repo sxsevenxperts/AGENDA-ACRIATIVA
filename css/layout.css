@@ -4,12 +4,18 @@
 
 /* --- Topbar --- */
 .topbar {
+  display: none; /* Hidden on mobile for app feel */
   background-color: var(--primary-900);
   color: var(--text-inverse);
   height: 32px;
-  display: flex;
   align-items: center;
   font-size: var(--text-xs);
+}
+
+@media (min-width: 768px) {
+  .topbar {
+    display: flex;
+  }
 }
 
 .topbar-content {
@@ -448,10 +454,17 @@
 
 /* --- Footer --- */
 #app-footer {
+  display: none; /* Hidden on mobile */
   background-color: var(--primary-900);
   color: var(--text-inverse);
   padding: var(--space-8) 0 var(--space-4);
   margin-top: auto;
+}
+
+@media (min-width: 768px) {
+  #app-footer {
+    display: block;
+  }
 }
 
 .footer-content {
