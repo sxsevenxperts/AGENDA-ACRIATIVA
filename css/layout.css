@@ -657,6 +657,17 @@
   }
 }
 
+/* Rodapé institucional também nas telas de acesso (login/cadastro) no mobile */
+.route-auth #app-footer {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .route-auth #app-footer {
+    padding: var(--space-6) 0 calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+}
+
 .footer-content {
   display: grid;
   grid-template-columns: 1fr;

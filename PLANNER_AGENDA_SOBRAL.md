@@ -39,6 +39,12 @@ O acesso Departamento/Secretaria é institucional, escolhido em caixa de seleç�
 - Seed script criado para sincronizar departamentos, equipamentos e serviços do scraper/local data para o Supabase.
 - Documentação operacional do Supabase/EasyPanel criada em `SUPABASE_AGENDA_SOBRAL.md`.
 
+### Entregas desta sessão (tipografia, rodapé login)
+
+- **Tipografia premium** alinhada à identidade institucional: **Montserrat** (títulos/display) + **Inter** (texto/UI), substituindo Open Sans. Confirmado que o portal oficial `sobral.ce.gov.br` usa Open Sans; a escolha eleva o acabamento mantendo o caráter humanista/governamental. Aplicado via `--font-family` e `--font-display`.
+- **Rodapé institucional nas telas de acesso** (login/cadastro/esqueceu-senha) inclusive no mobile: classe `route-auth` no `body` exibe o `#app-footer` completo (logo, Links Úteis, Contato, copyright) nessas rotas.
+- Cache-busting atualizado para `?v=9` + `sw.js` v9.
+
 ### Entregas desta sessão (menu, gov.br, acessos)
 
 - Menu contextual ☰ reescrito como painel dinâmico por perfil (Navegação, Conta, Métricas & Relatórios, Ajuda) com **Sair do acesso**; fecha ao navegar, clicar fora ou ESC. Ícones ausentes (`help`, `message`, `grid`, `users`, `file`, `star`) adicionados a `SobralData.icones`.

@@ -192,6 +192,10 @@ const App = (function() {
     if (appSidebar) appSidebar.classList.remove('open');
     closeMobileMenu();
 
+    // Rotas de autenticação exibem o rodapé institucional também no mobile
+    const authRoutes = ['/login', '/criar-conta', '/esqueceu-senha'];
+    document.body.classList.toggle('route-auth', authRoutes.includes(path));
+
     // Close any open modal (comprovante/ticket) on navigation
     document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
 
