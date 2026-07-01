@@ -296,7 +296,9 @@ const App = (function() {
                 </div>
 
                 <div class="mt-3 text-center">
-                  <span class="text-xs text-secondary bg-gray-100 px-2 py-1 rounded">Acesso Demo: CPF <b>529.982.247-25</b> / Senha: <b>demo</b></span>
+                  <button type="button" class="btn btn-sm btn-outline" style="border-radius: 9999px; font-size: 0.8rem; padding: 4px 12px; margin: 0 auto; display: inline-block;" onclick="document.getElementById('cpf').value='529.982.247-25'; document.getElementById('senha').value='demo'; document.getElementById('termos-cidadao').checked=true;">
+                    Preencher Acesso Demo (Cidadão)
+                  </button>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-full mt-4">Entrar</button>
@@ -335,7 +337,9 @@ const App = (function() {
                 </div>
 
                 <div class="mt-3 text-center">
-                  <span class="text-xs text-secondary bg-gray-100 px-2 py-1 rounded">Acesso Demo: Email <b>admin@sobral.ce.gov.br</b> / Senha: <b>admin123</b></span>
+                  <button type="button" class="btn btn-sm btn-outline" style="border-radius: 9999px; font-size: 0.8rem; padding: 4px 12px; margin: 0 auto; display: inline-block;" onclick="document.getElementById('email').value='admin@sobral.ce.gov.br'; document.getElementById('senha-admin').value='admin123'; document.getElementById('admin-secretaria').selectedIndex=1; document.getElementById('termos-admin').checked=true;">
+                    Preencher Acesso Demo (Gestor)
+                  </button>
                 </div>
 
                 <button type="submit" class="btn btn-secondary w-full mt-4">Entrar no Departamento</button>
