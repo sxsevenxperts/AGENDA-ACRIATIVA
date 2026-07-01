@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agenda-sobral-v5';
+const CACHE_NAME = 'agenda-sobral-v6';
 const ASSETS = [
   './',
   './index.html',
