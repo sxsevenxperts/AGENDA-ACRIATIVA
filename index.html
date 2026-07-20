@@ -1177,8 +1177,275 @@
       display: inline-block;
       animation: pulse 2s infinite;
     }
+
+    /* ============================================================
+       UX/UI ENHANCEMENTS - Animations, Loading States, Accessibility
+       ============================================================ */
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notifications */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toast {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 400px;
+      animation: slideInRight 0.3s ease-out;
+      border-left: 4px solid;
+    }
+
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--error); }
+    .toast.info { border-left-color: var(--info); }
+
+    .toast-message {
+      font-size: 14px;
+      color: var(--gray-800);
+      flex: 1;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--gray-500);
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .toast-close:hover { opacity: 1; }
+
+    /* Loading States */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      gap: 16px;
+      color: var(--gray-500);
+    }
+
+    .loading-state svg {
+      width: 48px;
+      height: 48px;
+      animation: spin 2s linear infinite;
+    }
+
+    /* Form Validation */
+    .form-input.success,
+    .form-select.success,
+    .form-textarea.success {
+      border-color: var(--success);
+      background: #F0FDF4;
+    }
+
+    .form-input.error,
+    .form-select.error,
+    .form-textarea.error {
+      border-color: var(--error);
+      background: #FEF2F2;
+    }
+
+    .form-error {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--error);
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      animation: slideInRight 0.2s ease-out;
+    }
+
+    /* Progress Indicators */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--gray-200);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cc-navy), var(--cc-cyan));
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .progress-steps {
+      display: flex;
+      gap: 8px;
+      margin: 24px 0;
+      justify-content: space-between;
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .progress-step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      border: 2px solid var(--gray-200);
+      background: white;
+      color: var(--gray-500);
+      transition: all 0.3s ease;
+    }
+
+    .progress-step.active .progress-step-circle {
+      background: var(--cc-navy);
+      border-color: var(--cc-navy);
+      color: white;
+      box-shadow: 0 0 0 8px rgba(26, 46, 74, 0.1);
+    }
+
+    .progress-step.completed .progress-step-circle {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .progress-step-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .progress-step.active .progress-step-label {
+      color: var(--cc-navy);
+      font-weight: 600;
+    }
+
+    /* Empty States */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      text-align: center;
+      gap: 16px;
+      animation: fadeInUp 0.4s ease-out;
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gray-100);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    .breadcrumb-item {
+      color: var(--gray-500);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .breadcrumb-item:hover {
+      color: var(--cc-navy);
+    }
+
+    .breadcrumb-item.active {
+      color: var(--cc-navy);
+      font-weight: 600;
+    }
+
+    .breadcrumb-separator {
+      color: var(--gray-300);
+      margin: 0 4px;
+    }
+
+    /* Accessibility */
+    :focus-visible {
+      outline: 2px solid var(--cc-navy);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .toast {
+        max-width: none;
+        margin: 0 10px;
+      }
+
+      .progress-steps {
+        gap: 4px;
+      }
+
+      .progress-step-label {
+        font-size: 11px;
+      }
+
+      #toast-container {
+        left: 10px;
+        right: 10px;
+      }
+    }
   </style>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="css/ux-enhancements.css">
 </head>
 <body>
 
@@ -2548,7 +2815,55 @@
 
   // Initialize
   window.addEventListener('DOMContentLoaded', initApp);
-  
+
+</script>
+
+<!-- UX Manager & Improvements -->
+<script src="js/ux-manager.js"></script>
+<script src="js/ux-improvements.js"></script>
+
+<!-- Enhanced Form Validation on Submit -->
+<script>
+  (function() {
+    // Auto-setup form validation when forms are rendered
+    const originalSubmitForm = window.submitForm;
+    window.submitForm = function() {
+      const form = document.getElementById('dynamic-form-element');
+      if (form) {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        let isValid = true;
+
+        inputs.forEach(input => {
+          if (input.hasAttribute('required') && !input.value.trim()) {
+            input.classList.add('error');
+            isValid = false;
+            UXManager.showToast(`Por favor, preencha "${input.previousElementSibling?.textContent || 'este campo'}"`, 'error');
+          }
+        });
+
+        if (!isValid) return;
+      }
+
+      // Continue with original logic
+      if (originalSubmitForm) originalSubmitForm.call(this);
+    };
+
+    // Add toast notifications for appointments
+    const originalGenerateCode = window.generateCode || function() { return Math.random().toString(36).substr(2, 6).toUpperCase(); };
+    window.generateCode = function() {
+      const code = originalGenerateCode.call(this);
+      return code;
+    };
+
+    // Show success toast on confirmation
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('btn-done') || e.target.id === 'btn-submit') {
+        setTimeout(() => {
+          UXManager.showToast('Agendamento confirmado com sucesso! 🎉', 'success', 5000);
+        }, 500);
+      }
+    });
+  })();
 </script>
 </body>
 </html>
