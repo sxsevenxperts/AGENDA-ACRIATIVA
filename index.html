@@ -3639,15 +3639,28 @@
       border-radius: 8px;
       box-shadow: var(--shadow-lg);
       z-index: 9999;
-      min-width: 200px;
+      min-width: 220px;
     `;
+
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const userAppts = appointments.filter(a => a.user_id === userSession.id);
+    const pendingCount = userAppts.filter(a => a.status === 'PENDENTE').length;
+
     menu.innerHTML = `
       <div style="padding: 12px 0;">
         <div style="padding: 12px 16px; font-size: 12px; color: var(--gray-500); border-bottom: 1px solid var(--gray-200);">
           ${userSession.email}
         </div>
-        <button onclick="openUserProfile()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--gray-700);">👤 Meu Perfil</button>
-        <button onclick="showUserAppointments()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--gray-700);">📅 Meus Agendamentos</button>
+        <button onclick="openUserProfile()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--gray-700); hover: background-color var(--gray-50);">👤 Meu Perfil</button>
+        <button onclick="openUserDashboard()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="color: var(--gray-700);">📅 Meus Agendamentos</span>
+          ${userAppts.length > 0 ? `<span style="background: var(--info); color: white; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 600;">${userAppts.length}</span>` : ''}
+        </button>
+        ${pendingCount > 0 ? `
+          <div style="padding: 8px 16px; font-size: 12px; background: rgba(245, 158, 11, 0.1); color: var(--warning); font-weight: 500; margin: 4px 0;">
+            ⏳ ${pendingCount} agendamento(s) pendente(s)
+          </div>
+        ` : ''}
         <button onclick="userLogout()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--error); border-top: 1px solid var(--gray-200);">🚪 Sair</button>
       </div>
     `;
@@ -3702,6 +3715,226 @@
     toast.innerText = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+  }
+
+  // ==========================================
+  // ADMIN APPROVAL SYSTEM (v2.7.0)
+  // ==========================================
+
+  function notifyAdminNewAppointment(appt) {
+    const dept = DEPARTMENTS[appt.deptId];
+    const notification = {
+      type: 'new_appointment',
+      appointmentId: appt.id,
+      deptId: appt.deptId,
+      deptName: dept.name,
+      userName: appt.user_name,
+      date: appt.date,
+      time: appt.time,
+      timestamp: new Date().toISOString()
+    };
+
+    // Store notification in localStorage
+    let notifications = JSON.parse(localStorage.getItem('admin_notifications') || '[]');
+    notifications.unshift(notification);
+    // Keep only last 50 notifications
+    notifications = notifications.slice(0, 50);
+    localStorage.setItem('admin_notifications', JSON.stringify(notifications));
+
+    // If admin is logged in, show toast (optional - can be silent for background notifications)
+    if (adminSession) {
+      console.log('📬 New appointment pending approval:', appt.id);
+    }
+  }
+
+  function getPendingAppointmentsCount(deptId = null) {
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const pending = appointments.filter(a => a.status === 'PENDENTE' && (!deptId || a.deptId === deptId));
+    return pending.length;
+  }
+
+  function getPendingAppointments(deptId = null) {
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    return appointments.filter(a => a.status === 'PENDENTE' && (!deptId || a.deptId === deptId));
+  }
+
+  function approveAppointment(apptId, adminDeptId) {
+    let appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const idx = appointments.findIndex(a => a.id === apptId);
+
+    if (idx === -1) {
+      showToast('Agendamento não encontrado', 'error');
+      return false;
+    }
+
+    appointments[idx].status = 'APROVADO';
+    appointments[idx].approved_at = new Date().toISOString();
+    appointments[idx].approved_by = adminDeptId;
+
+    localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+    showToast(`✅ Agendamento ${apptId} aprovado!`, 'success');
+
+    return true;
+  }
+
+  function rejectAppointment(apptId, adminDeptId, reason = '') {
+    let appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const idx = appointments.findIndex(a => a.id === apptId);
+
+    if (idx === -1) {
+      showToast('Agendamento não encontrado', 'error');
+      return false;
+    }
+
+    appointments[idx].status = 'REJEITADO';
+    appointments[idx].rejected_at = new Date().toISOString();
+    appointments[idx].rejected_by = adminDeptId;
+    appointments[idx].rejection_reason = reason;
+
+    localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+    showToast(`❌ Agendamento ${apptId} rejeitado`, 'error');
+
+    return true;
+  }
+
+  function confirmAppointment(apptId) {
+    let appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const idx = appointments.findIndex(a => a.id === apptId);
+
+    if (idx === -1) return false;
+
+    appointments[idx].status = 'CONFIRMADO';
+    appointments[idx].confirmed_at = new Date().toISOString();
+
+    localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+    return true;
+  }
+
+  function getAppointmentStatusColor(status) {
+    switch(status) {
+      case 'PENDENTE': return 'var(--warning)';      // Orange
+      case 'APROVADO': return 'var(--success)';      // Green
+      case 'CONFIRMADO': return 'var(--info)';       // Blue
+      case 'VALIDADO': return 'var(--cc-cyan)';      // Cyan
+      case 'REJEITADO': return 'var(--error)';       // Red
+      case 'CANCELADO': return 'var(--gray-500)';    // Gray
+      default: return 'var(--gray-400)';
+    }
+  }
+
+  // ==========================================
+  // USER DASHBOARD (v2.7.0)
+  // ==========================================
+
+  function openUserDashboard() {
+    if (!userSession) {
+      showToast('Faça login para ver seus agendamentos', 'info');
+      openUserAuth('login');
+      return;
+    }
+
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const userAppts = appointments.filter(a => a.user_id === userSession.id);
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'user-dashboard-modal';
+    modal.className = 'form-overlay active';
+
+    modal.innerHTML = `
+      <div class="form-container" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+        <div class="form-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Meus Agendamentos</h2>
+          <button class="form-close-btn" onclick="document.getElementById('user-dashboard-modal').remove()">✕</button>
+        </div>
+
+        <div class="form-body">
+          ${userAppts.length === 0 ? `
+            <div style="text-align: center; padding: 40px 20px; color: var(--gray-500);">
+              <p style="font-size: 16px;">Você não tem agendamentos ainda.</p>
+              <button class="form-btn form-btn-primary" style="margin-top: 20px;"
+                onclick="document.getElementById('user-dashboard-modal').remove(); document.querySelector('.dept-grid').scrollIntoView({behavior:'smooth'})">
+                ➕ Fazer Novo Agendamento
+              </button>
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              ${userAppts.map(appt => {
+                const dept = DEPARTMENTS[appt.deptId];
+                const statusColor = getAppointmentStatusColor(appt.status);
+                const dateObj = new Date(appt.date + 'T00:00:00');
+                const dateFormatted = dateObj.toLocaleDateString('pt-BR');
+
+                return `
+                  <div style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; background: var(--gray-50);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                      <div>
+                        <h3 style="margin: 0; font-size: 16px; color: var(--cc-navy);">${dept.name}</h3>
+                        <small style="color: var(--gray-500);">Código: ${appt.id}</small>
+                      </div>
+                      <div style="background: ${statusColor}; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                        ${appt.status}
+                      </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                      <div>
+                        <small style="color: var(--gray-600); display: block;">Data</small>
+                        <strong>${dateFormatted}</strong>
+                      </div>
+                      <div>
+                        <small style="color: var(--gray-600); display: block;">Horário</small>
+                        <strong>${appt.time}</strong>
+                      </div>
+                    </div>
+
+                    ${appt.status === 'PENDENTE' ? `
+                      <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--warning); padding: 12px; border-radius: 4px; margin-bottom: 12px;">
+                        <small style="color: var(--warning); font-weight: 600;">⏳ Aguardando aprovação do administrador</small>
+                      </div>
+                    ` : appt.status === 'REJEITADO' ? `
+                      <div style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--error); padding: 12px; border-radius: 4px; margin-bottom: 12px;">
+                        <small style="color: var(--error); font-weight: 600;">❌ Agendamento rejeitado</small>
+                        ${appt.rejection_reason ? `<small style="display: block; margin-top: 4px;">Motivo: ${appt.rejection_reason}</small>` : ''}
+                      </div>
+                    ` : appt.status === 'APROVADO' ? `
+                      <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success); padding: 12px; border-radius: 4px; margin-bottom: 12px;">
+                        <small style="color: var(--success); font-weight: 600;">✅ Agendamento aprovado! Sua senha é: <strong style="font-size: 14px;">${appt.senha}</strong></small>
+                      </div>
+                    ` : ''}
+
+                    <div style="display: flex; gap: 8px;">
+                      ${appt.status === 'PENDENTE' || appt.status === 'APROVADO' ? `
+                        <button class="form-btn form-btn-secondary" style="flex: 1; padding: 8px;"
+                          onclick="cancelUserAppointment('${appt.id}'); document.getElementById('user-dashboard-modal').remove();">
+                          🗑️ Cancelar
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  function cancelUserAppointment(apptId) {
+    if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return;
+
+    let appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const idx = appointments.findIndex(a => a.id === apptId);
+
+    if (idx !== -1) {
+      appointments[idx].status = 'CANCELADO';
+      appointments[idx].canceled_at = new Date().toISOString();
+      localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+      showToast('Agendamento cancelado com sucesso', 'success');
+    }
   }
 
   // Initialize LocalStorage
@@ -4165,10 +4398,19 @@
         date: formData.date,
         time: formData.time,
         data: formData,
-        status: 'AGENDADO'
+        status: 'PENDENTE',  // Waiting for admin approval
+        user_id: userSession ? userSession.id : null,  // Connect to user if logged in
+        user_email: userSession ? userSession.email : null,
+        user_name: userSession ? userSession.name : formData[config[currentDeptId].questions.find(q => q.label.toLowerCase().includes('nome'))?.label || 'Nome'] || 'Usuário',
+        created_at: new Date().toISOString(),
+        approved_at: null,
+        approved_by: null
       };
       appointments.push(newAppt);
       localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+
+      // Notify admin of new pending appointment
+      notifyAdminNewAppointment(newAppt);
       
       // Close form, open confirmation
       closeForm();
@@ -4777,48 +5019,99 @@
   function loadAppointments() {
     const list = document.getElementById('appointments-list');
     list.innerHTML = '';
-    
+
     const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const dateFilter = document.getElementById('dash-date-filter').value;
-    
+
     const filtered = allAppts.filter(a => {
       if(adminSession !== 'super' && a.deptId !== adminSession) return false;
       if(dateFilter && a.date !== dateFilter) return false;
       return true;
     });
-    
-    if(filtered.length === 0) {
-      list.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--gray-500); background: white; border-radius: 12px;">Nenhum agendamento encontrado para esta data.</div>';
-      return;
-    }
-    
-    filtered.forEach(a => {
+
+    // Separate pending from other statuses
+    const pending = filtered.filter(a => a.status === 'PENDENTE');
+    const others = filtered.filter(a => a.status !== 'PENDENTE');
+
+    const renderCard = (a, showApprovalButtons = false) => {
       const card = document.createElement('div');
-      card.style.cssText = 'background: white; border-radius: 12px; padding: 20px; border-left: 4px solid ' + DEPARTMENTS[a.deptId].color + '; box-shadow: var(--shadow-sm);';
-      
+      const statusColor = getAppointmentStatusColor(a.status);
+      card.style.cssText = `background: white; border-radius: 12px; padding: 20px; border-left: 4px solid ${statusColor}; box-shadow: var(--shadow-sm); ${a.status === 'PENDENTE' ? 'border: 2px solid ' + statusColor : ''}`;
+
       let details = '';
-      for(let key in a.data) {
-         if(key !== 'date' && key !== 'time') {
-           details += `<div><strong>${key}:</strong> ${a.data[key]}</div>`;
-         }
+      if (a.data) {
+        for(let key in a.data) {
+          if(key !== 'date' && key !== 'time') {
+            details += `<div><strong>${key}:</strong> ${a.data[key]}</div>`;
+          }
+        }
       }
-      
+
+      const userInfo = a.user_id ? `<br><small style="color: var(--gray-600);">👤 ${a.user_email || a.user_name}</small>` : '';
+
       card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom: 12px;">
-          <div style="font-weight: 700; font-size: 18px;">${a.senha} <span style="font-weight:400; color:var(--gray-500); font-size:14px; margin-left:8px;">${a.time}</span></div>
-          <div style="background: ${a.status === 'VALIDADO' ? 'var(--success)' : 'var(--gray-200)'}; color: ${a.status === 'VALIDADO' ? 'white' : 'var(--gray-700)'}; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">${a.status}</div>
+        <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 12px;">
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 18px;">${a.senha} <span style="font-weight:400; color:var(--gray-500); font-size:14px; margin-left:8px;">${a.time}</span></div>
+            <div style="font-size: 14px; color: var(--gray-700); margin-top: 4px;">
+              <strong>Local:</strong> ${DEPARTMENTS[a.deptId].name}<br>
+              <strong>Cód:</strong> ${a.id}${userInfo}
+            </div>
+          </div>
+          <div style="background: ${statusColor}; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${a.status}</div>
         </div>
-        <div style="font-size: 14px; color: var(--gray-700); margin-bottom: 12px;">
-          <strong>Local:</strong> ${DEPARTMENTS[a.deptId].name}<br>
-          <strong>Cód:</strong> ${a.id}
-        </div>
+        ${showApprovalButtons ? `
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <small style="color: var(--warning); font-weight: 600; display: block; margin-bottom: 8px;">⏳ Aguardando sua aprovação</small>
+            <div style="display: flex; gap: 8px;">
+              <button onclick="approveAppointment('${a.id}', '${adminSession}'); loadAppointments();"
+                style="flex: 1; padding: 8px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                ✅ Aprovar
+              </button>
+              <button onclick="rejectAppointment('${a.id}', '${adminSession}', 'Rejeitado pelo administrador'); loadAppointments();"
+                style="flex: 1; padding: 8px; background: var(--error); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                ❌ Rejeitar
+              </button>
+            </div>
+          </div>
+        ` : ''}
         <details style="font-size: 13px; color: var(--gray-600); background: var(--gray-50); padding: 12px; border-radius: 8px;">
           <summary style="cursor: pointer; font-weight: 500;">Ver todos os dados do formulário</summary>
           <div style="margin-top: 8px; display: grid; gap: 4px;">${details}</div>
         </details>
       `;
-      list.appendChild(card);
-    });
+      return card;
+    };
+
+    // Show pending appointments first with approval buttons
+    if (pending.length > 0) {
+      const pendingHeader = document.createElement('div');
+      pendingHeader.style.cssText = 'background: rgba(245, 158, 11, 0.1); border: 2px solid var(--warning); border-radius: 12px; padding: 16px; margin-bottom: 16px; grid-column: 1 / -1;';
+      pendingHeader.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="font-size: 20px;">⏳</span>
+          <strong style="color: var(--warning);">${pending.length} agendamento(s) aguardando aprovação</strong>
+        </div>
+        <small style="color: var(--gray-600);">Revise e aprove ou rejeite os agendamentos abaixo</small>
+      `;
+      list.appendChild(pendingHeader);
+
+      pending.forEach(a => {
+        list.appendChild(renderCard(a, true));
+      });
+    }
+
+    if (others.length === 0 && pending.length === 0) {
+      list.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--gray-500); background: white; border-radius: 12px;">Nenhum agendamento encontrado para esta data.</div>';
+      return;
+    }
+
+    // Show other statuses
+    if (others.length > 0) {
+      others.forEach(a => {
+        list.appendChild(renderCard(a, false));
+      });
+    }
   }
 
   // ==========================================

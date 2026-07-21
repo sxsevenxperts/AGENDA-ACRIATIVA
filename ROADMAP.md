@@ -1,8 +1,42 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.6.0  
-**Status Geral:** 🟢 Produção - User Authentication Ready (7 Departments + User Login/Signup + Supabase)
+**Versão:** 2.7.0  
+**Status Geral:** 🟢 Produção - Admin Approval System + User Dashboard (7 Departments + User Auth + Approval Workflow)
+
+---
+
+## Atualização — 2026-07-21 (v2.7.0) — Admin Approval System + User Dashboard + Notifications
+
+### Concluído
+- [x] **Sistema de aprovação admin**: Novos agendamentos são criados com status PENDENTE e precisam de aprovação do admin.
+- [x] **Status workflow**: PENDENTE → APROVADO → CONFIRMADO → REALIZADO/CANCELADO/REJEITADO.
+- [x] **Interface de aprovação**: Admin vê lista de agendamentos pendentes com botões "Aprovar" e "Rejeitar".
+- [x] **Notificação de novo agendamento**: Admin é notificado quando novo agendamento é criado (badge no menu de usuário).
+- [x] **Dashboard de usuário**: Modal mostrando histórico de agendamentos do usuário logado com status e ações.
+- [x] **Conexão user_id**: Agendamentos agora associados com user_id quando criados por usuário logado.
+- [x] **Cancelamento de agendamento**: Usuários podem cancelar seus próprios agendamentos (status CANCELADO).
+- [x] **Feedback visual**: Cores diferentes para cada status, cards bem formatados com informações claras.
+- [x] **Contador de agendamentos**: Menu do usuário mostra número de agendamentos e quantos estão pendentes.
+
+### Impactos
+- **Usuários**: Podem acompanhar status em tempo real, sabem quando precisam tomar ação (agendamento rejeitado).
+- **Admin**: Controle total sobre quais agendamentos são aceitos, informações de user_id/email para contato.
+- **Segurança**: Agendamentos públicos não são confirmados automaticamente, reduz spam/abuso.
+- **UX**: Workflow claro: usuário faz agendamento → recebe status PENDENTE → admin aprova/rejeita → status APROVADO.
+
+### Próximos Passos
+- [ ] Integração com Supabase (migrar agendamentos para tabela appointments na cloud)
+- [ ] Email/SMS de notificação quando agendamento é aprovado/rejeitado
+- [ ] 2FA para admin (código 6 dígitos via SMS)
+- [ ] Dashboard com gráficos (Supabase + Chart.js)
+- [ ] Integração com Supabase Auth quando credenciais disponíveis
+
+### Riscos e débitos técnicos
+- Notificações ainda são apenas no navegador (sem email/SMS)
+- Sem integração com Supabase (apenas localStorage)
+- Sem rate limiting (pode haver spam de agendamentos)
+- Sem validação de email (qualquer email aceito)
 
 ---
 

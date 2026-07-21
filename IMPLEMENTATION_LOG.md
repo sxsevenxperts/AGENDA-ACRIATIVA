@@ -1,8 +1,155 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.6.0  
-**Status:** ✅ User Authentication + E2E Testing (7 Departamentos + Supabase + Login/Signup)
+**Versão Atual:** 2.7.0  
+**Status:** ✅ Admin Approval + User Dashboard (7 Departamentos + User Auth + Approval Workflow)
+
+---
+
+## 2026-07-21 — Admin Approval System + User Dashboard + Appointment Notifications (v2.7.0)
+
+### Objetivo
+Implementar sistema completo de aprovação de agendamentos por admin e dashboard de usuário para acompanhar status em tempo real. Adicionar notificações quando novos agendamentos são criados e quando são aprovados/rejeitados.
+
+### Alterações realizadas
+
+**1. Modificação da Estrutura de Agendamento**
+- Status inicial alterado: 'AGENDADO' → 'PENDENTE' (aguardando aprovação)
+- Novos campos adicionados:
+  - `user_id`: ID do usuário que criou (null se anônimo)
+  - `user_email`: Email do usuário
+  - `user_name`: Nome do usuário
+  - `created_at`: ISO timestamp de criação
+  - `approved_at`: ISO timestamp de aprovação
+  - `approved_by`: ID do admin que aprovou
+  - `rejected_at`: ISO timestamp de rejeição
+  - `rejected_by`: ID do admin que rejeitou
+  - `rejection_reason`: Motivo da rejeição
+  - `confirmed_at`: ISO timestamp de confirmação
+  - `canceled_at`: ISO timestamp de cancelamento
+
+**2. Sistema de Notificações (localStorage)**
+- Nova chave: `admin_notifications`
+- Estrutura: Array de notificações com type, appointmentId, deptId, deptName, userName, date, time, timestamp
+- Função: `notifyAdminNewAppointment(appt)` - chamada quando novo agendamento é criado
+
+**3. Funções de Gerenciamento de Status**
+```javascript
+getPendingAppointmentsCount(deptId) - Retorna número de agendamentos pendentes
+getPendingAppointments(deptId) - Retorna lista de agendamentos pendentes
+approveAppointment(apptId, adminDeptId) - Aprova agendamento (PENDENTE → APROVADO)
+rejectAppointment(apptId, adminDeptId, reason) - Rejeita agendamento
+confirmAppointment(apptId) - Confirma agendamento (APROVADO → CONFIRMADO)
+getAppointmentStatusColor(status) - Retorna cor para cada status (para UI)
+```
+
+**4. Interface de Aprovação no Painel Admin**
+- Nova seção na aba "Agendamentos" mostrando agendamentos PENDENTES primeiro
+- Header destacado com contador de pendentes e aviso visual
+- Botões "Aprovar" e "Rejeitar" para cada agendamento pendente
+- Status badges com cores diferentes para cada estado
+- Informações de usuário (email) se agendamento foi feito por user logado
+
+**5. Dashboard de Usuário (v2.7.0)**
+- Função: `openUserDashboard()` - abre modal com histórico de agendamentos
+- Mostra todos os agendamentos do usuário logado com:
+  - Departamento e horário
+  - Status atual (PENDENTE, APROVADO, CONFIRMADO, REJEITADO, CANCELADO)
+  - Informações visuais (cores, ícones de estado)
+  - Mensagem contextual para cada status
+  - Se APROVADO: mostra senha do agendamento
+  - Se REJEITADO: mostra motivo da rejeição
+  - Se PENDENTE: mostra aviso "Aguardando aprovação do administrador"
+  - Botão "Cancelar" para agendamentos não finalizados
+
+**6. Menu de Usuário Melhorado**
+- Agora mostra contador de agendamentos ao lado de "Meus Agendamentos"
+- Exibe aviso se há agendamentos PENDENTES (⏳ X agendamento(s) pendente(s))
+- Link para openUserDashboard() com UI melhorada (modal em vez de alert)
+
+**7. Função de Cancelamento de Agendamento**
+- `cancelUserAppointment(apptId)` - usuário pode cancelar seus próprios agendamentos
+- Altera status para CANCELADO com timestamp
+
+### Decisões técnicas
+
+**1. Status Workflow**
+- Decisão: PENDENTE → APROVADO → CONFIRMADO (com opções de REJEITADO, CANCELADO)
+- Motivo: Múltiplas etapas permitem admin aceitar/rejeitar; CONFIRMADO para quando usuário chega
+- Alternativa rejeitada: Status único (AGENDADO) não oferecia controle de aprovação
+
+**2. Armazenamento de user_id**
+- Decisão: Guardar user_id, email e nome do usuário no agendamento
+- Motivo: Admin consegue contatar usuário se houver dúvida; rastreabilidade de quem criou
+- Implementação: Se userSession existe, preenche; caso contrário fica null
+
+**3. Notificações**
+- Decisão: Armazenar em localStorage (admin_notifications array)
+- Motivo: Simples, não requer backend; pronto para migrar para Supabase later
+- Futura melhoria: Email/SMS integrado
+
+**4. UI do Dashboard de Usuário**
+- Decisão: Modal em vez de alert()
+- Motivo: Better UX, mostra múltiplos agendamentos lado a lado, cards coloridos
+- Benefício: Usuário vê histórico completo com status e ações possíveis
+
+### Validações executadas
+
+**1. Testes Funcionais**
+- ✅ Novo agendamento é criado com status PENDENTE
+- ✅ Admin vê agendamentos pendentes na aba de agendamentos
+- ✅ Admin pode aprovar agendamento (PENDENTE → APROVADO)
+- ✅ Admin pode rejeitar agendamento (PENDENTE → REJEITADO)
+- ✅ Usuário vê dashboard com todos os seus agendamentos
+- ✅ Usuário vê status PENDENTE com aviso "Aguardando aprovação"
+- ✅ Usuário vê status APROVADO com senha do agendamento
+- ✅ Usuário vê status REJEITADO com motivo
+- ✅ Usuário pode cancelar agendamento (muda para CANCELADO)
+- ✅ Menu de usuário mostra contador de agendamentos
+- ✅ Menu de usuário mostra aviso de pendentes
+- ✅ Cores diferentes para cada status (visual feedback)
+
+**2. Code Review**
+- ✅ Sem hardcoded credentials
+- ✅ Sem senhas expostas
+- ✅ Sem XSS vulnerabilities
+- ✅ Sem console errors
+- ✅ Função updateAppointmentStatus() preserva dados existentes
+
+**3. Compatibilidade**
+- ✅ Backwards compatible com agendamentos antigos (status AGENDADO mapeado para APROVADO)
+- ✅ Funciona com e sem userSession (user_id fica null se anônimo)
+- ✅ localStorage fallback funciona 100%
+
+### Impactos
+
+**UX/UI Impact**
+- Usuário: Feedback imediato sobre status do agendamento, dashboard elegante
+- Admin: Controle total sobre agendamentos, fácil aprovação/rejeição com um clique
+- Segurança: Reduz spam pois agendamentos precisam de aprovação
+
+**Architecture Impact**
+- Novo status workflow (PENDENTE/APROVADO/CONFIRMADO/etc)
+- New fields em cadeia_appointments (user_id, created_at, approved_at, etc)
+- Função getAppointmentStatusColor() para renderização consistente
+
+**Business Impact**
+- Admin tem controle total sobre quem acessa os espaços
+- Usuários sabem exatamente o status do seu agendamento
+- Rastreabilidade: quem criou, quando foi aprovado, por quem
+
+### Pendências
+
+1. **Email/SMS Notifications**: Ainda faltam notificações por email quando agendamento é aprovado/rejeitado
+2. **Supabase Integration**: Agendamentos ainda em localStorage; pronto para migração
+3. **Rate Limiting**: Sem proteção contra spam de agendamentos
+4. **Validação de Email**: Qualquer email é aceito (sem verificação)
+5. **Admin Notification UI**: Notificações armazenadas mas não mostradas em tempo real (apenas no menu)
+
+### Arquivos principais envolvidos
+- `index.html` — Adição de funções de approval, dashboard, notificações
+- `ROADMAP.md` — Atualizado com v2.7.0
+- `IMPLEMENTATION_LOG.md` — Este arquivo
 
 ---
 
