@@ -1,8 +1,38 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.2.0  
+**Versão Atual:** 2.3.1  
 **Status:** ✅ Implementação Completa + Produção
+
+---
+
+## 2026-07-21 — Correção de espaço vazio no rodapé (mobile)
+
+### Objetivo
+Remover o bloco vazio visual que aparecia após o rodapé na responsividade mobile, prejudicando a experiência do usuário.
+
+### Alterações realizadas
+- **CSS (`.footer` margin-top)**: Reduzida a margem superior do rodapé de 80px para 48px em tablets (768px) e 32px em celulares (640px). Alterações em duas `@media` queries dentro de `index.html`.
+  - `@media (max-width: 768px)`: `.footer { margin-top: 48px; }`
+  - `@media (max-width: 640px)`: `.footer { margin-top: 32px; }`
+
+### Decisões técnicas
+- A margem de 80px no desktop é apropriada para separação visual entre conteúdo principal e rodapé. Em mobile, este espaço se traduz em um bloco vazio perceptível que degrada a UX.
+- Margem reduzida (48px/32px) mantém a hierarquia visual enquanto elimina o excesso.
+
+### Validações executadas
+- Teste headless em viewport 390x844 (iPhone SE): scroll height reduzido de 3718px para 3670px (48px de redução = diferença esperada).
+- Verificado que rodapé mantém alinhamento horizontal no viewport após scroll até o fim.
+- **0 erros de página** durante teste.
+
+### Impactos
+- **Usuário:** layout mobile mais compacto, sem espaço desnecessário; melhor percepção de proximidade entre conteúdo e rodapé.
+- **Negócio:** melhora na experiência de navegação em dispositivos móveis.
+
+### Arquivos principais envolvidos
+- `index.html` (CSS media queries)
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
 
 ---
 

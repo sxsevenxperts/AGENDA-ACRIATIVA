@@ -1,8 +1,16 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.2.0  
+**Versão:** 2.3.1  
 **Status Geral:** 🟢 Produção - Pronto para Deploy (Agendar/Consultar por card + Painel Diretoria)
+
+---
+
+## Atualização — 2026-07-21 (v2.3.1) — Correção UX mobile
+
+### Concluído
+- [x] **Redução de espaço vazio no rodapé**: Reduzida a margem-top do `.footer` de 80px para 48px (768px) e 32px (640px) em viewports mobile, eliminando o bloco vazio visual que aparecia após o rodapé na responsividade. Scroll height reduzido de 3718px para 3670px em mobile (390px).
+- [x] **Validação técnica**: Testada em 390px (iPhone SE), confirmado scroll height consistente e eliminação do espaço excessivo.
 
 ---
 
