@@ -2,13 +2,20 @@
 
 **Última atualização:** 2026-07-21  
 **Versão:** 2.1.2  
-**Status Geral:** 🟢 Produção - Pronto para Deploy
+**Status Geral:** 🟢 Produção - Pronto para Deploy (Header Redesign Complete)
 
 ---
 
 ## 📍 Status Atual
 
 ### ✅ Concluído (Versão 2.1.2)
+- [x] **Header Layout Redesign** - Reestruturação para modelo Agenda Sobral
+  - Logos em primeira row (lado-a-lado)
+  - "CADEIA CRIATIVA" title centralizado na segunda row
+  - Layout responsivo (768px, 640px breakpoints)
+  - Navigation bar com hover effects
+  - Drop shadows em logos com efeito glow
+
 - [x] **Deployment Infrastructure** - Docker, Easypanel, Nginx completo
   - Dockerfile multi-stage (node:18-alpine)
   - docker-compose.yml com app, nginx, supabase
