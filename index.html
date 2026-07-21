@@ -2410,15 +2410,38 @@
           
           <!-- Step 3: Terms -->
           <div id="step-3" style="display: none;">
-             <h3 class="step-title">Termo de Responsabilidade</h3>
-             <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius-md); font-size: 13px; color: var(--gray-600); margin-bottom: 24px; border: 1px solid var(--gray-200);">
-               Declaro para os devidos fins que estou ciente das normas de uso do espaço, incluindo pontualidade e cuidados com o patrimônio público. A Prefeitura de Sobral reserva-se o direito de cancelar o agendamento em caso de força maior.
+             <h3 class="step-title">Termos e Orientações</h3>
+
+             <div style="background: var(--warning-light, rgba(255, 152, 0, 0.1)); padding: 16px; border-radius: var(--radius-md); font-size: 13px; color: var(--gray-800); margin-bottom: 20px; border: 1px solid var(--warning, #FF9800); border-left: 4px solid var(--warning, #FF9800);">
+               <strong style="color: var(--gray-900);">📋 ORIENTAÇÕES E RESPONSABILIDADES:</strong>
+               <ul style="margin: 12px 0 0 0; padding-left: 20px; line-height: 1.6;">
+                 <li>A instituição/empresa responsável pelo evento responderá integralmente pela organização, execução e condução das atividades realizadas no espaço.</li>
+                 <li>O Centro de Inovação – Cadeia Criativa de Sobral não se responsabiliza por materiais, equipamentos particulares, objetos pessoais, acidentes, danos ou quaisquer ocorrências relacionadas ao evento.</li>
+                 <li>A disponibilização de equipamentos e recursos tecnológicos (notebook, datashow, microfone, caixa de som) estará condicionada à solicitação prévia e à disponibilidade dos equipamentos.</li>
+                 <li>Os equipamentos disponibilizados deverão ser utilizados adequadamente, ficando o solicitante responsável pela guarda, conservação e devolução nas mesmas condições recebidas.</li>
+                 <li>O solicitante compromete-se a ressarcir eventuais danos, perdas ou extravios causados aos equipamentos e instalações, quando comprovada sua responsabilidade.</li>
+                 <li>O espaço deverá ser utilizado exclusivamente para a finalidade informada na solicitação de agendamento.</li>
+                 <li>Ao término da atividade, o ambiente deverá ser entregue nas mesmas condições de organização e conservação em que foi recebido.</li>
+                 <li>A guarda e segurança de pertences, equipamentos eletroeletrônicos e materiais de uso pessoal são de inteira responsabilidade de seus respectivos proprietários. A instituição não se responsabiliza por perdas, danos, extravios ou furtos deixados nas dependências comuns, salas reservadas ou áreas de coworking.</li>
+               </ul>
              </div>
-             
-             <label class="checkbox-label" style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer;">
-               <input type="checkbox" id="dynamic-terms" required style="margin-top: 4px; width: 18px; height: 18px;">
-               <span style="font-size: 14px; font-weight: 500; color: var(--gray-800);">Concordo com os termos e orientações apresentados.</span>
-             </label>
+
+             <div style="display: flex; flex-direction: column; gap: 16px;">
+               <label class="checkbox-label" style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer;">
+                 <input type="checkbox" id="dynamic-terms" required style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+                 <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito os Termos e Orientações</strong><br><small style="color: var(--gray-600);">Declaro estar ciente de todas as orientações, normas de uso do espaço e responsabilidades descritas acima.</small></span>
+               </label>
+
+               <label class="checkbox-label" style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer;">
+                 <input type="checkbox" id="dynamic-lgpd" required style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+                 <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito a LGPD e Política de Privacidade</strong><br><small style="color: var(--gray-600);">Autorizo o tratamento de meus dados pessoais de acordo com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).</small></span>
+               </label>
+
+               <label class="checkbox-label" style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer;">
+                 <input type="checkbox" id="dynamic-privacy" required style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+                 <span style="font-size: 14px; color: var(--gray-800);"><strong>Li e Aceito a Política de Privacidade</strong><br><small style="color: var(--gray-600);">Concordo com a coleta, uso e proteção de meus dados conforme descrito na Política de Privacidade do Centro de Inovação Cadeia Criativa.</small></span>
+               </label>
+             </div>
           </div>
 
         </form>
@@ -4071,6 +4094,8 @@
     // Clear previous state of Date and Terms
     document.getElementById('dynamic-date').value = '';
     document.getElementById('dynamic-terms').checked = false;
+    document.getElementById('dynamic-lgpd').checked = false;
+    document.getElementById('dynamic-privacy').checked = false;
     
     // Render Time slots (will show "Por favor, selecione uma data" initially)
     generateTimeSlots();
@@ -4409,8 +4434,16 @@
   // ==========================================
   
   function submitForm() {
-    if(!document.getElementById('dynamic-terms').checked) {
-      alert("Você deve concordar com os termos.");
+    const termsChecked = document.getElementById('dynamic-terms').checked;
+    const lgpdChecked = document.getElementById('dynamic-lgpd').checked;
+    const privacyChecked = document.getElementById('dynamic-privacy').checked;
+
+    if(!termsChecked || !lgpdChecked || !privacyChecked) {
+      const missing = [];
+      if(!termsChecked) missing.push('Termos e Orientações');
+      if(!lgpdChecked) missing.push('LGPD');
+      if(!privacyChecked) missing.push('Política de Privacidade');
+      alert(`⚠️ Você precisa aceitar os seguintes termos para continuar:\n\n• ${missing.join('\n• ')}`);
       return;
     }
 
@@ -4472,7 +4505,13 @@
         user_name: userSession ? userSession.name : formData[config[currentDeptId].questions.find(q => q.label.toLowerCase().includes('nome'))?.label || 'Nome'] || 'Usuário',
         created_at: new Date().toISOString(),
         approved_at: null,
-        approved_by: null
+        approved_by: null,
+        terms_accepted: {
+          guidelines: true,
+          lgpd: true,
+          privacy_policy: true,
+          accepted_at: new Date().toISOString()
+        }
       };
       appointments.push(newAppt);
       localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
