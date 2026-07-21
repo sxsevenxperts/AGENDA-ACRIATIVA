@@ -2369,9 +2369,14 @@
         </div>
       </div>
       
-      <div style="display: flex; border-bottom: 1px solid var(--gray-200); padding: 0 32px;">
-        <div class="dash-tab active" onclick="switchDashTab('agendamentos')" id="tab-agendamentos" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid var(--cc-cyan); font-weight: 600; color: var(--cc-navy);">Agendamentos</div>
-        <div class="dash-tab" onclick="switchDashTab('scanner')" id="tab-scanner" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500);">Validar Entrada (Scanner QR)</div>
+      <div style="display: flex; border-bottom: 1px solid var(--gray-200); padding: 0 32px; overflow-x: auto;">
+        <div class="dash-tab active" onclick="switchDashTab('agendamentos')" id="tab-agendamentos" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid var(--cc-cyan); font-weight: 600; color: var(--cc-navy); white-space: nowrap;">Agendamentos</div>
+        <div class="dash-tab" onclick="switchDashTab('agendar')" id="tab-agendar" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Agendar</div>
+        <div class="dash-tab" onclick="switchDashTab('desmarcar')" id="tab-desmarcar" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Desmarcar</div>
+        <div class="dash-tab" onclick="switchDashTab('editar')" id="tab-editar" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Editar</div>
+        <div class="dash-tab" onclick="switchDashTab('horarios')" id="tab-horarios" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Horários</div>
+        <div class="dash-tab" onclick="switchDashTab('dashboard')" id="tab-dashboard" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Dashboard</div>
+        <div class="dash-tab" onclick="switchDashTab('scanner')" id="tab-scanner" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Scanner QR</div>
       </div>
       
       <div class="form-body" style="flex: 1; overflow-y: auto; padding: 32px; background: var(--gray-50);">
@@ -2381,28 +2386,198 @@
             <h3>Próximos Agendamentos</h3>
             <input type="date" id="dash-date-filter" class="form-input" style="width: auto;" onchange="loadAppointments()">
           </div>
-          
+
           <div id="appointments-list" style="display: grid; gap: 16px;">
             <!-- Rendered via JS -->
           </div>
         </div>
-        
-        <!-- TAB 2: Scanner -->
+
+        <!-- TAB 2: Agendar Manualmente -->
+        <div id="dash-view-agendar" style="display: none;">
+          <h3>Agendar Manualmente</h3>
+          <p class="subtitle" style="margin-bottom: 24px;">Crie um novo agendamento para um cliente.</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+            <div class="form-group">
+              <label class="form-label">Nome Completo <span class="required">*</span></label>
+              <input type="text" id="manual-nome" class="form-input" placeholder="Nome do cliente">
+            </div>
+            <div class="form-group">
+              <label class="form-label">CPF/CNPJ <span class="required">*</span></label>
+              <input type="text" id="manual-cpf" class="form-input" placeholder="000.000.000-00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Telefone <span class="required">*</span></label>
+              <input type="tel" id="manual-phone" class="form-input" placeholder="(00) 00000-0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">E-mail</label>
+              <input type="email" id="manual-email" class="form-input" placeholder="email@exemplo.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data <span class="required">*</span></label>
+              <input type="date" id="manual-date" class="form-input" onchange="updateManualTimeSlots()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Horário <span class="required">*</span></label>
+              <select id="manual-time" class="form-input form-select">
+                <option value="">Selecione uma data primeiro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea id="manual-notes" class="form-input form-textarea" placeholder="Observações adicionais"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button class="form-btn form-btn-primary" onclick="createManualAppointment()">Agendar</button>
+            <button class="form-btn form-btn-secondary" onclick="clearManualForm()">Limpar</button>
+          </div>
+        </div>
+
+        <!-- TAB 3: Desmarcar -->
+        <div id="dash-view-desmarcar" style="display: none;">
+          <h3>Desmarcar Agendamento</h3>
+          <p class="subtitle" style="margin-bottom: 24px;">Cancele um agendamento existente.</p>
+
+          <div style="margin-bottom: 24px;">
+            <label class="form-label">Filtrar por data:</label>
+            <input type="date" id="desmarcar-date-filter" class="form-input" style="width: 200px;" onchange="loadCancellableAppointments()">
+          </div>
+
+          <div id="cancellable-appointments-list" style="display: grid; gap: 12px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- TAB 4: Editar -->
+        <div id="dash-view-editar" style="display: none;">
+          <h3>Editar Agendamento</h3>
+          <p class="subtitle" style="margin-bottom: 24px;">Modificar detalhes de um agendamento existente.</p>
+
+          <div style="margin-bottom: 24px;">
+            <label class="form-label">Filtrar por data:</label>
+            <input type="date" id="editar-date-filter" class="form-input" style="width: 200px;" onchange="loadEditableAppointments()">
+          </div>
+
+          <div id="editable-appointments-list" style="display: grid; gap: 12px;">
+            <!-- Rendered via JS -->
+          </div>
+
+          <!-- Edit Form (hidden by default) -->
+          <div id="edit-appointment-form" style="display: none; border: 2px solid var(--cc-cyan); padding: 24px; border-radius: 12px; margin-top: 24px;">
+            <h4>Editar Agendamento</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+              <div class="form-group">
+                <label class="form-label">Nome <span class="required">*</span></label>
+                <input type="text" id="edit-nome" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefone <span class="required">*</span></label>
+                <input type="tel" id="edit-phone" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">E-mail</label>
+                <input type="email" id="edit-email" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Horário <span class="required">*</span></label>
+                <select id="edit-time" class="form-input form-select"></select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Observações</label>
+              <textarea id="edit-notes" class="form-input form-textarea"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+              <button class="form-btn form-btn-primary" onclick="saveEditedAppointment()">Salvar Edição</button>
+              <button class="form-btn form-btn-secondary" onclick="cancelEditAppointment()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: Horários de Funcionamento -->
+        <div id="dash-view-horarios" style="display: none;">
+          <h3>Horários de Funcionamento</h3>
+          <p class="subtitle" style="margin-bottom: 24px;">Configure o horário de operação para este departamento.</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 600px;">
+            <div class="form-group">
+              <label class="form-label">Hora de Abertura</label>
+              <input type="time" id="horario-abertura" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora de Fechamento</label>
+              <input type="time" id="horario-fechamento" class="form-input">
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; padding: 16px; background: var(--blue-50); border-radius: 8px; border-left: 4px solid var(--cc-cyan);">
+            <p style="font-size: 14px; margin: 0;"><strong>Dias funcionando:</strong> Segunda a Sexta</p>
+            <p style="font-size: 14px; margin: 8px 0 0 0; color: var(--gray-600);">Sábados e domingos: Fechado</p>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button class="form-btn form-btn-primary" onclick="saveOperatingHours()">Salvar Horários</button>
+            <button class="form-btn form-btn-secondary" onclick="resetOperatingHours()">Padrão</button>
+          </div>
+        </div>
+
+        <!-- TAB 6: Dashboard -->
+        <div id="dash-view-dashboard" style="display: none;">
+          <h3>Dashboard de Estatísticas</h3>
+          <p class="subtitle" style="margin-bottom: 24px;">Visualize os dados de agendamentos do departamento.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+            <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid var(--success);">
+              <p style="font-size: 12px; color: var(--gray-600); margin: 0 0 8px 0;">Total Agendamentos</p>
+              <p style="font-size: 32px; font-weight: 700; margin: 0; color: var(--success);" id="stat-total">0</p>
+            </div>
+
+            <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid var(--cc-cyan);">
+              <p style="font-size: 12px; color: var(--gray-600); margin: 0 0 8px 0;">Hoje</p>
+              <p style="font-size: 32px; font-weight: 700; margin: 0; color: var(--cc-cyan);" id="stat-today">0</p>
+            </div>
+
+            <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid var(--cc-yellow);">
+              <p style="font-size: 12px; color: var(--gray-600); margin: 0 0 8px 0;">Não Comparecidos</p>
+              <p style="font-size: 32px; font-weight: 700; margin: 0; color: var(--cc-yellow);" id="stat-noshow">0</p>
+            </div>
+
+            <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #FF6B6B;">
+              <p style="font-size: 12px; color: var(--gray-600); margin: 0 0 8px 0;">Taxa Ocupação</p>
+              <p style="font-size: 32px; font-weight: 700; margin: 0; color: #FF6B6B;" id="stat-occupancy">0%</p>
+            </div>
+          </div>
+
+          <div style="background: white; padding: 24px; border-radius: 12px;">
+            <h4 style="margin-top: 0;">Últimos 10 Agendamentos</h4>
+            <div id="dashboard-recent-appointments" style="display: grid; gap: 12px;">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 7: Scanner -->
         <div id="dash-view-scanner" style="display: none; text-align: center;">
           <h3>Validar Agendamento</h3>
           <p class="subtitle" style="margin-bottom: 24px;">Aponte o QR Code do usuário para a câmera ou digite o código manualmente.</p>
-          
+
           <div style="max-width: 400px; margin: 0 auto; background: #000; border-radius: 16px; overflow: hidden; position: relative;">
             <video id="qr-video" width="100%" autoplay playsinline style="display: block; min-height: 300px;"></video>
             <canvas id="qr-canvas" style="display: none;"></canvas>
             <div style="position: absolute; inset: 20%; border: 2px dashed rgba(255,255,255,0.5); border-radius: 12px;"></div>
           </div>
-          
+
           <div style="margin: 24px auto; max-width: 400px; display: flex; gap: 12px;">
             <input type="text" id="manual-code" class="form-input" placeholder="Ou digite o código (ex: AXK-9B3)" style="text-transform: uppercase;">
             <button class="form-btn form-btn-primary" style="background: var(--cc-navy);" onclick="validateManualCode()">Validar</button>
           </div>
-          
+
           <div id="validation-result" style="margin-top: 24px; padding: 20px; border-radius: 12px; display: none;"></div>
         </div>
       </div>
@@ -3129,12 +3304,38 @@
     const activeTab = document.getElementById('tab-' + tabId);
     activeTab.style.borderBottomColor = 'var(--cc-cyan)';
     activeTab.style.color = 'var(--cc-navy)';
-    
-    document.getElementById('dash-view-agendamentos').style.display = tabId === 'agendamentos' ? 'block' : 'none';
-    document.getElementById('dash-view-scanner').style.display = tabId === 'scanner' ? 'block' : 'none';
-    
-    if(tabId === 'scanner') startScanner();
-    else stopScanner();
+
+    // Hide all tabs
+    document.querySelectorAll('[id^="dash-view-"]').forEach(el => el.style.display = 'none');
+
+    // Show selected tab
+    const viewEl = document.getElementById('dash-view-' + tabId);
+    if(viewEl) viewEl.style.display = 'block';
+
+    // Load data for specific tabs
+    if(tabId === 'scanner') {
+      startScanner();
+    } else {
+      stopScanner();
+    }
+
+    if(tabId === 'desmarcar') {
+      document.getElementById('desmarcar-date-filter').value = new Date().toISOString().split('T')[0];
+      loadCancellableAppointments();
+    }
+
+    if(tabId === 'editar') {
+      document.getElementById('editar-date-filter').value = new Date().toISOString().split('T')[0];
+      loadEditableAppointments();
+    }
+
+    if(tabId === 'horarios') {
+      loadOperatingHours();
+    }
+
+    if(tabId === 'dashboard') {
+      loadDashboardStats();
+    }
   }
   
   function loadAppointments() {
@@ -3285,6 +3486,379 @@
            `;
         }
      }
+  }
+
+  // ==========================================
+  // MANUAL SCHEDULING (Agendar)
+  // ==========================================
+
+  function updateManualTimeSlots() {
+    const date = document.getElementById('manual-date').value;
+    const select = document.getElementById('manual-time');
+    select.innerHTML = '<option value="">Selecione um horário</option>';
+
+    if (!date) return;
+
+    const dept = DEPARTMENTS[adminSession];
+    let currentMin = dept.startHour * 60;
+    const endMin = dept.endHour * 60;
+    const slots = [];
+    const sessionMins = dept.durationHours * 60;
+
+    while(currentMin + sessionMins <= endMin) {
+      const startStr = formatMin(currentMin);
+      const endStr = formatMin(currentMin + sessionMins);
+      slots.push(`${startStr} - ${endStr}`);
+      currentMin += sessionMins + dept.bufferMinutes;
+    }
+
+    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const bookedTimes = allAppts
+      .filter(a => a.deptId === adminSession && a.date === date)
+      .map(a => a.time);
+
+    slots.forEach(s => {
+      if (!bookedTimes.includes(s)) {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.innerText = s;
+        select.appendChild(opt);
+      }
+    });
+  }
+
+  function createManualAppointment() {
+    const nome = document.getElementById('manual-nome').value.trim();
+    const cpf = document.getElementById('manual-cpf').value.trim();
+    const phone = document.getElementById('manual-phone').value.trim();
+    const email = document.getElementById('manual-email').value.trim();
+    const date = document.getElementById('manual-date').value;
+    const time = document.getElementById('manual-time').value;
+    const notes = document.getElementById('manual-notes').value.trim();
+
+    if (!nome) { alert('Digite o nome completo.'); return; }
+    if (!cpf) { alert('Digite CPF/CNPJ.'); return; }
+    if (!phone) { alert('Digite o telefone.'); return; }
+    if (!date) { alert('Selecione a data.'); return; }
+    if (!time) { alert('Selecione o horário.'); return; }
+
+    const dept = DEPARTMENTS[adminSession];
+    let counters = JSON.parse(localStorage.getItem('cadeia_counters') || '{}');
+    counters[adminSession] = (counters[adminSession] || 0) + 1;
+    localStorage.setItem('cadeia_counters', JSON.stringify(counters));
+
+    const senhaPrefix = `${dept.prefix}-${counters[adminSession].toString().padStart(3, '0')}`;
+    const validationCode = Math.random().toString(36).substring(2,5).toUpperCase() + '-' + Math.random().toString(36).substring(2,5).toUpperCase();
+
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const newAppt = {
+      id: validationCode,
+      senha: senhaPrefix,
+      deptId: adminSession,
+      date: date,
+      time: time,
+      data: {
+        'Nome Completo': nome,
+        'CPF/CNPJ': cpf,
+        'Telefone': phone,
+        'E-mail': email,
+        'Observações': notes
+      },
+      status: 'AGENDADO',
+      createdBy: 'admin'
+    };
+    appointments.push(newAppt);
+    localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+
+    alert(`✅ Agendamento criado!\nSenha: ${senhaPrefix}\nCódigo: ${validationCode}`);
+    clearManualForm();
+    switchDashTab('agendamentos');
+    loadAppointments();
+  }
+
+  function clearManualForm() {
+    document.getElementById('manual-nome').value = '';
+    document.getElementById('manual-cpf').value = '';
+    document.getElementById('manual-phone').value = '';
+    document.getElementById('manual-email').value = '';
+    document.getElementById('manual-date').value = '';
+    document.getElementById('manual-time').innerHTML = '<option value="">Selecione uma data primeiro</option>';
+    document.getElementById('manual-notes').value = '';
+  }
+
+  // ==========================================
+  // CANCEL APPOINTMENTS (Desmarcar)
+  // ==========================================
+
+  function loadCancellableAppointments() {
+    const list = document.getElementById('cancellable-appointments-list');
+    list.innerHTML = '';
+
+    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const dateFilter = document.getElementById('desmarcar-date-filter').value;
+
+    const filtered = allAppts.filter(a => {
+      if(adminSession !== 'super' && a.deptId !== adminSession) return false;
+      if(dateFilter && a.date !== dateFilter) return false;
+      return a.status === 'AGENDADO'; // Only show scheduled appointments
+    });
+
+    if(filtered.length === 0) {
+      list.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--gray-500); background: white; border-radius: 12px;">Nenhum agendamento ativo para esta data.</div>';
+      return;
+    }
+
+    filtered.forEach((a, idx) => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background: white; border-radius: 12px; padding: 16px; border-left: 4px solid ' + DEPARTMENTS[a.deptId].color + '; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);';
+
+      const nameKey = Object.keys(a.data).find(k => k.toLowerCase().includes('nome')) || Object.keys(a.data)[0];
+      const name = a.data[nameKey] || 'Sem nome';
+
+      card.innerHTML = `
+        <div>
+          <div style="font-weight: 700; font-size: 16px;">${a.senha}</div>
+          <div style="color: var(--gray-600); font-size: 14px;">${name} | ${a.time}</div>
+        </div>
+        <button class="form-btn form-btn-danger" onclick="cancelAppointment('${a.id}')" style="background: #EF4444; color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 6px;">Desmarcar</button>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function cancelAppointment(apptId) {
+    if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return;
+
+    let allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const idx = allAppts.findIndex(a => a.id === apptId);
+
+    if(idx !== -1) {
+      allAppts.splice(idx, 1);
+      localStorage.setItem('cadeia_appointments', JSON.stringify(allAppts));
+      alert('✅ Agendamento cancelado com sucesso.');
+      loadCancellableAppointments();
+    }
+  }
+
+  // ==========================================
+  // EDIT APPOINTMENTS (Editar)
+  // ==========================================
+
+  function loadEditableAppointments() {
+    const list = document.getElementById('editable-appointments-list');
+    list.innerHTML = '';
+
+    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const dateFilter = document.getElementById('editar-date-filter').value;
+
+    const filtered = allAppts.filter(a => {
+      if(adminSession !== 'super' && a.deptId !== adminSession) return false;
+      if(dateFilter && a.date !== dateFilter) return false;
+      return a.status === 'AGENDADO';
+    });
+
+    if(filtered.length === 0) {
+      list.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--gray-500); background: white; border-radius: 12px;">Nenhum agendamento para editar nesta data.</div>';
+      return;
+    }
+
+    filtered.forEach((a, idx) => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background: white; border-radius: 12px; padding: 16px; border-left: 4px solid ' + DEPARTMENTS[a.deptId].color + '; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);';
+
+      const nameKey = Object.keys(a.data).find(k => k.toLowerCase().includes('nome')) || Object.keys(a.data)[0];
+      const name = a.data[nameKey] || 'Sem nome';
+
+      card.innerHTML = `
+        <div>
+          <div style="font-weight: 700; font-size: 16px;">${a.senha}</div>
+          <div style="color: var(--gray-600); font-size: 14px;">${name} | ${a.time}</div>
+        </div>
+        <button class="form-btn form-btn-primary" onclick="editAppointment('${a.id}')" style="background: var(--cc-cyan); color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 6px;">Editar</button>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  let editingApptId = null;
+
+  function editAppointment(apptId) {
+    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const appt = allAppts.find(a => a.id === apptId);
+
+    if (!appt) return;
+
+    editingApptId = apptId;
+
+    const nameKey = Object.keys(appt.data).find(k => k.toLowerCase().includes('nome')) || Object.keys(appt.data)[0];
+    const phoneKey = Object.keys(appt.data).find(k => k.toLowerCase().includes('telefone')) || 'Telefone';
+    const emailKey = Object.keys(appt.data).find(k => k.toLowerCase().includes('e-mail')) || 'E-mail';
+
+    document.getElementById('edit-nome').value = appt.data[nameKey] || '';
+    document.getElementById('edit-phone').value = appt.data[phoneKey] || '';
+    document.getElementById('edit-email').value = appt.data[emailKey] || '';
+    document.getElementById('edit-notes').value = appt.data['Observações'] || '';
+
+    // Load time slots
+    const dept = DEPARTMENTS[adminSession];
+    let currentMin = dept.startHour * 60;
+    const endMin = dept.endHour * 60;
+    const slots = [];
+    const sessionMins = dept.durationHours * 60;
+
+    while(currentMin + sessionMins <= endMin) {
+      const startStr = formatMin(currentMin);
+      const endStr = formatMin(currentMin + sessionMins);
+      slots.push(`${startStr} - ${endStr}`);
+      currentMin += sessionMins + dept.bufferMinutes;
+    }
+
+    const timeSelect = document.getElementById('edit-time');
+    timeSelect.innerHTML = '';
+    slots.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.innerText = s;
+      if (s === appt.time) opt.selected = true;
+      timeSelect.appendChild(opt);
+    });
+
+    document.getElementById('edit-appointment-form').style.display = 'block';
+  }
+
+  function saveEditedAppointment() {
+    const nome = document.getElementById('edit-nome').value.trim();
+    const phone = document.getElementById('edit-phone').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    const time = document.getElementById('edit-time').value;
+    const notes = document.getElementById('edit-notes').value.trim();
+
+    if (!nome) { alert('Nome obrigatório.'); return; }
+    if (!phone) { alert('Telefone obrigatório.'); return; }
+    if (!time) { alert('Horário obrigatório.'); return; }
+
+    let allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const idx = allAppts.findIndex(a => a.id === editingApptId);
+
+    if(idx !== -1) {
+      allAppts[idx].data['Nome Completo'] = nome;
+      allAppts[idx].data['Telefone'] = phone;
+      allAppts[idx].data['E-mail'] = email;
+      allAppts[idx].data['Observações'] = notes;
+      allAppts[idx].time = time;
+      localStorage.setItem('cadeia_appointments', JSON.stringify(allAppts));
+      alert('✅ Agendamento atualizado com sucesso.');
+      cancelEditAppointment();
+      loadEditableAppointments();
+    }
+  }
+
+  function cancelEditAppointment() {
+    document.getElementById('edit-appointment-form').style.display = 'none';
+    editingApptId = null;
+  }
+
+  // ==========================================
+  // OPERATING HOURS (Horários)
+  // ==========================================
+
+  function loadOperatingHours() {
+    const dept = DEPARTMENTS[adminSession];
+    const abertura = `0${dept.startHour}:00`.slice(-5);
+    const fechamento = `0${dept.endHour}:00`.slice(-5);
+
+    document.getElementById('horario-abertura').value = abertura;
+    document.getElementById('horario-fechamento').value = fechamento;
+  }
+
+  function saveOperatingHours() {
+    const abertura = document.getElementById('horario-abertura').value;
+    const fechamento = document.getElementById('horario-fechamento').value;
+
+    if (!abertura || !fechamento) {
+      alert('Preencha os horários.');
+      return;
+    }
+
+    let horarios = JSON.parse(localStorage.getItem('cadeia_horarios') || '{}');
+    horarios[adminSession] = {
+      abertura: abertura,
+      fechamento: fechamento
+    };
+    localStorage.setItem('cadeia_horarios', JSON.stringify(horarios));
+    alert('✅ Horários salvos com sucesso.');
+  }
+
+  function resetOperatingHours() {
+    const dept = DEPARTMENTS[adminSession];
+    const abertura = `0${dept.startHour}:00`.slice(-5);
+    const fechamento = `0${dept.endHour}:00`.slice(-5);
+
+    document.getElementById('horario-abertura').value = abertura;
+    document.getElementById('horario-fechamento').value = fechamento;
+  }
+
+  // ==========================================
+  // DASHBOARD STATISTICS
+  // ==========================================
+
+  function loadDashboardStats() {
+    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const today = new Date().toISOString().split('T')[0];
+
+    let filtered = allAppts;
+    if(adminSession !== 'super') {
+      filtered = allAppts.filter(a => a.deptId === adminSession);
+    }
+
+    const total = filtered.length;
+    const todayAppts = filtered.filter(a => a.date === today).length;
+    const noShows = filtered.filter(a => a.status === 'NAO_COMPARECEU').length;
+
+    // Calculate occupancy (approximation)
+    const allSlots = filtered.reduce((acc, a) => {
+      const dept = DEPARTMENTS[a.deptId];
+      let current = dept.startHour * 60;
+      const end = dept.endHour * 60;
+      while(current + (dept.durationHours * 60) <= end) {
+        acc++;
+        current += (dept.durationHours * 60) + dept.bufferMinutes;
+      }
+      return acc;
+    }, 0);
+
+    const occupancy = allSlots > 0 ? Math.round((total / allSlots) * 100) : 0;
+
+    document.getElementById('stat-total').innerText = total;
+    document.getElementById('stat-today').innerText = todayAppts;
+    document.getElementById('stat-noshow').innerText = noShows;
+    document.getElementById('stat-occupancy').innerText = occupancy + '%';
+
+    // Display recent appointments
+    const recent = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+    const recentContainer = document.getElementById('dashboard-recent-appointments');
+    recentContainer.innerHTML = '';
+
+    if(recent.length === 0) {
+      recentContainer.innerHTML = '<div style="color: var(--gray-500); text-align: center; padding: 20px;">Nenhum agendamento registrado.</div>';
+      return;
+    }
+
+    recent.forEach(a => {
+      const nameKey = Object.keys(a.data).find(k => k.toLowerCase().includes('nome')) || Object.keys(a.data)[0];
+      const name = a.data[nameKey] || 'Sem nome';
+
+      const div = document.createElement('div');
+      div.style.cssText = 'padding: 12px; border-radius: 8px; background: var(--gray-50); display: flex; justify-content: space-between; align-items: center;';
+      div.innerHTML = `
+        <div>
+          <div style="font-weight: 600; color: var(--gray-900);">${name}</div>
+          <div style="font-size: 13px; color: var(--gray-600);">${a.senha} | ${a.time} | ${a.date}</div>
+        </div>
+        <span style="background: ${a.status === 'VALIDADO' ? 'var(--success)' : 'var(--gray-300)'}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">${a.status}</span>
+      `;
+      recentContainer.appendChild(div);
+    });
   }
 
   // ==========================================
