@@ -2638,6 +2638,36 @@
     </div>
   </footer>
 
+  <!-- CONSENT GATE MODAL (pop-up de consentimento — Termos, Privacidade e LGPD) -->
+  <div class="form-overlay" id="consent-gate-modal" style="display: none; z-index: 10000;">
+    <div class="form-container" style="max-width: 520px; max-height: 90vh; overflow-y: auto;">
+      <div class="form-header" style="text-align: center; padding: 24px 24px 8px;">
+        <div style="font-size: 40px; margin-bottom: 8px;">🔐</div>
+        <h2 style="margin: 0;">Consentimento e Privacidade</h2>
+        <p class="subtitle" style="margin-top: 8px;">Para usar a Agenda da Cadeia Criativa, precisamos do seu consentimento. É rápido e garante a segurança jurídica dos seus dados (LGPD - Lei nº 13.709/2018).</p>
+      </div>
+      <div class="form-body" style="padding: 8px 24px 16px;">
+        <label style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="consent-terms" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+          <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito os Termos de Uso e Orientações</strong><br><small style="color: var(--gray-600);">Li e concordo com as regras de uso dos espaços e agendamentos.</small></span>
+        </label>
+        <label style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="consent-lgpd" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+          <span style="font-size: 14px; color: var(--gray-800);"><strong>Consinto o tratamento dos meus dados (LGPD)</strong><br><small style="color: var(--gray-600);">Autorizo o tratamento de meus dados pessoais conforme a Lei nº 13.709/2018.</small></span>
+        </label>
+        <label style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 4px; cursor: pointer;">
+          <input type="checkbox" id="consent-privacy" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+          <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito a Política de Privacidade</strong><br><small style="color: var(--gray-600);">Li e compreendi a <a href="javascript:void(0);" onclick="openPrivacyPolicy()" style="color: var(--cc-cyan); text-decoration: underline; font-weight: 500;">Política de Privacidade completa</a>.</small></span>
+        </label>
+        <div id="consent-gate-error" style="color: var(--error); font-size: 13px; margin-top: 10px; display: none;">Você precisa aceitar os três itens para continuar.</div>
+      </div>
+      <div class="form-footer" style="padding: 8px 24px 24px;">
+        <button class="form-btn form-btn-primary" style="width: 100%; background: var(--cc-navy);" onclick="acceptConsentGate()">Aceitar e continuar</button>
+        <p style="text-align: center; font-size: 11px; color: var(--gray-500); margin-top: 12px;">Seu consentimento é registrado com data e hora para sua segurança jurídica.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- PRIVACY POLICY MODAL -->
   <div class="form-overlay" id="privacy-policy-modal" style="display: none;">
     <div class="form-container" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
@@ -4636,6 +4666,93 @@
     document.body.style.overflow = '';
   }
 
+  // ==========================================
+  // CONSENTIMENTO / LGPD — pop-up + registro na infra (segurança jurídica)
+  // ==========================================
+  const CONSENT_VERSION = '1.0'; // Ao mudar as políticas, incremente para re-solicitar consentimento
+
+  // Registra o consentimento no "livro" de consentimentos (infra): localStorage +
+  // tentativa best-effort no Supabase. Cada registro tem data/hora, origem e versão.
+  async function recordConsent(source) {
+    const record = {
+      id: 'consent_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      source: source,                         // 'gate' (pop-up inicial) ou 'formulario'
+      version: CONSENT_VERSION,
+      terms: true,
+      lgpd: true,
+      privacy_policy: true,
+      user_id: (typeof userSession !== 'undefined' && userSession) ? userSession.id : null,
+      user_email: (typeof userSession !== 'undefined' && userSession) ? userSession.email : null,
+      user_agent: navigator.userAgent,
+      accepted_at: new Date().toISOString()
+    };
+
+    // 1) Registro local (sempre disponível — prova de consentimento no dispositivo)
+    try {
+      const ledger = JSON.parse(localStorage.getItem('cadeia_consents') || '[]');
+      ledger.push(record);
+      localStorage.setItem('cadeia_consents', JSON.stringify(ledger.slice(-500)));
+    } catch (e) { console.warn('Falha ao registrar consentimento local:', e); }
+
+    // 2) Registro na infra (Supabase) — best-effort, não bloqueia o usuário
+    try {
+      if (supabaseClient) {
+        await supabaseClient.from('consents').insert([record]);
+      }
+    } catch (e) { console.warn('Consentimento não sincronizado com Supabase (tabela opcional):', e); }
+
+    return record;
+  }
+
+  function acceptConsentGate() {
+    const terms = document.getElementById('consent-terms').checked;
+    const lgpd = document.getElementById('consent-lgpd').checked;
+    const privacy = document.getElementById('consent-privacy').checked;
+    const err = document.getElementById('consent-gate-error');
+
+    if (!terms || !lgpd || !privacy) {
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+
+    recordConsent('gate');
+    try {
+      localStorage.setItem('cadeia_consent_accepted', JSON.stringify({ version: CONSENT_VERSION, at: new Date().toISOString() }));
+    } catch (e) { /* ignore */ }
+
+    closeConsentGate();
+  }
+
+  function closeConsentGate() {
+    const modal = document.getElementById('consent-gate-modal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Mostra o pop-up de consentimento se ainda não foi aceito nesta versão/dispositivo
+  function showConsentGateIfNeeded() {
+    const modal = document.getElementById('consent-gate-modal');
+    if (!modal) return;
+    let accepted = null;
+    try { accepted = JSON.parse(localStorage.getItem('cadeia_consent_accepted') || 'null'); } catch (e) {}
+    if (accepted && accepted.version === CONSENT_VERSION) return; // já consentiu nesta versão
+
+    ['consent-terms', 'consent-lgpd', 'consent-privacy'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.checked = false;
+    });
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // Pequeno atraso para o pop-up aparecer após o carregamento inicial
+    setTimeout(showConsentGateIfNeeded, 600);
+  });
+
   // Close modal when clicking outside
   document.addEventListener('DOMContentLoaded', () => {
     const privacyModal = document.getElementById('privacy-policy-modal');
@@ -4834,6 +4951,9 @@
       return;
     }
 
+    // Registra o consentimento na infra (livro de consentimentos) — segurança jurídica
+    recordConsent('formulario');
+
     // Generate Codes
     const dept = DEPARTMENTS[currentDeptId];
 
@@ -4897,6 +5017,7 @@
           guidelines: true,
           lgpd: true,
           privacy_policy: true,
+          version: CONSENT_VERSION,
           accepted_at: new Date().toISOString()
         }
       };
