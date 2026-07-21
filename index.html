@@ -2331,12 +2331,21 @@
       </div>
       <div class="form-body">
         <div class="form-group">
-          <label class="form-label">E-mail Institucional</label>
-          <input type="email" class="form-input" id="admin-email" placeholder="exemplo@cadeia.criativa">
+          <label class="form-label">Departamento/Setor</label>
+          <select class="form-input" id="admin-dept" style="cursor: pointer;">
+            <option value="">-- Selecione seu departamento --</option>
+            <option value="studio">Studio de Gravação</option>
+            <option value="sebrae">Sebrae Labs</option>
+            <option value="coworking">Coworking</option>
+            <option value="auditorio">Auditório</option>
+            <option value="secitece">SECITECE</option>
+            <option value="atrio">Átrio</option>
+            <option value="super">Super Administrador</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" class="form-input" id="admin-senha">
+          <input type="password" class="form-input" id="admin-senha" placeholder="Digite sua senha">
         </div>
         <div id="admin-login-error" style="color: var(--error); font-size: 13px; margin-top: 12px; display: none;">Credenciais inválidas.</div>
       </div>
@@ -2999,21 +3008,33 @@
   }
   
   function doAdminLogin() {
-    const email = document.getElementById('admin-email').value;
+    const deptId = document.getElementById('admin-dept').value;
     const pass = document.getElementById('admin-senha').value;
     const err = document.getElementById('admin-login-error');
-    
-    if(email === 'super@cadeia.criativa' && pass === 'super123') {
-       adminSession = 'super';
-    } else {
-       const match = Object.values(DEPARTMENTS).find(d => email === `${d.id}@cadeia.criativa` && pass === 'admin123');
-       if(match) adminSession = match.id;
-       else {
-         err.style.display = 'block';
-         return;
-       }
+
+    // Validação
+    if(!deptId) {
+      err.innerText = 'Selecione um departamento.';
+      err.style.display = 'block';
+      return;
     }
-    
+
+    if(!pass) {
+      err.innerText = 'Digite a senha.';
+      err.style.display = 'block';
+      return;
+    }
+
+    // Validar senha (super admin: super123, outros: admin123)
+    const correctPass = (deptId === 'super') ? 'super123' : 'admin123';
+    if(pass !== correctPass) {
+      err.innerText = 'Senha incorreta.';
+      err.style.display = 'block';
+      return;
+    }
+
+    // Login bem-sucedido
+    adminSession = deptId;
     err.style.display = 'none';
     closeAdminLogin();
     openAdminDash();
