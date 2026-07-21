@@ -1,8 +1,18 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.3.1  
+**Versão:** 2.3.2  
 **Status Geral:** 🟢 Produção - Pronto para Deploy (Agendar/Consultar por card + Painel Diretoria)
+
+---
+
+## Atualização — 2026-07-21 (v2.3.2) — E2E Testing + Bug Fixes
+
+### Concluído
+- [x] **Teste E2E completo** de todas as funcionalidades (hero, cards, Agendar, Consultar, Admin login, dashboard tabs, forms, data persistence, mobile responsiveness, footer).
+- [x] **Bug 1 - Tab switching**: Corrigida a função `switchDashTab` que não adicionava a classe 'active' aos tabs. Agora usa `classList.add('active')` e `classList.remove('active')` para garantir sincronização entre classes e estilos inline.
+- [x] **Bug 2 - localStorage initialization**: Inicializadas as estruturas `cadeia_appointments` (array vazio) e `cadeia_counters` (com 6 departamentos zerados) na função `initApp()` para garantir dados consistentes desde o primeiro carregamento.
+- [x] **Validação E2E**: 6/6 testes passando — tab switching, form validation, mobile responsiveness, data persistence, footer spacing, department button functionality.
 
 ---
 

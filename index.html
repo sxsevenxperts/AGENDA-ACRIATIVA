@@ -2899,7 +2899,19 @@
       });
       localStorage.setItem('cadeia_departments', JSON.stringify(config));
     }
-    
+
+    // Initialize appointments and counters if not present
+    if (!localStorage.getItem('cadeia_appointments')) {
+      localStorage.setItem('cadeia_appointments', JSON.stringify([]));
+    }
+    if (!localStorage.getItem('cadeia_counters')) {
+      const initialCounters = {};
+      Object.keys(DEPARTMENTS).forEach(key => {
+        initialCounters[key] = 0;
+      });
+      localStorage.setItem('cadeia_counters', JSON.stringify(initialCounters));
+    }
+
     // Os cards usam botões dedicados (Agendar / Consultar); não há mais clique no card inteiro
     // para evitar disparo duplo (ex.: "Consultar" abrindo o formulário de agendamento por cima).
 
@@ -2907,7 +2919,7 @@
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     document.getElementById('dynamic-date').min = tomorrow.toISOString().split('T')[0];
-    
+
     // Apply Masks dynamically to inputs
     setupMasks();
   }
@@ -3480,11 +3492,13 @@
 
   function switchDashTab(tabId) {
     document.querySelectorAll('.dash-tab').forEach(el => {
+      el.classList.remove('active');
       el.style.borderBottomColor = 'transparent';
       el.style.color = 'var(--gray-500)';
       el.style.fontWeight = '500';
     });
     const activeTab = document.getElementById('tab-' + tabId);
+    activeTab.classList.add('active');
     activeTab.style.borderBottomColor = 'var(--cc-cyan)';
     activeTab.style.color = 'var(--cc-navy)';
     activeTab.style.fontWeight = '600';

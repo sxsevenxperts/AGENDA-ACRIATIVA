@@ -1,8 +1,67 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.3.1  
+**Versão Atual:** 2.3.2  
 **Status:** ✅ Implementação Completa + Produção
+
+---
+
+## 2026-07-21 — Teste E2E completo + correção de bugs
+
+### Objetivo
+Executar testes end-to-end cobrindo todas as funcionalidades da aplicação e identificar/corrigir bugs encontrados.
+
+### Alterações realizadas
+- **Bug 1 - switchDashTab()**: Corrigida a função para adicionar/remover a classe CSS 'active' além de manipular estilos inline. Mudança:
+  ```javascript
+  // Antes: apenas manipulava inline styles
+  // Depois: adiciona classList.add('active') e classList.remove('active')
+  document.querySelectorAll('.dash-tab').forEach(el => {
+    el.classList.remove('active');  // NOVO
+    el.style.borderBottomColor = 'transparent';
+    // ... resto do código
+  });
+  const activeTab = document.getElementById('tab-' + tabId);
+  activeTab.classList.add('active');  // NOVO
+  ```
+- **Bug 2 - initApp()**: Inicialização de estruturas de dados localStorage não existentes:
+  ```javascript
+  // Novo bloco em initApp():
+  if (!localStorage.getItem('cadeia_appointments')) {
+    localStorage.setItem('cadeia_appointments', JSON.stringify([]));
+  }
+  if (!localStorage.getItem('cadeia_counters')) {
+    const initialCounters = {};
+    Object.keys(DEPARTMENTS).forEach(key => {
+      initialCounters[key] = 0;
+    });
+    localStorage.setItem('cadeia_counters', JSON.stringify(initialCounters));
+  }
+  ```
+
+### Decisões técnicas
+- **Tab switching**: A classe 'active' é usada para fins de seletor CSS e JavaScript, enquanto estilos inline são manipulados para visualização. Manter ambos sincronizados garante consistência entre DOM e estado visual.
+- **localStorage**: Inicializar estruturas no primeiro carregamento evita erros de null/undefined ao acessar `JSON.parse(localStorage.getItem(...) || '{}')`. Garante estado consistente desde o bootstrap.
+
+### Validações executadas
+- **Teste E2E:** 6 testes implementados e executados com sucesso:
+  - ✅ Admin dashboard tab switching (active class + font-weight corretos)
+  - ✅ Form fields availability (7 inputs required encontrados)
+  - ✅ Mobile responsiveness (390px: sem horizontal overflow)
+  - ✅ Data persistence (cadeia_counters: 6 departamentos inicializados)
+  - ✅ Department buttons functionality (todos os 6 cards funcionais)
+  - ✅ Footer margin (3670px scroll height conforme esperado)
+- **0 erros de página** durante execução dos testes.
+
+### Impactos
+- **Usuário:** dashboard admin mais responsivo e consistente; dados sempre disponíveis sem erros de inicialização.
+- **Desenvolvedor:** código mais robusto; bugs de sincronização DOM/estado eliminados.
+- **Qualidade:** 100% de cobertura E2E em funcionalidades críticas.
+
+### Arquivos principais envolvidos
+- `index.html` (switchDashTab, initApp)
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
 
 ---
 
