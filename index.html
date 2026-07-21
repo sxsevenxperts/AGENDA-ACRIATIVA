@@ -2234,6 +2234,44 @@
         </div>
       </div>
 
+      <!-- LINK LAB -->
+      <div class="dept-card" data-dept="linklab">
+        <div class="dept-card-header">
+          <div class="dept-icon"><i class="ph ph-flask" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-name">Link Lab</div>
+          <div class="dept-desc">Laboratório de inovação e prototipagem para empreendedores e projetos criativos.</div>
+        </div>
+        <div class="dept-card-footer">
+          <div class="dept-meta">
+            <div class="dept-meta-item">⏱ 2h por sessão</div>
+            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
+          </div>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('linklab')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('linklab')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SALA DE TREINAMENTO -->
+      <div class="dept-card" data-dept="salatreinamento">
+        <div class="dept-card-header">
+          <div class="dept-icon"><i class="ph ph-book" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-name">Sala de Treinamento</div>
+          <div class="dept-desc">Espaço para treinamentos, workshops e capacitações com estrutura completa.</div>
+        </div>
+        <div class="dept-card-footer">
+          <div class="dept-meta">
+            <div class="dept-meta-item">⏱ 2h por sessão</div>
+            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
+          </div>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('salatreinamento')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('salatreinamento')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ÁTRIO -->
       <div class="dept-card" data-dept="atrio">
         <div class="dept-card-header">
@@ -2718,11 +2756,10 @@
         <div class="form-group">
           <label class="form-label">Departamento/Setor</label>
           <select class="form-input" id="admin-dept" style="cursor: pointer;">
-            <option value="">-- Selecione seu departamento --</option>
-            <option value="musica">Stúdio de Música - Silton</option>
-            <option value="coworking">Coworking</option>
-            <option value="linklab">Link Lab</option>
-            <option value="super">🏛️ Diretoria / Administração Geral</option>
+            <option value="">-- Selecione seu acesso --</option>
+            <option value="super">🏛️ ADM Diretoria</option>
+            <option value="articulacao">📋 ADM Articulação e Conectividade</option>
+            <option value="musica">🎵 ADM Stúdio Musical</option>
           </select>
         </div>
         <div class="form-group">
@@ -2966,6 +3003,15 @@
           <div id="dashboard-dept-breakdown" style="display: none; margin-bottom: 32px;">
             <h4 style="margin: 0 0 16px 0;">Compilado por Departamento</h4>
             <div id="dept-breakdown-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Trilha de Auditoria (Coordenação e Diretoria) — quem criou/editou/cancelou/validou -->
+          <div id="dashboard-audit-log-box" style="display: none; background: white; padding: 24px; border-radius: 12px; margin-bottom: 32px;">
+            <h4 style="margin-top: 0;">📝 Trilha de Auditoria — Últimas Ações</h4>
+            <p class="subtitle" style="margin-top: -8px; margin-bottom: 16px;">Registro de quem criou, editou, cancelou ou validou cada agendamento.</p>
+            <div id="dashboard-audit-log" style="display: grid; gap: 8px;">
               <!-- Rendered via JS -->
             </div>
           </div>
@@ -3218,6 +3264,48 @@
     }
   };
 
+  // ==========================================
+  // PAPÉIS DE ACESSO ADMINISTRATIVO (login)
+  // Não são departamentos — definem QUEM acessa e QUAIS departamentos gerencia
+  // ==========================================
+  const ADMIN_ROLES = {
+    // Silton — gestor exclusivo do Stúdio de Música
+    'musica': {
+      label: 'ADM Stúdio Musical — Silton',
+      loginGroup: 'musica',
+      manager: 'Silton',
+      depts: ['musica'],
+      passwords: ['Studio!Silton2026']
+    },
+    // Joyla — Coordenação ADM (Articulação e Conectividade), vê a auditoria da assistente
+    'coordenadora': {
+      label: 'ADM Articulação e Conectividade — Coordenação (Joyla)',
+      loginGroup: 'articulacao',
+      manager: 'Joyla',
+      depts: ['coworking', 'linklab', 'salatreinamento', 'atrio'],
+      passwords: ['Artic!Joyla2026'],
+      canAudit: true
+    },
+    // Assistente — mesma coordenação da Joyla (ações registradas para Joyla acompanhar)
+    'assistente': {
+      label: 'ADM Articulação e Conectividade — Assistente',
+      loginGroup: 'articulacao',
+      manager: 'Assistente',
+      depts: ['coworking', 'linklab', 'salatreinamento', 'atrio'],
+      passwords: ['Artic!Assist2026']
+    },
+    // Joyce — Diretoria ADM: consolida TODOS os departamentos e dados gerais
+    'super': {
+      label: 'ADM Diretoria — Joyce',
+      loginGroup: 'super',
+      manager: 'Joyce',
+      depts: ['coworking', 'linklab', 'salatreinamento', 'atrio', 'musica'],
+      passwords: ['Diretoria!Joyce2026'],
+      isDiretoria: true,
+      canAudit: true
+    }
+  };
+
   // Default Questions - Unified form for all departments
   const DEFAULT_QUESTIONS = {
     'coworking': [
@@ -3327,6 +3415,87 @@
   let supabaseClient = null;
   let userSession = null; // { id, email, name, phone, token }
   let authMode = 'signup'; // 'signup' or 'login'
+
+  // ==========================================
+  // HELPERS DE ACESSO POR PAPEL (role-based access)
+  // ==========================================
+
+  // Departamentos que a sessão atual pode acessar
+  function getSessionDepts() {
+    if (!adminSession) return [];
+    const role = ADMIN_ROLES[adminSession];
+    if (role) return role.depts;
+    return DEPARTMENTS[adminSession] ? [adminSession] : [];
+  }
+
+  // A sessão atual pode acessar este departamento?
+  function canAccessDept(deptId) {
+    return getSessionDepts().includes(deptId);
+  }
+
+  // A sessão gerencia mais de um departamento? (mostra seletor de departamento)
+  function isMultiDept() {
+    return getSessionDepts().length > 1;
+  }
+
+  // A sessão pode ver a trilha de auditoria (quem criou/editou/cancelou)?
+  function canAuditActions() {
+    const role = ADMIN_ROLES[adminSession];
+    return !!(role && role.canAudit);
+  }
+
+  // A sessão é a Diretoria (visão geral consolidada)?
+  function isDiretoria() {
+    const role = ADMIN_ROLES[adminSession];
+    return !!(role && role.isDiretoria);
+  }
+
+  // Nome identificável de quem está operando (registro de auditoria)
+  function getOperatorName() {
+    const role = ADMIN_ROLES[adminSession];
+    return role ? role.manager : 'Administrador';
+  }
+
+  // Rótulo exibido no cabeçalho do painel
+  function getSessionLabel() {
+    const role = ADMIN_ROLES[adminSession];
+    if (role) return role.label;
+    if (DEPARTMENTS[adminSession]) return DEPARTMENTS[adminSession].name;
+    return 'Administrador';
+  }
+
+  // Preenche um <select> com apenas os departamentos acessíveis pela sessão
+  function populateDeptSelect(selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Selecione o departamento</option>';
+    getSessionDepts().forEach(id => {
+      if (!DEPARTMENTS[id]) return;
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.innerText = DEPARTMENTS[id].name;
+      sel.appendChild(opt);
+    });
+    if (current && getSessionDepts().includes(current)) sel.value = current;
+  }
+
+  // Registra uma ação na trilha de auditoria (para Coordenação e Diretoria acompanharem)
+  function logAudit(action, appt) {
+    try {
+      const log = JSON.parse(localStorage.getItem('cadeia_audit') || '[]');
+      log.unshift({
+        action: action,                    // 'Criou', 'Editou', 'Cancelou', 'Validou'
+        operator: getOperatorName(),       // ex.: 'Joyla', 'Assistente', 'Silton', 'Joyce'
+        role: adminSession,
+        senha: appt.senha || '',
+        deptId: appt.deptId || '',
+        apptId: appt.id || '',
+        at: new Date().toISOString()
+      });
+      localStorage.setItem('cadeia_audit', JSON.stringify(log.slice(0, 200)));
+    } catch (e) { console.warn('Falha ao registrar auditoria:', e); }
+  }
 
   // ==========================================
   // SUPABASE INTEGRATION
@@ -4030,16 +4199,21 @@
     }
 
     const storedConfig = localStorage.getItem('cadeia_departments');
-    if (storedConfig) {
-      config = JSON.parse(storedConfig);
-    } else {
-      // Build initial config from defaults
-      Object.keys(DEPARTMENTS).forEach(key => {
+    config = storedConfig ? JSON.parse(storedConfig) : {};
+
+    // Garante que TODOS os departamentos atuais tenham config — mesmo p/ usuários com
+    // localStorage antigo (que não tinha Link Lab / Sala de Treinamento / Stúdio de Música).
+    let configChanged = false;
+    Object.keys(DEPARTMENTS).forEach(key => {
+      if (!config[key]) {
         config[key] = {
           questions: DEFAULT_QUESTIONS[key] || DEFAULT_QUESTIONS['coworking'],
           orientacoes: DEPARTMENTS[key].defaultOrientacoes
         };
-      });
+        configChanged = true;
+      }
+    });
+    if (!storedConfig || configChanged) {
       localStorage.setItem('cadeia_departments', JSON.stringify(config));
     }
 
@@ -4103,8 +4277,11 @@
     formData = {};
     
     const deptInfo = DEPARTMENTS[deptId];
-    const deptConfig = config[deptId];
-    
+    const deptConfig = config[deptId] || {
+      questions: DEFAULT_QUESTIONS[deptId] || DEFAULT_QUESTIONS['coworking'],
+      orientacoes: (DEPARTMENTS[deptId] || {}).defaultOrientacoes || ''
+    };
+
     // Update UI Header
     document.getElementById('dynamic-badge').style.background = `rgba(${hexToRgb(deptInfo.color)}, 0.1)`;
     document.getElementById('dynamic-badge').style.color = deptInfo.color;
@@ -4136,7 +4313,7 @@
     generateTimeSlots();
     
     // Show Admin Controls if logged in
-    document.getElementById('admin-controls').style.display = (adminSession === deptId || adminSession === 'super') ? 'block' : 'none';
+    document.getElementById('admin-controls').style.display = canAccessDept(deptId) ? 'block' : 'none';
     document.getElementById('edit-mode-add-btn').style.display = 'none';
     
     // Show Step 1
@@ -4711,14 +4888,9 @@
   }
   
   async function getValidPasswordsForDept(deptId) {
-    let defaultPasswords;
-    if (deptId === 'super') {
-      defaultPasswords = ['diretoria123', 'super123'];
-    } else if (deptId === 'musica') {
-      defaultPasswords = ['musica123', 'admin123'];
-    } else {
-      defaultPasswords = ['admin123'];
-    }
+    // deptId aqui é o ID do PAPEL de acesso (musica, coordenadora, assistente, super)
+    const role = ADMIN_ROLES[deptId];
+    let defaultPasswords = role ? [...role.passwords] : ['admin123'];
 
     // Tenta buscar do Supabase primeiro (prioridade alta)
     if (supabaseClient) {
@@ -4734,16 +4906,30 @@
     return customPassword ? [customPassword, ...defaultPasswords] : defaultPasswords;
   }
 
+  // Resolve o PAPEL efetivo a partir do grupo escolhido no dropdown + senha.
+  // "articulacao" distingue Coordenação (Joyla) x Assistente pela senha.
+  async function resolveRoleFromLogin(selectedGroup, pass) {
+    // Candidatos: papéis cujo loginGroup corresponde ao grupo selecionado
+    const candidates = Object.keys(ADMIN_ROLES).filter(
+      roleId => ADMIN_ROLES[roleId].loginGroup === selectedGroup
+    );
+    for (const roleId of candidates) {
+      const validPasswords = await getValidPasswordsForDept(roleId);
+      if (validPasswords.includes(pass)) return roleId;
+    }
+    return null;
+  }
+
   async function doAdminLogin() {
-    const deptId = document.getElementById('admin-dept').value;
+    const selectedGroup = document.getElementById('admin-dept').value;
     const pass = document.getElementById('admin-senha').value;
     const err = document.getElementById('admin-login-error');
     const btn = document.querySelector('#form-admin-login .form-btn-primary');
     const originalText = btn.innerText;
 
     // Validação
-    if(!deptId) {
-      err.innerText = 'Selecione um departamento.';
+    if(!selectedGroup) {
+      err.innerText = 'Selecione seu acesso.';
       err.style.display = 'block';
       return;
     }
@@ -4759,9 +4945,9 @@
     btn.disabled = true;
 
     try {
-      // Validar senha (verifica Supabase primeiro, depois localStorage, depois padrões)
-      const validPasswords = await getValidPasswordsForDept(deptId);
-      if(!validPasswords.includes(pass)) {
+      // Resolve o papel efetivo (verifica Supabase, localStorage e padrões por senha)
+      const resolvedRole = await resolveRoleFromLogin(selectedGroup, pass);
+      if(!resolvedRole) {
         err.innerText = 'Senha incorreta.';
         err.style.display = 'block';
         btn.innerText = originalText;
@@ -4770,7 +4956,7 @@
       }
 
       // Login bem-sucedido
-      adminSession = deptId;
+      adminSession = resolvedRole;
       err.style.display = 'none';
       btn.innerText = originalText;
       btn.disabled = false;
@@ -4787,7 +4973,7 @@
   
   function openAdminDash() {
     document.getElementById('form-admin-dash').classList.add('active');
-    document.getElementById('dash-dept-name').innerText = adminSession === 'super' ? 'Diretoria — Visão Geral' : DEPARTMENTS[adminSession].name;
+    document.getElementById('dash-dept-name').innerText = getSessionLabel();
 
     // Default to today
     document.getElementById('dash-date-filter').value = new Date().toISOString().split('T')[0];
@@ -4932,8 +5118,8 @@
   let editingQuestionId = null;
 
   function loadQuestionsEditor() {
-    const deptId = adminSession === 'super' ? (document.getElementById('manual-dept-select')?.value || currentDeptId) : adminSession;
-    if (!config[deptId]) return;
+    const deptId = isMultiDept() ? (document.getElementById('manual-dept-select')?.value || getSessionDepts()[0]) : getSessionDepts()[0];
+    if (!deptId || !config[deptId]) return;
 
     renderQuestionsList(deptId);
   }
@@ -5036,7 +5222,7 @@
       return;
     }
 
-    const deptId = adminSession === 'super' ? (document.getElementById('manual-dept-select')?.value || adminSession) : adminSession;
+    const deptId = isMultiDept() ? (document.getElementById('manual-dept-select')?.value || getSessionDepts()[0]) : getSessionDepts()[0];
 
     if (!config[deptId]) {
       config[deptId] = { questions: [], orientacoes: DEPARTMENTS[deptId]?.defaultOrientacoes || '' };
@@ -5241,12 +5427,14 @@
 
     if(tabId === 'agendar') {
       const g = document.getElementById('manual-dept-group');
-      if(g) g.style.display = (adminSession === 'super') ? 'block' : 'none';
+      if(g) g.style.display = isMultiDept() ? 'block' : 'none';
+      if(isMultiDept()) populateDeptSelect('manual-dept-select');
     }
 
     if(tabId === 'horarios') {
       const g = document.getElementById('horario-dept-group');
-      if(g) g.style.display = (adminSession === 'super') ? 'block' : 'none';
+      if(g) g.style.display = isMultiDept() ? 'block' : 'none';
+      if(isMultiDept()) populateDeptSelect('horario-dept-select');
       loadOperatingHours();
     }
 
@@ -5257,8 +5445,9 @@
     if(tabId === 'editar-formulario') {
       const g = document.getElementById('manual-dept-group');
       if(g) {
-        g.style.display = (adminSession === 'super') ? 'block' : 'none';
+        g.style.display = isMultiDept() ? 'block' : 'none';
       }
+      if(isMultiDept()) populateDeptSelect('manual-dept-select');
       // Carregar perguntas do departamento
       setTimeout(() => loadQuestionsEditor(), 100);
     }
@@ -5272,7 +5461,7 @@
     const dateFilter = document.getElementById('dash-date-filter').value;
 
     const filtered = allAppts.filter(a => {
-      if(adminSession !== 'super' && a.deptId !== adminSession) return false;
+      if(!canAccessDept(a.deptId)) return false;
       if(dateFilter && a.date !== dateFilter) return false;
       return true;
     });
@@ -5297,13 +5486,23 @@
 
       const userInfo = a.user_id ? `<br><small style="color: var(--gray-600);">👤 ${a.user_email || a.user_name}</small>` : '';
 
+      // Trilha de auditoria — visível para Coordenação (Joyla) e Diretoria (Joyce)
+      let auditInfo = '';
+      if (canAuditActions()) {
+        const parts = [];
+        if (a.createdBy) parts.push(`Criado por <strong>${a.createdBy}</strong>`);
+        if (a.lastEditedBy) parts.push(`Editado por <strong>${a.lastEditedBy}</strong>`);
+        if (a.validatedBy) parts.push(`Validado por <strong>${a.validatedBy}</strong>`);
+        if (parts.length) auditInfo = `<br><small style="color: var(--cc-navy); background: rgba(0,180,216,0.08); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">📝 ${parts.join(' · ')}</small>`;
+      }
+
       card.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 12px;">
           <div style="flex: 1;">
             <div style="font-weight: 700; font-size: 18px;">${a.senha} <span style="font-weight:400; color:var(--gray-500); font-size:14px; margin-left:8px;">${a.time}</span></div>
             <div style="font-size: 14px; color: var(--gray-700); margin-top: 4px;">
               <strong>Local:</strong> ${DEPARTMENTS[a.deptId].name}<br>
-              <strong>Cód:</strong> ${a.id}${userInfo}
+              <strong>Cód:</strong> ${a.id}${userInfo}${auditInfo}
             </div>
           </div>
           <div style="background: ${statusColor}; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${a.status}</div>
@@ -5437,7 +5636,7 @@
      } else {
         const appt = allAppts[apptIndex];
         // Check dept permission
-        if(adminSession !== 'super' && appt.deptId !== adminSession) {
+        if(!canAccessDept(appt.deptId)) {
            resDiv.style.background = '#FEF3C7'; // light yellow
            resDiv.style.color = 'var(--warning)';
            resDiv.innerHTML = `<i class="ph ph-warning"></i> <strong>Agendamento de outro setor:</strong> Este código pertence ao ${DEPARTMENTS[appt.deptId].name}.`;
@@ -5451,7 +5650,10 @@
         } else {
            // Mark as validated
            allAppts[apptIndex].status = 'VALIDADO';
+           allAppts[apptIndex].validatedBy = getOperatorName();
+           allAppts[apptIndex].validatedAt = new Date().toISOString();
            localStorage.setItem('cadeia_appointments', JSON.stringify(allAppts));
+           logAudit('Validou', allAppts[apptIndex]);
            
            resDiv.style.background = '#D1FAE5'; // light green
            resDiv.style.color = '#065F46'; // dark green
@@ -5471,15 +5673,13 @@
 
   // Departamento-alvo das operações manuais: setor do admin, ou o escolhido pela Diretoria
   function getManualDeptId() {
-    return adminSession === 'super'
-      ? (document.getElementById('manual-dept-select') || {}).value || ''
-      : adminSession;
+    if (isMultiDept()) return (document.getElementById('manual-dept-select') || {}).value || '';
+    return getSessionDepts()[0] || '';
   }
 
   function getHorarioDeptId() {
-    return adminSession === 'super'
-      ? (document.getElementById('horario-dept-select') || {}).value || ''
-      : adminSession;
+    if (isMultiDept()) return (document.getElementById('horario-dept-select') || {}).value || '';
+    return getSessionDepts()[0] || '';
   }
 
   function updateManualTimeSlots() {
@@ -5550,10 +5750,13 @@
         'Observações': notes
       },
       status: 'AGENDADO',
-      createdBy: 'admin'
+      createdBy: getOperatorName(),
+      createdByRole: adminSession,
+      createdAt: new Date().toISOString()
     };
     appointments.push(newAppt);
     localStorage.setItem('cadeia_appointments', JSON.stringify(appointments));
+    logAudit('Criou', newAppt);
 
     alert(`✅ Agendamento criado!\nSenha: ${senhaPrefix}\nCódigo: ${validationCode}`);
     clearManualForm();
@@ -5583,7 +5786,7 @@
     const dateFilter = document.getElementById('desmarcar-date-filter').value;
 
     const filtered = allAppts.filter(a => {
-      if(adminSession !== 'super' && a.deptId !== adminSession) return false;
+      if(!canAccessDept(a.deptId)) return false;
       if(dateFilter && a.date !== dateFilter) return false;
       return a.status === 'AGENDADO'; // Only show scheduled appointments
     });
@@ -5618,6 +5821,7 @@
     const idx = allAppts.findIndex(a => a.id === apptId);
 
     if(idx !== -1) {
+      logAudit('Cancelou', allAppts[idx]);
       allAppts.splice(idx, 1);
       localStorage.setItem('cadeia_appointments', JSON.stringify(allAppts));
       alert('✅ Agendamento cancelado com sucesso.');
@@ -5637,7 +5841,7 @@
     const dateFilter = document.getElementById('editar-date-filter').value;
 
     const filtered = allAppts.filter(a => {
-      if(adminSession !== 'super' && a.deptId !== adminSession) return false;
+      if(!canAccessDept(a.deptId)) return false;
       if(dateFilter && a.date !== dateFilter) return false;
       return a.status === 'AGENDADO';
     });
@@ -5721,7 +5925,11 @@
       allAppts[idx].data['E-mail'] = email;
       allAppts[idx].data['Observações'] = notes;
       allAppts[idx].time = time;
+      allAppts[idx].lastEditedBy = getOperatorName();
+      allAppts[idx].lastEditedByRole = adminSession;
+      allAppts[idx].lastEditedAt = new Date().toISOString();
       localStorage.setItem('cadeia_appointments', JSON.stringify(allAppts));
+      logAudit('Editou', allAppts[idx]);
       alert('✅ Agendamento atualizado com sucesso.');
       cancelEditAppointment();
       loadEditableAppointments();
@@ -5808,10 +6016,7 @@
     const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const today = new Date().toISOString().split('T')[0];
 
-    let filtered = allAppts;
-    if(adminSession !== 'super') {
-      filtered = allAppts.filter(a => a.deptId === adminSession);
-    }
+    let filtered = allAppts.filter(a => canAccessDept(a.deptId));
 
     const total = filtered.length;
     const todayAppts = filtered.filter(a => a.date === today).length;
@@ -5832,14 +6037,14 @@
     document.getElementById('stat-noshow').innerText = noShows;
     document.getElementById('stat-occupancy').innerText = occupancy + '%';
 
-    // Compilado por departamento — exclusivo da Diretoria/Administração Geral
+    // Compilado por departamento — para papéis multi-departamento (Coordenação e Diretoria)
     const breakdownBox = document.getElementById('dashboard-dept-breakdown');
     const breakdownGrid = document.getElementById('dept-breakdown-grid');
-    if(adminSession === 'super') {
+    if(isMultiDept()) {
       breakdownBox.style.display = 'block';
       breakdownGrid.innerHTML = '';
 
-      Object.keys(DEPARTMENTS).forEach(deptId => {
+      getSessionDepts().forEach(deptId => {
         const dept = DEPARTMENTS[deptId];
         const deptAppts = allAppts.filter(a => a.deptId === deptId);
         const deptTotal = deptAppts.length;
@@ -5865,6 +6070,40 @@
       });
     } else {
       breakdownBox.style.display = 'none';
+    }
+
+    // Trilha de auditoria — visível para Coordenação (Joyla) e Diretoria (Joyce)
+    const auditBox = document.getElementById('dashboard-audit-log-box');
+    const auditContainer = document.getElementById('dashboard-audit-log');
+    if(auditBox && canAuditActions()) {
+      auditBox.style.display = 'block';
+      const auditLog = JSON.parse(localStorage.getItem('cadeia_audit') || '[]')
+        .filter(e => canAccessDept(e.deptId))
+        .slice(0, 20);
+      auditContainer.innerHTML = '';
+      if(auditLog.length === 0) {
+        auditContainer.innerHTML = '<div style="color: var(--gray-500); text-align: center; padding: 16px;">Nenhuma ação registrada ainda.</div>';
+      } else {
+        const actionColor = { 'Criou': 'var(--success)', 'Editou': 'var(--cc-cyan)', 'Cancelou': 'var(--error)', 'Validou': 'var(--cc-navy)' };
+        auditLog.forEach(e => {
+          const when = new Date(e.at);
+          const whenStr = isNaN(when) ? '' : when.toLocaleString('pt-BR');
+          const deptName = DEPARTMENTS[e.deptId] ? DEPARTMENTS[e.deptId].name : e.deptId;
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; background:var(--gray-50);';
+          row.innerHTML = `
+            <div style="font-size:13px; color:var(--gray-700);">
+              <span style="font-weight:700; color:${actionColor[e.action] || 'var(--gray-700)'};">${e.action}</span>
+              por <strong>${e.operator || '—'}</strong>
+              <span style="color:var(--gray-500);">· ${e.senha || ''} · ${deptName}</span>
+            </div>
+            <div style="font-size:12px; color:var(--gray-500); white-space:nowrap;">${whenStr}</div>
+          `;
+          auditContainer.appendChild(row);
+        });
+      }
+    } else if(auditBox) {
+      auditBox.style.display = 'none';
     }
 
     // Display recent appointments
