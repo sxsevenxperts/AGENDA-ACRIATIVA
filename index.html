@@ -4362,9 +4362,11 @@
       
       if(!dateVal) { alert("Por favor, selecione uma data."); return; }
       if(!selectedSlot) { alert("Por favor, selecione um horário."); return; }
-      
+
       formData.date = dateVal;
-      formData.time = selectedSlot.innerText;
+      // Extract start time only (before " - ")
+      const fullTime = selectedSlot.innerText.split('\n')[0]; // Remove "Indisponível" if present
+      formData.time = fullTime.split(' - ')[0];
       
       showStep(3);
     }
@@ -4424,46 +4426,75 @@
     const dept = DEPARTMENTS[currentDeptId];
     const slots = [];
     const sessionMins = dept.durationHours * 60;
+    const bufferMins = 15; // 15 minutes buffer between bookings
 
-    // Generate slots for each operating hour period
-    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }]; // Fallback for backwards compatibility
+    // Get existing appointments for this date and dept
+    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const existingAppts = allAppts.filter(a => a.deptId === currentDeptId && a.date === selectedDate);
+
+    // Convert existing appointments to minutes for conflict checking
+    const bookedIntervals = existingAppts.map(appt => {
+      const startMin = timeToMinutes(appt.time);
+      return {
+        start: startMin,
+        end: startMin + sessionMins
+      };
+    });
+
+    // Generate slots for each operating hour period in 15-minute intervals
+    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }];
 
     operatingHours.forEach(period => {
-      let currentMin = period.start * 60; // Convert hour to minutes
+      let currentMin = period.start * 60;
       const endMin = period.end * 60;
 
+      // Generate in 15-minute intervals
       while(currentMin + sessionMins <= endMin) {
         const startStr = formatMin(currentMin);
         const endStr = formatMin(currentMin + sessionMins);
-        slots.push(`${startStr} - ${endStr}`);
 
-        // Next slot logic: add duration + buffer
-        currentMin += sessionMins + dept.bufferMinutes;
+        // Check if this time slot is available
+        let isAvailable = true;
+        for (let interval of bookedIntervals) {
+          // Check for overlap including buffer
+          if ((currentMin < interval.end + bufferMins) && (currentMin + sessionMins + bufferMins > interval.start)) {
+            isAvailable = false;
+            break;
+          }
+        }
+
+        slots.push({
+          display: `${startStr} - ${endStr}`,
+          start: startStr,
+          available: isAvailable
+        });
+
+        // Move to next 15-minute slot
+        currentMin += 15;
       }
     });
 
-    // Get real bookings for this date and dept
-    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
-    const bookedTimes = allAppts
-      .filter(a => a.deptId === currentDeptId && a.date === selectedDate)
-      .map(a => a.time);
-    
-    slots.forEach((s, i) => {
-      const isBooked = bookedTimes.includes(s);
+    // Render time slots
+    slots.forEach((slot) => {
       const div = document.createElement('div');
-      div.className = 'time-slot' + (isBooked ? ' unavailable' : '');
-      div.innerText = s;
-      
-      if(!isBooked) {
+      div.className = 'time-slot' + (!slot.available ? ' unavailable' : '');
+      div.innerText = slot.display;
+
+      if(slot.available) {
         div.onclick = function() {
           container.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
           this.classList.add('selected');
+          formData.time = slot.start; // Store only the start time
         };
       } else {
-        div.innerHTML += '<br><small>Ocupado</small>';
+        div.innerHTML += '<br><small>Indisponível</small>';
       }
       container.appendChild(div);
     });
+
+    if (slots.length === 0) {
+      container.innerHTML = '<div style="grid-column: 1/-1; color: var(--gray-500); font-size: 14px;">Nenhum horário disponível nesta data.</div>';
+    }
   }
   
   function formatMin(totalMins) {
@@ -4472,7 +4503,7 @@
     return `${h}:${m}`;
   }
 
-  function generateTimeSlots(dept) {
+  function getTotalTimeSlots(dept) {
     const slots = [];
     const sessionMins = dept.durationHours * 60;
     const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }];
@@ -4481,15 +4512,68 @@
       let currentMin = period.start * 60;
       const endMin = period.end * 60;
 
+      // Generate slots in 15-minute intervals (all possible slots)
+      while(currentMin + sessionMins <= endMin) {
+        slots.push(1); // Count this slot
+        currentMin += 15;
+      }
+    });
+
+    return slots.length;
+  }
+
+  function getAvailableTimeSlots(dept, date) {
+    const slots = [];
+    const sessionMins = dept.durationHours * 60;
+    const bufferMins = 15; // 15 minutes buffer
+    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }];
+
+    // Get existing appointments for this dept and date
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const existingAppts = appointments.filter(a => a.deptId === dept.id && a.date === date);
+
+    // Convert existing appointments to intervals
+    const bookedIntervals = existingAppts.map(appt => {
+      const startMin = timeToMinutes(appt.time);
+      return { start: startMin, end: startMin + sessionMins };
+    });
+
+    operatingHours.forEach(period => {
+      let currentMin = period.start * 60;
+      const endMin = period.end * 60;
+
+      // Generate slots in 15-minute intervals
       while(currentMin + sessionMins <= endMin) {
         const startStr = formatMin(currentMin);
         const endStr = formatMin(currentMin + sessionMins);
-        slots.push(`${startStr} - ${endStr}`);
-        currentMin += sessionMins + dept.bufferMinutes;
+
+        // Check if this slot conflicts with existing appointments
+        let hasConflict = false;
+        for (let interval of bookedIntervals) {
+          if ((currentMin < interval.end + bufferMins) && (currentMin + sessionMins + bufferMins > interval.start)) {
+            hasConflict = true;
+            break;
+          }
+        }
+
+        if (!hasConflict) {
+          slots.push(`${startStr} - ${endStr}`);
+        }
+
+        // Move to next 15-minute slot
+        currentMin += 15;
       }
     });
 
     return slots;
+  }
+
+  function timeToMinutes(timeStr) {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(':');
+    if (parts.length !== 2) return 0;
+    const [hours, mins] = parts.map(Number);
+    return hours * 60 + (isNaN(mins) ? 0 : mins);
   }
 
   // ==========================================
@@ -5094,13 +5178,13 @@
     container.innerHTML = '';
 
     const dept = DEPARTMENTS[deptId];
-    const slots = generateTimeSlots(dept);
-    
-    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
-    const bookedTimes = allAppts
-      .filter(a => a.deptId === deptId && a.date === date)
-      .map(a => a.time);
-    
+    const slots = getAvailableTimeSlots(dept, date);
+
+    if (slots.length === 0) {
+      container.innerHTML = '<div style="grid-column: 1/-1; color: var(--gray-500); font-size: 14px; text-align: center; padding: 20px;">Nenhum horário disponível nesta data.</div>';
+      return;
+    }
+
     slots.forEach(s => {
       const isBooked = bookedTimes.includes(s);
       const div = document.createElement('div');
@@ -5409,20 +5493,22 @@
     if (!date || !deptId) return;
 
     const dept = DEPARTMENTS[deptId];
-    const slots = generateTimeSlots(dept);
+    const slots = getAvailableTimeSlots(dept, date);
 
-    const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
-    const bookedTimes = allAppts
-      .filter(a => a.deptId === deptId && a.date === date)
-      .map(a => a.time);
+    if (slots.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.innerText = 'Nenhum horário disponível';
+      opt.disabled = true;
+      select.appendChild(opt);
+      return;
+    }
 
     slots.forEach(s => {
-      if (!bookedTimes.includes(s)) {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.innerText = s;
-        select.appendChild(opt);
-      }
+      const opt = document.createElement('option');
+      opt.value = s.split(' - ')[0]; // Store only start time
+      opt.innerText = s;
+      select.appendChild(opt);
     });
   }
 
@@ -5602,15 +5688,15 @@
 
     // Load time slots — baseados no departamento do próprio agendamento
     const dept = DEPARTMENTS[appt.deptId];
-    const slots = generateTimeSlots(dept);
+    const slots = getAvailableTimeSlots(dept, appt.date);
 
     const timeSelect = document.getElementById('edit-time');
     timeSelect.innerHTML = '';
     slots.forEach(s => {
       const opt = document.createElement('option');
-      opt.value = s;
+      opt.value = s.split(' - ')[0]; // Store only start time
       opt.innerText = s;
-      if (s === appt.time) opt.selected = true;
+      if (s.startsWith(appt.time)) opt.selected = true;
       timeSelect.appendChild(opt);
     });
 
@@ -5736,8 +5822,8 @@
     // Calculate occupancy (approximation)
     const allSlots = filtered.reduce((acc, a) => {
       const dept = DEPARTMENTS[a.deptId];
-      const slots = generateTimeSlots(dept);
-      acc += slots.length;
+      const slots = getTotalTimeSlots(dept);
+      acc += slots;
       return acc;
     }, 0);
 

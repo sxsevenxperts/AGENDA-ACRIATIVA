@@ -1,8 +1,56 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.8.4  
-**Status:** ✅ Department Finalization (5 Final Spaces + Unified Form + Capacity Validation + LGPD)
+**Versão Atual:** 2.9.0  
+**Status:** ✅ 15-Minute Hourly Slots (5 Spaces + Capacity Validation + 15min Buffer + LGPD)
+
+---
+
+## 2026-07-21 — 15-Minute Hourly Time Slots with Buffer System (v2.9.0)
+
+### Objetivo
+Refatorar o sistema de agendamento para permitir escolha de horários específicos em intervalos de 15 minutos, respeitando um buffer de 15 minutos entre agendamentos.
+
+### Alterações realizadas
+
+**1. Novas Funções**
+- `getAvailableTimeSlots(dept, date)` — Retorna slots disponíveis considerando agendamentos existentes
+- `getTotalTimeSlots(dept)` — Retorna contagem total de slots possíveis (sem filtro de disponibilidade)
+- `timeToMinutes(timeStr)` — Converte "HH:MM" para minutos
+
+**2. Função `generateTimeSlots()` Refatorada**
+- Agora gera horários em intervalos de 15 minutos (antes: blocos completos)
+- Verifica conflitos com agendamentos existentes + buffer
+- Marca slots como "Indisponível" na UI quando ocupados
+- Respeita períodos de operação (08-12, 13-17, 18-21)
+
+**3. Validação de Conflitos**
+- Para cada novo slot, verifica se há sobreposição com agendamentos existentes
+- Inclui buffer de 15 min antes e depois de cada agendamento
+- Exemplo: Se agendamento em 08:00-11:00 + 15min buffer, próximo livre é 11:15
+
+**4. Armazenamento Simplificado**
+- Antes: `time: "08:00 - 12:00"`
+- Depois: `time: "08:00"` (apenas hora de início)
+- Duração recuperada de `dept.durationHours`
+
+**5. Compatibilidade**
+- `updateManualTimeSlots()` — Atualizado para usar `getAvailableTimeSlots()`
+- `renderConsultarAgenda()` — Atualizado para usar `getAvailableTimeSlots()`
+- `editAppointment()` — Atualizado para usar `getAvailableTimeSlots()`
+- `loadDashboardStats()` — Atualizado para usar `getTotalTimeSlots()`
+
+### Arquivos Alterados
+- `index.html` (180 linhas modificadas)
+  - 3 novas funções
+  - Função `generateTimeSlots()` completamente refatorada
+  - 4 funções atualizadas para usar novas APIs
+
+### Impacto
+- ✅ Melhor controle de disponibilidade
+- ✅ Buffer automático entre agendamentos
+- ✅ Mais opções de horário para usuários
+- ✅ Validação robusta de conflitos
 
 ---
 

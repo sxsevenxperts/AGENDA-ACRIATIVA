@@ -1,8 +1,26 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.8.2  
-**Status Geral:** 🟢 Produção - Departments Restructure + Capacity-Aware Booking (5 Spaces incl. Stúdio de Música + LGPD Compliance)
+**Versão:** 2.9.0  
+**Status Geral:** 🟢 Produção - 15-Min Hourly Time Slots with 15min Buffer (5 Spaces + Capacity-Aware + LGPD Compliance)
+
+---
+
+## Atualização — 2026-07-21 (v2.9.0) — 15-Minute Hourly Time Slots with Buffer System
+
+### Concluído
+- [x] **Sistema de horários refatorado**: Geração de slots em intervalos de 15 minutos
+- [x] **Buffer de 15 minutos**: Respeitado entre um agendamento e outro
+- [x] **Verificação de conflitos**: Sistema valida disponibilidade considerando buffer
+- [x] **Horários específicos**: Usuários escolhem hora exata (não blocos de tempo)
+- [x] **Dentro dos períodos**: Todos os horários gerados respeitam os períodos de operação
+- [x] **Capacidade por slot**: Validação continua funcionando para cada horário
+
+### Funcionalidade
+- Horários disponíveis em intervalos de 15 min (ex: 08:00, 08:15, 08:30...)
+- Sessão de 3h no Stúdio de Música ocupa 08:00-11:00, próximo horário é 11:15
+- Buffer automático de 15 min entre agendamentos
+- UI mostra "Indisponível" para horários sem espaço
 
 ---
 
