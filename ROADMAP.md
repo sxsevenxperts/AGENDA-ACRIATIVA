@@ -1,8 +1,28 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.8.0  
-**Status Geral:** 🟢 Produção - Departments Restructure + Capacity-Aware Booking (4 Core Spaces + Unified Form + Capacity Limits)
+**Versão:** 2.8.2  
+**Status Geral:** 🟢 Produção - Departments Restructure + Capacity-Aware Booking (5 Spaces incl. Stúdio de Música + LGPD Compliance)
+
+---
+
+## Atualização — 2026-07-21 (v2.8.2) — Stúdio de Música Department
+
+### Concluído
+- [x] **Novo departamento**: Stúdio de Música adicionado ao sistema
+- [x] **Configuração**: Capacidade máxima de 20 pessoas, 3h por sessão
+- [x] **Horários**: 08h-12h, 13h-17h, 18h-21h (suporta eventos noturnos)
+- [x] **Formulário unificado**: Formulário personalizado com tipo de evento adaptado (Gravação, Ensaio, Masterclass, Workshop Musical, Produção, Performance)
+- [x] **Login de admin**: Senha padrão "musica123" com acesso ao dashboard administrativo
+- [x] **Integração visual**: Card visual no dashboard principal com ícone de microfone
+- [x] **Orientações específicas**: Recomendações sobre equipamento profissional, ruído e reserva com antecedência
+
+### Departamentos Ativos
+- ✅ Coworking (70 pessoas)
+- ✅ Link Lab (120 pessoas)
+- ✅ Sala de Treinamento (30 pessoas)
+- ✅ Átrio (150 pessoas)
+- ✅ **Stúdio de Música (20 pessoas)** — NOVO
 
 ---
 

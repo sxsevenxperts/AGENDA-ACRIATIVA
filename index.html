@@ -762,12 +762,11 @@
       box-shadow: var(--shadow-xl), 0 10px 25px rgba(0,0,0,0.1);
     }
 
-    .dept-card[data-dept="studio"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(232,115,42,0.25); }
-    .dept-card[data-dept="sebrae"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(33,150,243,0.25); }
     .dept-card[data-dept="coworking"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(76,175,80,0.25); }
-    .dept-card[data-dept="auditorio"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(156,39,176,0.25); }
-    .dept-card[data-dept="secitece"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(255,152,0,0.25); }
+    .dept-card[data-dept="linklab"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(33,150,243,0.25); }
+    .dept-card[data-dept="salatreinamento"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(255,152,0,0.25); }
     .dept-card[data-dept="atrio"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(81,183,222,0.25); }
+    .dept-card[data-dept="musica"]:hover { box-shadow: var(--shadow-xl), 0 10px 30px rgba(156,39,176,0.25); }
 
     .dept-card-header {
       padding: 24px 24px 20px;
@@ -785,12 +784,11 @@
       height: 4px;
     }
 
-    .dept-card[data-dept="studio"] .dept-card-header::before { background: var(--dept-studio); }
-    .dept-card[data-dept="sebrae"] .dept-card-header::before { background: var(--dept-sebrae); }
     .dept-card[data-dept="coworking"] .dept-card-header::before { background: var(--dept-coworking); }
-    .dept-card[data-dept="auditorio"] .dept-card-header::before { background: var(--dept-auditorio); }
-    .dept-card[data-dept="secitece"] .dept-card-header::before { background: var(--dept-secitece); }
+    .dept-card[data-dept="linklab"] .dept-card-header::before { background: var(--dept-sebrae); }
+    .dept-card[data-dept="salatreinamento"] .dept-card-header::before { background: var(--dept-secitece); }
     .dept-card[data-dept="atrio"] .dept-card-header::before { background: var(--dept-atrio); }
+    .dept-card[data-dept="musica"] .dept-card-header::before { background: var(--dept-auditorio); }
 
     .dept-icon {
       width: 52px;
@@ -804,12 +802,11 @@
       position: relative;
     }
 
-    .dept-card[data-dept="studio"] .dept-icon { background: rgba(232,115,42,0.1); }
-    .dept-card[data-dept="sebrae"] .dept-icon { background: rgba(33,150,243,0.1); }
     .dept-card[data-dept="coworking"] .dept-icon { background: rgba(76,175,80,0.1); }
-    .dept-card[data-dept="auditorio"] .dept-icon { background: rgba(156,39,176,0.1); }
-    .dept-card[data-dept="secitece"] .dept-icon { background: rgba(255,152,0,0.1); }
+    .dept-card[data-dept="linklab"] .dept-icon { background: rgba(33,150,243,0.1); }
+    .dept-card[data-dept="salatreinamento"] .dept-icon { background: rgba(255,152,0,0.1); }
     .dept-card[data-dept="atrio"] .dept-icon { background: rgba(81,183,222,0.1); }
+    .dept-card[data-dept="musica"] .dept-icon { background: rgba(156,39,176,0.1); }
 
     .dept-name {
       font-family: 'Montserrat', sans-serif;
@@ -877,12 +874,11 @@
       color: var(--white);
     }
 
-    .dept-card[data-dept="studio"] .dept-btn { background: var(--dept-studio); }
-    .dept-card[data-dept="sebrae"] .dept-btn { background: var(--dept-sebrae); }
     .dept-card[data-dept="coworking"] .dept-btn { background: var(--dept-coworking); }
-    .dept-card[data-dept="auditorio"] .dept-btn { background: var(--dept-auditorio); }
-    .dept-card[data-dept="secitece"] .dept-btn { background: var(--dept-secitece); }
+    .dept-card[data-dept="linklab"] .dept-btn { background: var(--dept-sebrae); }
+    .dept-card[data-dept="salatreinamento"] .dept-btn { background: var(--dept-secitece); }
     .dept-card[data-dept="atrio"] .dept-btn { background: var(--dept-atrio); }
+    .dept-card[data-dept="musica"] .dept-btn { background: var(--dept-auditorio); }
 
     .dept-btn:hover {
       transform: scale(1.05);
@@ -2219,44 +2215,6 @@
         <p>Selecione o departamento para ver o formulário de agendamento</p>
       </div>
 
-      <!-- STÚDIO -->
-      <div class="dept-card" data-dept="studio">
-        <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-video-camera" style="font-size: 1.2em; vertical-align: middle;"></i></div>
-          <div class="dept-name">Stúdio</div>
-          <div class="dept-desc">Estúdio de gravação audiovisual com equipamentos profissionais para produção de conteúdo.</div>
-        </div>
-        <div class="dept-card-footer">
-          <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 2h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
-          </div>
-          <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('studio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('studio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SEBRAE LABS -->
-      <div class="dept-card" data-dept="sebrae">
-        <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-flask" style="font-size: 1.2em; vertical-align: middle;"></i></div>
-          <div class="dept-name">Sebrae Labs</div>
-          <div class="dept-desc">Laboratório de inovação e prototipagem para empreendedores e startups.</div>
-        </div>
-        <div class="dept-card-footer">
-          <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 1h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
-          </div>
-          <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('sebrae')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('sebrae')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
-          </div>
-        </div>
-      </div>
-
       <!-- COWORKING -->
       <div class="dept-card" data-dept="coworking">
         <div class="dept-card-header">
@@ -2276,44 +2234,6 @@
         </div>
       </div>
 
-      <!-- AUDITÓRIO -->
-      <div class="dept-card" data-dept="auditorio">
-        <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-microphone-stage" style="font-size: 1.2em; vertical-align: middle;"></i></div>
-          <div class="dept-name">Auditório</div>
-          <div class="dept-desc">Auditório para eventos, apresentações, palestras e workshops com capacidade para 120 pessoas.</div>
-        </div>
-        <div class="dept-card-footer">
-          <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 2h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
-          </div>
-          <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('auditorio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('auditorio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECITECE -->
-      <div class="dept-card" data-dept="secitece">
-        <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-binoculars" style="font-size: 1.2em; vertical-align: middle;"></i></div>
-          <div class="dept-name">SECITECE</div>
-          <div class="dept-desc">Secretaria de Ciência, Tecnologia e Educação Superior — atendimento e projetos de CT&I.</div>
-        </div>
-        <div class="dept-card-footer">
-          <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 1h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
-          </div>
-          <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('secitece')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('secitece')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
-          </div>
-        </div>
-      </div>
-
       <!-- ÁTRIO -->
       <div class="dept-card" data-dept="atrio">
         <div class="dept-card-header">
@@ -2329,6 +2249,25 @@
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('atrio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
             <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('atrio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STÚDIO DE MÚSICA -->
+      <div class="dept-card" data-dept="musica">
+        <div class="dept-card-header">
+          <div class="dept-icon"><i class="ph ph-microphone" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-name">Stúdio de Música</div>
+          <div class="dept-desc">Espaço profissional para gravação, ensaios e produção musical com equipamento de alta qualidade.</div>
+        </div>
+        <div class="dept-card-footer">
+          <div class="dept-meta">
+            <div class="dept-meta-item">⏱ 3h por sessão</div>
+            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
+          </div>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('musica')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('musica')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
           </div>
         </div>
       </div>
@@ -2680,12 +2619,11 @@
           <label class="form-label">Selecione o Espaço</label>
           <select id="consultar-dept" class="form-input form-select" onchange="renderConsultarAgenda()">
             <option value="">Escolha...</option>
-            <option value="studio">Stúdio de Gravação</option>
-            <option value="sebrae">Sebrae Labs</option>
             <option value="coworking">Coworking</option>
-            <option value="auditorio">Auditório</option>
-            <option value="secitece">Sala SECITECE</option>
-            <option value="atrio">Átrio Central</option>
+            <option value="linklab">Link Lab</option>
+            <option value="salatreinamento">Sala de Treinamento</option>
+            <option value="atrio">Átrio</option>
+            <option value="musica">Stúdio de Música</option>
           </select>
         </div>
         <div class="form-group" style="margin-top: 16px;">
@@ -2781,13 +2719,11 @@
           <label class="form-label">Departamento/Setor</label>
           <select class="form-input" id="admin-dept" style="cursor: pointer;">
             <option value="">-- Selecione seu departamento --</option>
-            <option value="studio">Studio de Gravação</option>
-            <option value="sebrae">Sebrae Labs</option>
             <option value="coworking">Coworking</option>
-            <option value="auditorio">Auditório</option>
-            <option value="secitece">SECITECE</option>
+            <option value="linklab">Link Lab</option>
+            <option value="salatreinamento">Sala de Treinamento</option>
             <option value="atrio">Átrio</option>
-            <option value="podcasts">Podcasts</option>
+            <option value="musica">Stúdio de Música</option>
             <option value="super">🏛️ Diretoria / Administração Geral</option>
           </select>
         </div>
@@ -2851,13 +2787,11 @@
             <label class="form-label">Departamento <span class="required">*</span></label>
             <select id="manual-dept-select" class="form-input form-select" onchange="updateManualTimeSlots()">
               <option value="">Selecione o departamento</option>
-              <option value="studio">Stúdio</option>
-              <option value="sebrae">Sebrae Labs</option>
               <option value="coworking">Coworking</option>
-              <option value="auditorio">Auditório</option>
-              <option value="secitece">SECITECE</option>
+              <option value="linklab">Link Lab</option>
+              <option value="salatreinamento">Sala de Treinamento</option>
               <option value="atrio">Átrio</option>
-              <option value="podcasts">Podcasts</option>
+              <option value="musica">Stúdio de Música</option>
             </select>
           </div>
 
@@ -2973,13 +2907,11 @@
             <label class="form-label">Departamento</label>
             <select id="horario-dept-select" class="form-input form-select" onchange="loadOperatingHours()">
               <option value="">Selecione o departamento</option>
-              <option value="studio">Stúdio</option>
-              <option value="sebrae">Sebrae Labs</option>
               <option value="coworking">Coworking</option>
-              <option value="auditorio">Auditório</option>
-              <option value="secitece">SECITECE</option>
+              <option value="linklab">Link Lab</option>
+              <option value="salatreinamento">Sala de Treinamento</option>
               <option value="atrio">Átrio</option>
-              <option value="podcasts">Podcasts</option>
+              <option value="musica">Stúdio de Música</option>
             </select>
           </div>
 
@@ -3268,6 +3200,23 @@
       ],
       prefix: 'ATR',
       defaultOrientacoes: 'Sujeito a lotação.\\nEventos com música precisam de alvará especial.'
+    },
+    'musica': {
+      id: 'musica',
+      name: 'Stúdio de Música',
+      subtitle: 'Espaço profissional para gravação, ensaios e produção musical',
+      capacity: 20,
+      color: '#9C27B0',
+      icon: '<i class="ph ph-microphone" style="font-size: 1.2em; vertical-align: middle;"></i>',
+      durationHours: 3,
+      bufferMinutes: 30,
+      operatingHours: [
+        { start: 8, end: 12 },
+        { start: 13, end: 17 },
+        { start: 18, end: 21 }
+      ],
+      prefix: 'MUS',
+      defaultOrientacoes: 'Equipamento profissional — requer treinamento.\\nRuído controlado por horários.\\nReserva de estúdio com antecedência de 48h.'
     }
   };
 
@@ -3342,6 +3291,25 @@
       { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
       { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
       { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
+      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
+      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
+      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
+      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
+      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
+    ],
+    'musica': [
+      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
+      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
+      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
+      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
+      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
+      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
+      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
+      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
+      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Gravação', 'Ensaio', 'Masterclass', 'Workshop Musical', 'Produção', 'Performance'] },
+      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 3 horas' },
       { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
       { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
       { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
@@ -4661,7 +4629,14 @@
   }
   
   async function getValidPasswordsForDept(deptId) {
-    const defaultPasswords = (deptId === 'super') ? ['diretoria123', 'super123'] : ['admin123'];
+    let defaultPasswords;
+    if (deptId === 'super') {
+      defaultPasswords = ['diretoria123', 'super123'];
+    } else if (deptId === 'musica') {
+      defaultPasswords = ['musica123', 'admin123'];
+    } else {
+      defaultPasswords = ['admin123'];
+    }
 
     // Tenta buscar do Supabase primeiro (prioridade alta)
     if (supabaseClient) {
