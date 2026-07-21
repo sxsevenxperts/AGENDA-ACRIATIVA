@@ -6,18 +6,25 @@
 
 ---
 
-## 2026-07-21 — Responsive Design + Centered Cards Layout (v2.9.6)
+## 2026-07-21 — Responsive Design + Centered Cards Layout (v2.9.6 - FIXED)
 
 ### Objetivo
-Garantir que o layout de departamentos seja responsivo em todas as resoluções, com últimos 2 cards lado a lado e centralizados horizontalmente (como as logos).
+Garantir que o layout de departamentos seja responsivo em todas as resoluções, com últimos 2 cards lado a lado e centralizados horizontalmente (como as logos). **FIXED: Corrigido para garantir 3 colunas no desktop.**
 
 ### Alterações realizadas
 
-**1. Grid CSS com Cards Centralizados**
-- Desktop (> 1024px): 3 cards primeira linha + 2 cards segunda linha (lado a lado, centralizados via max-width + justify-self)
-- Tablet (769-1024px): 2 cards por linha, mantendo últimos 2 lado a lado e centralizados
+**1. Grid CSS com Cards Centralizados (CORRIGIDO)**
+- Desktop (> 1024px): `grid-template-columns: repeat(3, minmax(340px, 1fr))` — garante 3 colunas com 340px mínimo
+- Tablet (769-1024px): `grid-template-columns: repeat(2, minmax(280px, 1fr))` — 2 cards por linha
 - Tablet Portrait (481-768px): 1 coluna com padding reduzido
 - Mobile (< 480px): 1 coluna com gap reduzido (16px vs 24px)
+
+**2. Correção: Removido max-width limitante**
+- Antes: `max-width: 1200px` estava causando grid de 2 colunas
+- Depois: `max-width: 100%` para permitir expansão completa
+
+**3. Media Query Adicionado**
+- Novo breakpoint: `1280px` para transição suave (ainda 3 colunas com gaps menores)
 
 **2. Remoção de Conflitos de Media Queries**
 - Removido `grid-template-columns: 1fr` conflitante do media query 768px
