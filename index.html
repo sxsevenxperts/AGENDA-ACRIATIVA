@@ -1910,6 +1910,102 @@
         right: 10px;
       }
     }
+
+    /* ============================================================
+       MOBILE UX/UI — REFINAMENTOS (v2.3.0)
+       ============================================================ */
+
+    /* Rolagem suave e sem overflow horizontal em qualquer tela */
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { overflow-x: hidden; }
+
+    @media (max-width: 768px) {
+      /* Top bar: encurta e centraliza */
+      .header-top .container { justify-content: center; gap: 10px; }
+      .header-top .container > div:first-child a:nth-child(2) { display: none; }
+
+      /* Navegação principal: distribui os links igualmente e vira "pills" tocáveis */
+      .header-nav-bar .container { flex-wrap: nowrap; }
+      .nav-link {
+        flex: 1;
+        text-align: center;
+        padding: 14px 6px;
+        font-size: 14px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Departamentos: mais respiro e botões com alvo de toque ≥ 48px */
+      .dept-grid { padding: 32px 0; gap: 18px; }
+      .dept-card-actions .dept-btn { min-height: 48px; padding: 12px 10px; font-size: 14px; }
+      .section-title { padding-bottom: 4px; }
+    }
+
+    @media (max-width: 640px) {
+      /* Evita zoom automático do iOS ao focar inputs (font-size ≥ 16px) */
+      .form-group input,
+      .form-group select,
+      .form-group textarea,
+      .form-input, .form-select, .form-textarea,
+      input, select, textarea { font-size: 16px !important; }
+
+      .container { padding: 0 16px; }
+
+      /* Painel Admin ocupa a tela inteira no celular */
+      #form-admin-dash { padding: 0 !important; align-items: stretch !important; }
+      #form-admin-dash .form-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+      }
+      #form-admin-dash .form-header {
+        padding: 14px 16px !important;
+        gap: 10px;
+      }
+      #form-admin-dash .form-header h2 { font-size: 17px; line-height: 1.25; }
+      #form-admin-dash .form-header .subtitle { font-size: 12px; }
+      #form-admin-dash .form-body { padding: 20px 16px !important; }
+
+      /* Botões do cabeçalho do painel compactos, mas tocáveis */
+      #form-admin-dash .form-btn-secondary { width: auto; padding: 10px 14px; font-size: 14px; min-height: 44px; }
+
+      /* Abas do painel roláveis horizontalmente com alvo confortável */
+      .dash-tab { padding: 14px 16px !important; font-size: 14px; }
+
+      /* Grids de 2 colunas dos formulários admin viram 1 coluna */
+      .admin-form-grid { grid-template-columns: 1fr !important; }
+
+      /* Modais gerais: largura total com pequena margem */
+      .form-overlay { align-items: flex-start; }
+      #form-consultar .form-container,
+      #form-admin-login .form-container,
+      #form-dynamic .form-container { max-width: 100% !important; }
+
+      /* Grade de horários mais legível no celular */
+      .time-slots { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+
+      /* Título de seção proporcional */
+      .section-title h2 { font-size: 22px; }
+      .section-title p { font-size: 14px; }
+
+      /* Rodapé centralizado no mobile */
+      .footer-grid { text-align: center; }
+      .footer-links { align-items: center; }
+    }
+
+    /* Respeita usuários que preferem menos movimento */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="css/ux-enhancements.css">
@@ -2451,7 +2547,7 @@
             </select>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+          <div class="admin-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
             <div class="form-group">
               <label class="form-label">Nome Completo <span class="required">*</span></label>
               <input type="text" id="manual-nome" class="form-input" placeholder="Nome do cliente">
@@ -2523,7 +2619,7 @@
           <!-- Edit Form (hidden by default) -->
           <div id="edit-appointment-form" style="display: none; border: 2px solid var(--cc-cyan); padding: 24px; border-radius: 12px; margin-top: 24px;">
             <h4>Editar Agendamento</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+            <div class="admin-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
               <div class="form-group">
                 <label class="form-label">Nome <span class="required">*</span></label>
                 <input type="text" id="edit-nome" class="form-input">
@@ -3382,10 +3478,16 @@
     document.querySelectorAll('.dash-tab').forEach(el => {
       el.style.borderBottomColor = 'transparent';
       el.style.color = 'var(--gray-500)';
+      el.style.fontWeight = '500';
     });
     const activeTab = document.getElementById('tab-' + tabId);
     activeTab.style.borderBottomColor = 'var(--cc-cyan)';
     activeTab.style.color = 'var(--cc-navy)';
+    activeTab.style.fontWeight = '600';
+    // Mantém a aba ativa visível na barra rolável (mobile)
+    if (activeTab.scrollIntoView) {
+      activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
 
     // Hide all tabs
     document.querySelectorAll('[id^="dash-view-"]').forEach(el => el.style.display = 'none');

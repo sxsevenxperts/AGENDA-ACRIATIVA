@@ -6,6 +6,36 @@
 
 ---
 
+## 2026-07-21 — Responsividade mobile + melhorias de UX/UI
+
+### Objetivo
+Deixar o site responsivo no celular e melhorar a experiência (UX) e a interface (UI), especialmente no painel administrativo.
+
+### Alterações realizadas (`index.html`)
+- **Bloco CSS mobile (v2.3.0)** adicionado ao final do `<style>`:
+  - `html { scroll-behavior: smooth }`, `body { overflow-x: hidden }`.
+  - `@media (max-width:768px)`: top bar centralizada e ocultando o rótulo longo da Secretaria; `.nav-link` com `flex:1`, centralizado e `min-height:48px`; cards com mais respiro e botões com alvo de toque ≥ 48px.
+  - `@media (max-width:640px)`: inputs/selects/textarea com `font-size:16px !important` (evita zoom do iOS); **painel admin em tela cheia** (`#form-admin-dash .form-container` com `width/height 100%`, `100dvh`, sem borda); cabeçalho do painel compacto; abas `.dash-tab` maiores; `.admin-form-grid` em 1 coluna; modais com largura total; `.time-slots` em 2 colunas; rodapé centralizado.
+  - `@media (prefers-reduced-motion: reduce)`: desativa animações/transições.
+- **Classe `.admin-form-grid`** adicionada aos dois grids de 2 colunas (Agendar manual e Editar) para permitir o colapso responsivo.
+- **`switchDashTab`**: passa a resetar `font-weight` das abas (só a ativa fica em 600) e chama `scrollIntoView` para manter a aba ativa visível na barra rolável do celular.
+
+### Validações executadas
+- Teste headless em 360/390/768/1024px: **sem overflow horizontal** em nenhuma largura; botões "Agendar" e "Consultar" funcionais e com destino correto em todas.
+- Painel admin no celular: modal ocupa 100% da altura (800px medidos), cabeçalho em 2 linhas com botões alinhados, abas roláveis, compilado com 6 cards. Destaque de aba correto (dashboard 600/cyan; agendamentos 500/transparente). Screenshots conferidos (home, hero, form, login, painel, agendar, dashboard).
+- **0 erros de página** em todas as execuções.
+
+### Impactos
+- **Usuário:** navegação e agendamento confortáveis no celular; painel de gestão utilizável em telas pequenas.
+- **Acessibilidade:** alvos de toque ≥ 44–48px, sem zoom indesejado, respeito a movimento reduzido.
+
+### Arquivos principais envolvidos
+- `index.html`
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
+
+---
+
 ## 2026-07-21 — Correção dos botões dos cards + alinhamento
 
 ### Objetivo

@@ -6,6 +6,21 @@
 
 ---
 
+## Atualização — 2026-07-21 (v2.3.0) — Responsividade mobile + UX/UI
+
+### Concluído
+- [x] **Painel Admin em tela cheia no celular** (100dvh, sem bordas), cabeçalho compacto que não quebra os botões Sair/✕, abas com alvo de toque confortável e rolagem horizontal.
+- [x] **Aba ativa do painel** agora reseta o peso da fonte corretamente (só a ativa fica destacada) e **rola para a vista** na barra rolável.
+- [x] **Navegação principal** no mobile: links distribuídos igualmente com alvo ≥ 48px.
+- [x] **Top bar** enxuta no mobile (oculta o rótulo longo da Secretaria, centraliza).
+- [x] **Inputs com `font-size:16px`** no mobile para evitar zoom automático do iOS.
+- [x] **Formulários admin de 2 colunas** (`.admin-form-grid`) colapsam para 1 coluna no celular.
+- [x] **Botões de departamento** com alvo de toque ≥ 48px; grade de horários em 2 colunas no mobile.
+- [x] **Rodapé centralizado** no mobile; `scroll-behavior: smooth`; `overflow-x: hidden` global; suporte a `prefers-reduced-motion`.
+- [x] Verificado **sem overflow horizontal** em 360/390/768/1024px e botões Agendar/Consultar funcionais em todas as larguras.
+
+---
+
 ## Atualização — 2026-07-21 (v2.2.1)
 
 ### Concluído
