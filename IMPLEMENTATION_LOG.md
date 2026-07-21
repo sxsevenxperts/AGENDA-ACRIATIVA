@@ -1,8 +1,56 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.7  
-**Status:** ✅ Layout Desktop Corrigido (Flexbox) + Responsividade Completa
+**Versão Atual:** 2.9.8  
+**Status:** ✅ Horários de Funcionamento + Alinhamento SVG + Flexbox + Responsividade Completa
+
+---
+
+## 2026-07-21 — Horários de Funcionamento + Alinhamento Cards (v2.9.8)
+
+### Objetivo
+Substituir textos de duração de sessão por horários reais de funcionamento em todos os cards de departamento, e corrigir alinhamento de SVGs/botões.
+
+### Alterações realizadas
+
+**1. Texto de horário nos cards (todos os 5 departamentos)**
+- Coworking: `"4h (meio período)"` → `08h-12h · 13h-17h · 18h-21h`
+- Link Lab: `"2h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+- Sala de Treinamento: `"2h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+- Átrio: `"2h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+- Stúdio de Música: `"3h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+
+**2. `operatingHours` JS config (todos os 5 departamentos)**
+- Adicionado turno `{ start: 18, end: 21 }` onde faltava (Coworking, Link Lab)
+- Todos os departamentos agora com 3 períodos: `08-12h / 13-17h / 18-21h`
+
+**3. `dept-meta` layout**
+- Mudado de `flex-direction: row` para `flex-direction: column; gap: 8px`
+- Horário e dias empilhados verticalmente para leitura mais clara
+
+**4. Alinhamento SVG**
+- `.dept-meta-item svg` e `.dept-card-actions .dept-btn svg`: `margin-right: 0 !important; flex-shrink: 0`
+
+### Decisões técnicas
+- Horário único para todos os departamentos (`08-12h / 13-17h / 18-21h`) conforme requisito do usuário
+- `operatingHours` JS alinhado com texto do card para manter consistência visual vs. funcional
+
+### Validações executadas
+- ✅ `grep` confirmou 5 ocorrências de `08h-12h · 13h-17h · 18h-21h` nos cards HTML
+- ✅ `operatingHours` com 3 blocos em todos os departamentos verificado por script Python
+- ✅ Commit e push realizados com sucesso (hash `9cdf15b`)
+- ✅ GitHub Actions auto-deploy disparado (webhook confirmado funcional desde v2.9.7)
+
+### Impacto
+- **Usuário:** Vê horários reais de funcionamento nos cards (não mais duração de sessão)
+- **Negócio:** Informação correta e útil para quem vai agendar
+- **Arquitetura:** Slots de reserva JS agora consistentes com o que o card exibe
+
+### Pendências
+- Nenhuma crítica. Horários podem ser personalizados por departamento no futuro se necessário.
+
+### Arquivos principais envolvidos
+- `index.html` — 5 cards de departamento + `operatingHours` JS config + CSS `dept-meta` + CSS SVG alignment
 
 ---
 

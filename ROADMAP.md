@@ -1,8 +1,36 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.7  
-**Status Geral:** 🟢 Em Produção - Layout Desktop Corrigido (Flexbox) + Responsividade Completa
+**Versão:** 2.9.8  
+**Status Geral:** 🟢 Em Produção - Horários de Funcionamento + Alinhamento SVG + Flexbox
+
+---
+
+## Atualização — 2026-07-21 (v2.9.8) — Horários de Funcionamento + Alinhamento Cards
+
+### Concluído
+- [x] **Todos os 5 departamentos** exibem `08h-12h · 13h-17h · 18h-21h` nos cards
+  - ✅ Coworking, Link Lab, Sala de Treinamento, Átrio, Stúdio de Música
+  - ✅ Substituiu textos antigos de duração de sessão ("2h por sessão", "4h (meio período)")
+- [x] **`operatingHours` JS** atualizado com 3 períodos em todos os departamentos
+  - ✅ `{ start: 8, end: 12 }, { start: 13, end: 17 }, { start: 18, end: 21 }`
+  - ✅ Slots de reserva agora refletem os 3 turnos reais
+- [x] **`dept-meta` empilhado verticalmente** (`flex-direction: column; gap: 8px`)
+  - ✅ Horário e dias aparecem em linhas separadas, alinhamento limpo
+- [x] **Alinhamento de SVGs** nos botões e meta-items corrigido
+  - ✅ `margin-right: 0 !important; flex-shrink: 0` — sem desalinhamento visual
+
+### Impacto
+- ✅ Informação de funcionamento real visível para todos os usuários
+- ✅ Consistência entre o que o card mostra e os slots disponíveis para reserva
+- ✅ Visual mais limpo e profissional nos cards
+
+### Próximos passos
+- [ ] Avaliar personalização de horários por departamento se necessário
+- [ ] Testes em produção com usuários reais
+
+### Riscos e débitos técnicos
+- Nenhum identificado nesta iteração.
 
 ---
 
