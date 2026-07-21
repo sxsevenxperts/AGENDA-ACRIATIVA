@@ -1,8 +1,21 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.0  
-**Status Geral:** 🟢 Produção - 15-Min Hourly Time Slots with 15min Buffer (5 Spaces + Capacity-Aware + LGPD Compliance)
+**Versão:** 2.9.1  
+**Status Geral:** 🟢 Produção - Admin Login Restructured (4 options: Stúdio + 3 Others) + 15-Min Slots + LGPD
+
+---
+
+## Atualização — 2026-07-21 (v2.9.1) — Admin Login Restructure
+
+### Concluído
+- [x] **Login reduzido**: Admin dropdown agora mostra apenas 4 opções
+  - ✅ Stúdio de Música - Silton (com nome personalizado)
+  - ✅ Coworking
+  - ✅ Link Lab
+  - ✅ Diretoria / Administração Geral
+- [x] **Acesso preservado**: Sala de Treinamento e Átrio disponíveis para usuários normais
+- [x] **Formato melhorado**: Label personalizado para gestor do Stúdio
 
 ---
 

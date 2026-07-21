@@ -1,8 +1,41 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.0  
-**Status:** ✅ 15-Minute Hourly Slots (5 Spaces + Capacity Validation + 15min Buffer + LGPD)
+**Versão Atual:** 2.9.1  
+**Status:** ✅ Admin Login Restructured (4 Options) + 15-Min Slots + LGPD
+
+---
+
+## 2026-07-21 — Admin Login System Restructure (v2.9.1)
+
+### Objetivo
+Reestruturar o dropdown de login de administrador para mostrar apenas 4 opções principais, com label personalizado para o gestor do Stúdio de Música.
+
+### Alterações realizadas
+
+**1. Dropdown Admin Login Reduzido**
+- De 6 opções (5 departments + Diretoria) para 4 opções
+- Opções agora: Stúdio de Música - Silton, Coworking, Link Lab, Diretoria
+- Sala de Treinamento e Átrio removidas do login (mantidas no sistema para usuários normais)
+
+**2. Label Personalizado**
+- "Stúdio de Música" → "Stúdio de Música - Silton" (gestor nomeado)
+- Melhora clareza de quem está fazendo login
+
+**3. Compatibilidade Preservada**
+- Autenticação continua funcionando normalmente
+- Funções `doAdminLogin()` e `getValidPasswordsForDept()` sem mudanças
+- Senhas mantêm-se iguais: 'musica123' e 'admin123' para Stúdio
+
+### Arquivos Alterados
+- `index.html` (4 linhas modificadas)
+  - Dropdown admin-dept reduzido de 6 para 4 opções
+
+### Impacto
+- ✅ Login mais simplificado para usuários
+- ✅ Interface mais limpa
+- ✅ Gestores nomeados e identificáveis
+- ✅ Departamentos ainda acessíveis para bookers normais
 
 ---
 
