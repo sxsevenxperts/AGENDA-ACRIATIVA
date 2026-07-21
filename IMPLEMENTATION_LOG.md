@@ -6,16 +6,16 @@
 
 ---
 
-## 2026-07-21 — Responsive Design Refinement (v2.9.6)
+## 2026-07-21 — Responsive Design + Centered Cards Layout (v2.9.6)
 
 ### Objetivo
-Garantir que o layout de departamentos seja responsivo em todas as resoluções: mobile (< 480px), tablet (481-1024px) e desktop (> 1024px).
+Garantir que o layout de departamentos seja responsivo em todas as resoluções, com últimos 2 cards lado a lado e centralizados horizontalmente (como as logos).
 
 ### Alterações realizadas
 
-**1. Grid CSS Refatorado com Media Queries**
-- Desktop (> 1024px): 3 colunas com últimas 2 centralizadas
-- Tablet (769-1024px): 2 colunas
+**1. Grid CSS com Cards Centralizados**
+- Desktop (> 1024px): 3 cards primeira linha + 2 cards segunda linha (lado a lado, centralizados via max-width + justify-self)
+- Tablet (769-1024px): 2 cards por linha, mantendo últimos 2 lado a lado e centralizados
 - Tablet Portrait (481-768px): 1 coluna com padding reduzido
 - Mobile (< 480px): 1 coluna com gap reduzido (16px vs 24px)
 

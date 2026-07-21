@@ -6,17 +6,18 @@
 
 ---
 
-## Atualização — 2026-07-21 (v2.9.6) — Responsive Design: Mobile, Tablet & Desktop
+## Atualização — 2026-07-21 (v2.9.6) — Responsive Design + Centered Cards
 
 ### Concluído
 - [x] **Grid responsivo completo** para todos os dispositivos
-  - ✅ Desktop (> 1024px): 3 colunas com últimas 2 centralizadas
-  - ✅ Tablet (769px - 1024px): 2 colunas
+  - ✅ Desktop (> 1024px): 3 cards primeira linha + 2 cards segunda linha (lado a lado, centralizados)
+  - ✅ Tablet (769px - 1024px): 2 cards por linha com últimos 2 lado a lado e centralizados
   - ✅ Tablet Portrait (481px - 768px): 1 coluna
   - ✅ Mobile (< 480px): 1 coluna otimizado
+- [x] **Último row centralizado horizontalmente** (como as logos do header)
 - [x] **Media queries refinadas** sem conflitos
 - [x] **Espaçamento adaptativo** por dispositivo
-- [x] **Cards centrados** em todas as resoluções
+- [x] **Cards lado a lado com justify-content: center** (alinhamento visual perfeito)
 
 ### Impacto
 - ✅ Experiência uniforme em mobile, tablet e desktop
