@@ -1,8 +1,40 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.4  
-**Status Geral:** 🟢 Em Produção - UI/UX com Vectors SVG + Cards Centralizados
+**Versão:** 2.9.5  
+**Status Geral:** 🟢 Em Produção - 4 Logins Administrativos com Credenciais Seguras
+
+---
+
+## Atualização — 2026-07-21 (v2.9.5) — Administrative Access: 4 Login Options + Secure Credentials
+
+### Concluído
+- [x] **Terceira opção de login**: `Assist. Articulação e Conectividade` adicionada ao dropdown
+- [x] **4 papéis administrativos distintos** agora com dropdown visual:
+  - ✅ ADM Diretoria (Joyce)
+  - ✅ ADM Articulação e Conectividade (Joyla - Coordenadora)
+  - ✅ Assist. Articulação e Conectividade (Assistente)
+  - ✅ ADM Stúdio Musical (Silton)
+- [x] **Documento CREDENCIAIS_ADMIN.md** criado com:
+  - Senhas seguras para cada login
+  - Matriz de acesso por departamento
+  - Instruções de login
+  - Recomendações de segurança
+  - Rastreamento de ações
+
+### Senhas Seguras (Geradas)
+| Login | Senha | Gerenciador |
+|-------|-------|-------------|
+| super | `Diretoria!Joyce2026` | Joyce (Diretoria) |
+| articulacao | `Artic!Joyla2026` | Joyla (Coordenadora) |
+| assistente | `Artic!Assist2026` | Assistente |
+| musica | `Studio!Silton2026` | Silton (Música) |
+
+### Impacto
+- ✅ Segurança jurídica com rastreamento de cada operador
+- ✅ Três níveis de acesso: Diretoria, Coordenação, Assistência
+- ✅ Documentação centralizada de credenciais
+- ✅ Matriz de permissões clara e explícita
 
 ---
 

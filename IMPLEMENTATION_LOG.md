@@ -1,8 +1,62 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.4  
-**Status:** ✅ UI/UX com SVG Vectors + Cards Centralizados
+**Versão Atual:** 2.9.5  
+**Status:** ✅ 4 Logins Administrativos com Credenciais Seguras
+
+---
+
+## 2026-07-21 — Administrative Access: 4 Login Options + Credentials (v2.9.5)
+
+### Objetivo
+Adicionar terceira opção de login (Assistente) ao dropdown e criar documentação segura com as 4 senhas administrativas para cada nível de acesso (Diretoria, Coordenação, Assistência, Música).
+
+### Alterações realizadas
+
+**1. Novo Login: Assistente**
+- Adição de `<option value="assistente">Assist. Articulação e Conectividade</option>` ao dropdown
+- Papel já estava configurado em ADMIN_ROLES (loginGroup: 'articulacao', mas roleId: 'assistente')
+- Permite distinguir Joyla (coordenadora) vs Assistente pela senha
+
+**2. Documento CREDENCIAIS_ADMIN.md (NOVO)**
+- Criado arquivo centralizado com todas as credenciais
+- Contém:
+  - 4 logins com senhas distintas e seguras
+  - Matriz de acesso por departamento (5x5)
+  - Instruções de login passo-a-passo
+  - Recomendações de segurança
+  - Rastreamento de ações explicado
+  - Informações de suporte
+
+**3. Senhas Configuradas**
+- `super` (Joyce/Diretoria): `Diretoria!Joyce2026` — Todos os 5 depts + Auditoria
+- `articulacao` (Joyla/Coordenadora): `Artic!Joyla2026` — 4 depts + Auditoria de operações
+- `assistente` (Assistente): `Artic!Assist2026` — 4 depts (ações registradas)
+- `musica` (Silton): `Studio!Silton2026` — Apenas Stúdio
+
+### Arquivos Alterados
+- `index.html` (1 linha adicionada)
+  - Nova opção no dropdown admin-dept
+- `CREDENCIAIS_ADMIN.md` (NOVO - 149 linhas)
+  - Documentação completa de credenciais
+
+### Validações Executadas
+- ✅ Dropdown HTML atualizado e testado
+- ✅ Papel assistente já estava em ADMIN_ROLES (nenhuma mudança necessária no JS)
+- ✅ Senhas seguem padrão seguro (maiúsculas, números, caracteres especiais)
+- ✅ Documento formatado em Markdown com seções claras
+
+### Impacto
+- ✅ 4 logins distintos com senhas diferentes
+- ✅ Assistente tem acesso independente (audível para Coordenadora)
+- ✅ Documentação centralizada para segurança operacional
+- ✅ Reduz necessidade de compartilhar senhas por e-mail
+- ✅ Facilita onboarding de novos usuários
+
+### Próximos Passos
+- [ ] Entregar CREDENCIAIS_ADMIN.md de forma segura (não por e-mail público)
+- [ ] Registrar cada distribuição de credencial para auditoria
+- [ ] Considerar implementar mudança de senha obrigatória no primeiro acesso
 
 ---
 
