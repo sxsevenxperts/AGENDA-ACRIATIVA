@@ -1,8 +1,35 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.3.4  
-**Status Geral:** 🟢 Produção - Pronto para Deploy (Admin Password Change + Painel Diretoria)
+**Versão:** 2.4.0  
+**Status Geral:** 🟢 Produção - Pronto para Deploy (Admin Form Customization + Painel Diretoria)
+
+---
+
+## Atualização — 2026-07-21 (v2.4.0) — Admin Form Customization (CRUD de Perguntas)
+
+### Concluído
+- [x] **Nova aba "⚙️ Editar Formulário"**: Painel CRUD completo para gerenciar perguntas por departamento.
+- [x] **8 tipos de campo**: Texto Curto, Texto Longo, E-mail, Telefone, Dropdown, Checkbox, Seleção Múltipla, Upload Imagem.
+- [x] **Funcionalidades CRUD**: Adicionar nova pergunta, editar existente, excluir, validação granular.
+- [x] **Persistência em localStorage**: Perguntas salvas em `config[deptId].questions` (estrutura aninhada com tipo, opções, etc).
+- [x] **Renderização automática**: Formulário público usa perguntas customizadas automaticamente (sem mudar URL/lógica).
+- [x] **Coleta de dados**: Checkboxes e seleção múltipla coletadas como string com valores separados por vírgula.
+- [x] **Acesso granular**: Super admins gerenciam todos os depts; admins normais gerenciam só seu dept.
+- [x] **Feedback visual**: Mensagens de sucesso/erro flutuantes com auto-dismiss.
+- [x] **Branding "Powered by SEVEN XPERTS"**: Verde gradiente (verde → verde-limão) no footer com CNPJ.
+
+### Impactos
+- **Admin**: Flexibilidade total para customizar formulários sem tocar código.
+- **UX**: Admins veem mudanças refletidas imediatamente no formulário público.
+- **Departamentos**: Cada setor pode ter perguntas únicas (ex: Studio pede equipamento; Sebrae pede projeto).
+- **Escalabilidade**: Cada pergunta ~200 bytes; 100 perguntas = 20KB (0.4% do limite localStorage).
+
+### Próximos Passos
+- [ ] Integração Supabase: Migrar `cadeia_departments` para tabela `form_templates`.
+- [ ] Validação customizada: Regex patterns, comprimento mín/máx, email validation.
+- [ ] Preview do formulário: Admin vê preview live enquanto edita.
+- [ ] Reordenação de perguntas: Drag-and-drop para reordenar.
 
 ---
 

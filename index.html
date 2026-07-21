@@ -2118,6 +2118,7 @@
   </style>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="css/ux-enhancements.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
 </head>
 <body>
 
@@ -3153,9 +3154,79 @@
   let currentStep = 1;
   let formData = {};
   let adminSession = null;
-  
+  let supabaseClient = null;
+
+  // ==========================================
+  // SUPABASE INTEGRATION
+  // ==========================================
+
+  function initSupabase() {
+    // Configure com variáveis de ambiente (será necessário adicionar ao .env)
+    const SUPABASE_URL = localStorage.getItem('SUPABASE_URL') || '';
+    const SUPABASE_KEY = localStorage.getItem('SUPABASE_KEY') || '';
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      console.log('⚠️ Supabase not configured. Using localStorage fallback.');
+      return false;
+    }
+
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log('✅ Supabase initialized');
+      return true;
+    } catch (e) {
+      console.error('❌ Supabase initialization failed:', e);
+      return false;
+    }
+  }
+
+  async function getPasswordFromSupabase(deptId) {
+    if (!supabaseClient) return null;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('admin_passwords')
+        .select('password')
+        .eq('dept_id', deptId)
+        .single();
+
+      if (error || !data) return null;
+      return data.password;
+    } catch (e) {
+      console.error('❌ Error fetching password from Supabase:', e);
+      return null;
+    }
+  }
+
+  async function savePasswordToSupabase(deptId, password) {
+    if (!supabaseClient) return false;
+
+    try {
+      const { error } = await supabaseClient
+        .from('admin_passwords')
+        .upsert({
+          dept_id: deptId,
+          password: password,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('❌ Error saving password to Supabase:', error);
+        return false;
+      }
+      console.log('✅ Password saved to Supabase');
+      return true;
+    } catch (e) {
+      console.error('❌ Error saving password to Supabase:', e);
+      return false;
+    }
+  }
+
   // Initialize LocalStorage
   function initApp() {
+    // Initialize Supabase (if configured)
+    initSupabase();
+
     const storedConfig = localStorage.getItem('cadeia_departments');
     if (storedConfig) {
       config = JSON.parse(storedConfig);
@@ -3649,17 +3720,29 @@
     document.getElementById('form-admin-login').classList.remove('active');
   }
   
-  function getValidPasswordsForDept(deptId) {
+  async function getValidPasswordsForDept(deptId) {
+    const defaultPasswords = (deptId === 'super') ? ['diretoria123', 'super123'] : ['admin123'];
+
+    // Tenta buscar do Supabase primeiro (prioridade alta)
+    if (supabaseClient) {
+      const supabasePassword = await getPasswordFromSupabase(deptId);
+      if (supabasePassword) {
+        return [supabasePassword, ...defaultPasswords];
+      }
+    }
+
+    // Fallback para localStorage (compatibilidade)
     const senhas = JSON.parse(localStorage.getItem('cadeia_senhas') || '{}');
     const customPassword = senhas[deptId];
-    const defaultPasswords = (deptId === 'super') ? ['diretoria123', 'super123'] : ['admin123'];
     return customPassword ? [customPassword, ...defaultPasswords] : defaultPasswords;
   }
 
-  function doAdminLogin() {
+  async function doAdminLogin() {
     const deptId = document.getElementById('admin-dept').value;
     const pass = document.getElementById('admin-senha').value;
     const err = document.getElementById('admin-login-error');
+    const btn = document.querySelector('#form-admin-login .form-btn-primary');
+    const originalText = btn.innerText;
 
     // Validação
     if(!deptId) {
@@ -3674,19 +3757,35 @@
       return;
     }
 
-    // Validar senha (verifica localStorage primeiro, depois padrões)
-    const validPasswords = getValidPasswordsForDept(deptId);
-    if(!validPasswords.includes(pass)) {
-      err.innerText = 'Senha incorreta.';
-      err.style.display = 'block';
-      return;
-    }
+    // Loading state
+    btn.innerText = 'Verificando...';
+    btn.disabled = true;
 
-    // Login bem-sucedido
-    adminSession = deptId;
-    err.style.display = 'none';
-    closeAdminLogin();
-    openAdminDash();
+    try {
+      // Validar senha (verifica Supabase primeiro, depois localStorage, depois padrões)
+      const validPasswords = await getValidPasswordsForDept(deptId);
+      if(!validPasswords.includes(pass)) {
+        err.innerText = 'Senha incorreta.';
+        err.style.display = 'block';
+        btn.innerText = originalText;
+        btn.disabled = false;
+        return;
+      }
+
+      // Login bem-sucedido
+      adminSession = deptId;
+      err.style.display = 'none';
+      btn.innerText = originalText;
+      btn.disabled = false;
+      closeAdminLogin();
+      openAdminDash();
+    } catch (e) {
+      console.error('Login error:', e);
+      err.innerText = 'Erro ao fazer login. Tente novamente.';
+      err.style.display = 'block';
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
   }
   
   function openAdminDash() {
@@ -3709,7 +3808,7 @@
     alert('Sessão encerrada com sucesso.');
   }
 
-  function alterarSenha() {
+  async function alterarSenha() {
     const senhaAtual = document.getElementById('senha-atual').value;
     const novaSenha = document.getElementById('nova-senha').value;
     const confirmarSenha = document.getElementById('confirmar-senha').value;
@@ -3718,6 +3817,8 @@
     const erroConfirmacao = document.getElementById('erro-confirmacao');
     const mensagemSucesso = document.getElementById('mensagem-sucesso');
     const mensagemErro = document.getElementById('mensagem-erro');
+    const btn = document.querySelector('[onclick="alterarSenha()"]');
+    const originalText = btn.innerText;
 
     // Limpar mensagens
     erroSenhaAtual.style.display = 'none';
@@ -3733,7 +3834,7 @@
     }
 
     // Validação: Verificar se a senha atual está correta
-    const validPasswords = getValidPasswordsForDept(adminSession);
+    const validPasswords = await getValidPasswordsForDept(adminSession);
     if (!validPasswords.includes(senhaAtual)) {
       erroSenhaAtual.innerText = 'Senha atual incorreta.';
       erroSenhaAtual.style.display = 'block';
@@ -3775,19 +3876,45 @@
       return;
     }
 
-    // Salvar nova senha no localStorage
-    const senhas = JSON.parse(localStorage.getItem('cadeia_senhas') || '{}');
-    senhas[adminSession] = novaSenha;
-    localStorage.setItem('cadeia_senhas', JSON.stringify(senhas));
+    // Loading state
+    btn.innerText = 'Salvando...';
+    btn.disabled = true;
 
-    // Exibir mensagem de sucesso
-    mensagemSucesso.innerText = '✓ Senha alterada com sucesso! A nova senha será usada no próximo login.';
-    mensagemSucesso.style.display = 'block';
+    try {
+      // Salvar no Supabase (prioridade alta)
+      if (supabaseClient) {
+        const supabaseSaved = await savePasswordToSupabase(adminSession, novaSenha);
+        if (!supabaseSaved) {
+          mensagemErro.innerText = 'Erro ao salvar no servidor. Tente novamente.';
+          mensagemErro.style.display = 'block';
+          btn.innerText = originalText;
+          btn.disabled = false;
+          return;
+        }
+      }
 
-    // Limpar formulário após 2 segundos
-    setTimeout(() => {
-      limparFormSenha();
-    }, 2000);
+      // Salvar também no localStorage (fallback/backup)
+      const senhas = JSON.parse(localStorage.getItem('cadeia_senhas') || '{}');
+      senhas[adminSession] = novaSenha;
+      localStorage.setItem('cadeia_senhas', JSON.stringify(senhas));
+
+      // Exibir mensagem de sucesso
+      mensagemSucesso.innerText = '✓ Senha alterada com sucesso! A nova senha será usada no próximo login.';
+      mensagemSucesso.style.display = 'block';
+      btn.innerText = originalText;
+      btn.disabled = false;
+
+      // Limpar formulário após 2 segundos
+      setTimeout(() => {
+        limparFormSenha();
+      }, 2000);
+    } catch (e) {
+      console.error('Erro ao alterar senha:', e);
+      mensagemErro.innerText = 'Erro ao alterar senha. Tente novamente.';
+      mensagemErro.style.display = 'block';
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
   }
 
   function limparFormSenha() {
