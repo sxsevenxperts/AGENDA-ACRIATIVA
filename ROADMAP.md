@@ -1,14 +1,24 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-20  
-**Versão:** 2.1.0  
+**Versão:** 2.1.1  
 **Status Geral:** 🟢 Produção
 
 ---
 
 ## 📍 Status Atual
 
-### ✅ Concluído (Versão 2.1.0)
+### ✅ Concluído (Versão 2.1.1)
+- [x] **Hero Section Redesign** - Modernização visual com Cadeia Criativa branding
+  - Logo destacada com animação flutuante
+  - Barra de busca central
+  - CTAs principais (Agendar, Consultar)
+  - Cards de estatísticas responsivos
+  - Animações escalonadas (fadeInDown, slideInUp, float)
+  - Design system completo (cores, tipografia, espaçamento)
+  - Responsivo 320px-2560px
+  - Glassmorphism effects
+
 - [x] **UX/UI Enhancements** - 9 áreas de melhoria implementadas
   - Animações e transições suaves
   - Sistema de notificações (toasts)
