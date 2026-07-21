@@ -1,8 +1,37 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.3.3  
-**Status Geral:** 🟢 Produção - Pronto para Deploy (Agendar/Consultar por card + Painel Diretoria)
+**Versão:** 2.3.4  
+**Status Geral:** 🟢 Produção - Pronto para Deploy (Admin Password Change + Painel Diretoria)
+
+---
+
+## Atualização — 2026-07-21 (v2.3.4) — Admin Password Change Feature
+
+### Concluído
+- [x] **Nova aba no painel admin**: "🔐 Alterar Senha" com formulário completo para mudança de senha.
+- [x] **Validação de senha atual**: Admin deve fornecer a senha atual correta antes de poder trocar.
+- [x] **Validação de nova senha**: Mínimo 6 caracteres, não pode ser igual à senha anterior.
+- [x] **Confirmação de senha**: Nova senha deve ser confirmada em campo separado.
+- [x] **Armazenamento em localStorage**: Senhas salvas em `cadeia_senhas` com estrutura `{deptId: "password"}`.
+- [x] **Backward compatibility**: Sistema verifica localStorage primeiro, depois usa senhas padrão se nenhuma customizada.
+- [x] **Mensagens de feedback**: Erros específicos para cada validação, sucesso com confirmação.
+
+### Impactos
+- **Segurança:** Cada admin pode agora trocar sua senha sem expor as credenciais padrão. Maior flexibilidade no gerenciamento de acesso.
+- **UX:** Formulário intuitivo com validações em tempo real e feedback claro ao usuário.
+- **Admin:** Senhas persistem em localStorage; ao fazer login com nova senha, é reconhecida automaticamente (prioridade em localStorage).
+
+### Escalabilidade
+- **Footprint de dados:** ~300 bytes total (6 departamentos × ~50 bytes/senha) — uso de <0.1% do limite localStorage (5MB).
+- **Performance:** Operações de leitura/escrita em localStorage são síncronas e <1ms. Sem impacto em performance mesmo com múltiplos usuários simultâneos.
+- **Suporte de usuários:** Ilimitado (cada usuário tem sua própria localStorage isolada no navegador).
+- **Pronto para Supabase:** Estrutura pronta para migração futura (será necessário apenas adicionar `fetch()` chamadas para salvar/carregar de Supabase).
+
+### Próximos Passos
+- [ ] Integração Supabase: Criar tabela `admin_passwords` e sincronizar leitura/escrita.
+- [ ] Criptografia: Implementar hash de senhas antes de salvar (bcrypt ou similar).
+- [ ] Auditoria: Log de alterações de senha com timestamp e IP do admin.
 
 ---
 

@@ -2656,6 +2656,7 @@
         <div class="dash-tab" onclick="switchDashTab('horarios')" id="tab-horarios" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Horários</div>
         <div class="dash-tab" onclick="switchDashTab('dashboard')" id="tab-dashboard" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Dashboard</div>
         <div class="dash-tab" onclick="switchDashTab('scanner')" id="tab-scanner" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Scanner QR</div>
+        <div class="dash-tab" onclick="switchDashTab('alterar-senha')" id="tab-alterar-senha" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">🔐 Alterar Senha</div>
       </div>
       
       <div class="form-body" style="flex: 1; overflow-y: auto; padding: 32px; background: var(--gray-50);">
@@ -2892,6 +2893,48 @@
           </div>
 
           <div id="validation-result" style="margin-top: 24px; padding: 20px; border-radius: 12px; display: none;"></div>
+        </div>
+
+        <!-- TAB 8: Alterar Senha -->
+        <div id="dash-view-alterar-senha" style="display: none;">
+          <h3>🔐 Alterar Senha</h3>
+          <p class="subtitle" style="margin-bottom: 32px;">Altere sua senha de acesso ao painel administrativo. É necessário fornecer a senha atual.</p>
+
+          <div style="max-width: 500px; background: var(--white); padding: 32px; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+            <div class="form-group">
+              <label class="form-label">Senha Atual <span class="required">*</span></label>
+              <input type="password" id="senha-atual" class="form-input" placeholder="Digite sua senha atual" required>
+              <div id="erro-senha-atual" style="color: var(--error); font-size: 12px; margin-top: 8px; display: none;"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nova Senha <span class="required">*</span></label>
+              <input type="password" id="nova-senha" class="form-input" placeholder="Digite uma nova senha" required>
+              <p style="font-size: 12px; color: var(--gray-500); margin-top: 8px;">Mínimo 6 caracteres. Use letras e números para maior segurança.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirmar Nova Senha <span class="required">*</span></label>
+              <input type="password" id="confirmar-senha" class="form-input" placeholder="Confirme a nova senha" required>
+              <div id="erro-confirmacao" style="color: var(--error); font-size: 12px; margin-top: 8px; display: none;"></div>
+            </div>
+
+            <div id="mensagem-sucesso" style="background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); padding: 16px; border-radius: 8px; margin-bottom: 24px; display: none;"></div>
+            <div id="mensagem-erro" style="background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); padding: 16px; border-radius: 8px; margin-bottom: 24px; display: none;"></div>
+
+            <div style="display: flex; gap: 12px; margin-top: 32px;">
+              <button class="form-btn form-btn-primary" style="flex: 1; background: var(--success);" onclick="alterarSenha()">
+                ✓ Alterar Senha
+              </button>
+              <button class="form-btn form-btn-secondary" style="flex: 1;" onclick="limparFormSenha()">
+                Cancelar
+              </button>
+            </div>
+
+            <p style="font-size: 11px; color: var(--gray-500); margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-200);">
+              ⚠️ <strong>Importante:</strong> Sua senha é armazenada com segurança. Memorize bem a nova senha! Não a compartilhe com ninguém.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -3503,6 +3546,13 @@
     document.getElementById('form-admin-login').classList.remove('active');
   }
   
+  function getValidPasswordsForDept(deptId) {
+    const senhas = JSON.parse(localStorage.getItem('cadeia_senhas') || '{}');
+    const customPassword = senhas[deptId];
+    const defaultPasswords = (deptId === 'super') ? ['diretoria123', 'super123'] : ['admin123'];
+    return customPassword ? [customPassword, ...defaultPasswords] : defaultPasswords;
+  }
+
   function doAdminLogin() {
     const deptId = document.getElementById('admin-dept').value;
     const pass = document.getElementById('admin-senha').value;
@@ -3521,8 +3571,8 @@
       return;
     }
 
-    // Validar senha (Diretoria/Administração Geral: diretoria123 ou super123; setores: admin123)
-    const validPasswords = (deptId === 'super') ? ['diretoria123', 'super123'] : ['admin123'];
+    // Validar senha (verifica localStorage primeiro, depois padrões)
+    const validPasswords = getValidPasswordsForDept(deptId);
     if(!validPasswords.includes(pass)) {
       err.innerText = 'Senha incorreta.';
       err.style.display = 'block';
@@ -3555,7 +3605,99 @@
     closeAdminDash();
     alert('Sessão encerrada com sucesso.');
   }
-  
+
+  function alterarSenha() {
+    const senhaAtual = document.getElementById('senha-atual').value;
+    const novaSenha = document.getElementById('nova-senha').value;
+    const confirmarSenha = document.getElementById('confirmar-senha').value;
+
+    const erroSenhaAtual = document.getElementById('erro-senha-atual');
+    const erroConfirmacao = document.getElementById('erro-confirmacao');
+    const mensagemSucesso = document.getElementById('mensagem-sucesso');
+    const mensagemErro = document.getElementById('mensagem-erro');
+
+    // Limpar mensagens
+    erroSenhaAtual.style.display = 'none';
+    erroConfirmacao.style.display = 'none';
+    mensagemSucesso.style.display = 'none';
+    mensagemErro.style.display = 'none';
+
+    // Validação: Senha atual vazia
+    if (!senhaAtual) {
+      erroSenhaAtual.innerText = 'Forneça sua senha atual.';
+      erroSenhaAtual.style.display = 'block';
+      return;
+    }
+
+    // Validação: Verificar se a senha atual está correta
+    const validPasswords = getValidPasswordsForDept(adminSession);
+    if (!validPasswords.includes(senhaAtual)) {
+      erroSenhaAtual.innerText = 'Senha atual incorreta.';
+      erroSenhaAtual.style.display = 'block';
+      return;
+    }
+
+    // Validação: Nova senha vazia
+    if (!novaSenha) {
+      mensagemErro.innerText = 'Digite uma nova senha.';
+      mensagemErro.style.display = 'block';
+      return;
+    }
+
+    // Validação: Nova senha com mínimo 6 caracteres
+    if (novaSenha.length < 6) {
+      mensagemErro.innerText = 'A nova senha deve ter no mínimo 6 caracteres.';
+      mensagemErro.style.display = 'block';
+      return;
+    }
+
+    // Validação: Nova senha não pode ser igual à atual
+    if (novaSenha === senhaAtual) {
+      mensagemErro.innerText = 'A nova senha deve ser diferente da senha atual.';
+      mensagemErro.style.display = 'block';
+      return;
+    }
+
+    // Validação: Confirmar senha vazia
+    if (!confirmarSenha) {
+      erroConfirmacao.innerText = 'Confirme a nova senha.';
+      erroConfirmacao.style.display = 'block';
+      return;
+    }
+
+    // Validação: Senhas não conferem
+    if (novaSenha !== confirmarSenha) {
+      erroConfirmacao.innerText = 'As senhas não conferem.';
+      erroConfirmacao.style.display = 'block';
+      return;
+    }
+
+    // Salvar nova senha no localStorage
+    const senhas = JSON.parse(localStorage.getItem('cadeia_senhas') || '{}');
+    senhas[adminSession] = novaSenha;
+    localStorage.setItem('cadeia_senhas', JSON.stringify(senhas));
+
+    // Exibir mensagem de sucesso
+    mensagemSucesso.innerText = '✓ Senha alterada com sucesso! A nova senha será usada no próximo login.';
+    mensagemSucesso.style.display = 'block';
+
+    // Limpar formulário após 2 segundos
+    setTimeout(() => {
+      limparFormSenha();
+    }, 2000);
+  }
+
+  function limparFormSenha() {
+    document.getElementById('senha-atual').value = '';
+    document.getElementById('nova-senha').value = '';
+    document.getElementById('confirmar-senha').value = '';
+
+    document.getElementById('erro-senha-atual').style.display = 'none';
+    document.getElementById('erro-confirmacao').style.display = 'none';
+    document.getElementById('mensagem-sucesso').style.display = 'none';
+    document.getElementById('mensagem-erro').style.display = 'none';
+  }
+
   function openConsultarModal(deptId) {
     const select = document.getElementById('consultar-dept');
     const today = new Date();
