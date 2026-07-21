@@ -739,37 +739,38 @@
 
     .dept-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(340px, 1fr));
       gap: 24px;
       padding: 60px 0;
-      max-width: 1200px;
+      max-width: 100%;
       margin: 0 auto;
     }
 
     /* Desktop (3 primeiros cards + 2 últimos centralizados) */
-    .dept-grid .dept-card:nth-child(1),
-    .dept-grid .dept-card:nth-child(2),
-    .dept-grid .dept-card:nth-child(3) {
-      max-width: 340px;
-      justify-self: center;
-    }
-
     .dept-grid .dept-card:nth-child(4) {
       grid-column: 2 / 3;
-      max-width: 340px;
       justify-self: center;
     }
 
     .dept-grid .dept-card:nth-child(5) {
       grid-column: 3 / 4;
-      max-width: 340px;
       justify-self: center;
+    }
+
+    /* Tablet Large (1280px - 1024px): ainda 3 colunas) */
+    @media (max-width: 1280px) {
+      .dept-grid {
+        grid-template-columns: repeat(3, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 50px 20px;
+      }
     }
 
     /* Tablet (2 colunas lado a lado, centralizadas) */
     @media (max-width: 1024px) {
       .dept-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 20px;
       }
 
       .dept-grid .dept-card:nth-child(4) {
