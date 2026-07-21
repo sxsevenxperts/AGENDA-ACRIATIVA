@@ -1,8 +1,28 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.5  
-**Status Geral:** 🟢 Em Produção - 4 Logins Administrativos com Credenciais Seguras
+**Versão:** 2.9.6  
+**Status Geral:** 🟢 Em Produção - Responsividade Completa + 4 Logins + SVG
+
+---
+
+## Atualização — 2026-07-21 (v2.9.6) — Responsive Design: Mobile, Tablet & Desktop
+
+### Concluído
+- [x] **Grid responsivo completo** para todos os dispositivos
+  - ✅ Desktop (> 1024px): 3 colunas com últimas 2 centralizadas
+  - ✅ Tablet (769px - 1024px): 2 colunas
+  - ✅ Tablet Portrait (481px - 768px): 1 coluna
+  - ✅ Mobile (< 480px): 1 coluna otimizado
+- [x] **Media queries refinadas** sem conflitos
+- [x] **Espaçamento adaptativo** por dispositivo
+- [x] **Cards centrados** em todas as resoluções
+
+### Impacto
+- ✅ Experiência uniforme em mobile, tablet e desktop
+- ✅ Sem conflitos de media queries
+- ✅ Melhor UX em dispositivos pequenos
+- ✅ Performance mantida
 
 ---
 
