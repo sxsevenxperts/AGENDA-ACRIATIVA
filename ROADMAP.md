@@ -20,6 +20,22 @@
 - [x] **Validação de capacidade**: Verifica se overbooking é possível por horário/data.
 - [x] **Rastreamento de participantes**: Campo "Quantas pessoas participarão" obrigatório, armazenado em appointment.
 - [x] **Alerta de capacidade**: Mensagem clara quando slot está cheio com opção de escolher outro horário.
+- [x] **Orientações e Responsabilidades**: 8 pontos detalhados sobre uso do espaço, equipamentos e segurança.
+- [x] **Termos de Aceite (3 checkboxes obrigatórios)**: 
+  - Termos e Orientações
+  - LGPD (Lei Geral de Proteção de Dados)
+  - Política de Privacidade
+- [x] **Política de Privacidade Adaptada**: Documento completo POLITICA_PRIVACIDADE.md
+  - Seções: Coleta, Retenção, Compartilhamento, Direitos (LGPD), Cookies, Compromissos
+  - Conformidade total com LGPD (Lei nº 13.709/2018)
+- [x] **Modal de Política de Privacidade**: Visualizador interativo no formulário com link direto
+- [x] **Documento LGPD Completo (v1.0)**: 18 seções com total conformidade legal e segurança jurídica
+  - Bases legais de tratamento (Art. 7º LGPD)
+  - Direitos garantidos do Titular (Art. 17-22)
+  - Medidas de segurança técnicas, administrativas e físicas (9 camadas)
+  - Procedimentos de notificação de incidente
+  - DPO (Data Protection Officer) designado e contatos
+  - Declaração de conformidade com LGPD + Lei Constitucional + CDC
 
 ### Impactos
 - **Usabilidade**: Simplificação de 7 departamentos para 4 espaços principais, formulário único reduz confusão.
