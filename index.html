@@ -3111,133 +3111,151 @@
   // ==========================================
   
   const DEPARTMENTS = {
-    'studio': {
-      id: 'studio',
-      name: 'Stúdio',
-      subtitle: 'Estúdio de gravação audiovisual — sessões de 2 horas',
-      color: '#E8732A',
-      icon: '<i class="ph ph-video-camera" style="font-size: 1.2em; vertical-align: middle;"></i>',
-      durationHours: 2,
-      bufferMinutes: 15,
-      startHour: 8,
-      endHour: 18,
-      prefix: 'STU',
-      defaultOrientacoes: 'Chegar 15 minutos antes.\\nTrazer HD externo.\\nNão é permitido alimentos.'
-    },
-    'sebrae': {
-      id: 'sebrae',
-      name: 'Sebrae Labs',
-      subtitle: 'Laboratório de inovação e prototipagem — sessões de 1 hora',
-      color: '#2196F3',
-      icon: '<i class="ph ph-flask" style="font-size: 1.2em; vertical-align: middle;"></i>',
-      durationHours: 1,
-      bufferMinutes: 15,
-      startHour: 8,
-      endHour: 18,
-      prefix: 'SEB',
-      defaultOrientacoes: 'Uso das máquinas requer aprovação prévia.\\nTrazer EPI se necessário.'
-    },
     'coworking': {
       id: 'coworking',
       name: 'Coworking',
-      subtitle: 'Espaço de trabalho compartilhado — períodos de 4 horas',
+      subtitle: 'Espaço de trabalho compartilhado para equipes e empreendedores',
+      capacity: 70,
       color: '#4CAF50',
       icon: '<i class="ph ph-desktop" style="font-size: 1.2em; vertical-align: middle;"></i>',
       durationHours: 4,
       bufferMinutes: 0,
-      startHour: 8,
-      endHour: 17,
+      operatingHours: [
+        { start: 8, end: 12 },
+        { start: 13, end: 17 }
+      ],
       prefix: 'COW',
       defaultOrientacoes: 'Silêncio na área compartilhada.\\nLimpe sua mesa após o uso.'
     },
-    'auditorio': {
-      id: 'auditorio',
-      name: 'Auditório',
-      subtitle: 'Auditório para eventos 120 pessoas — sessões de 2 horas',
-      color: '#9C27B0',
-      icon: '<i class="ph ph-microphone-stage" style="font-size: 1.2em; vertical-align: middle;"></i>',
+    'linklab': {
+      id: 'linklab',
+      name: 'Link Lab',
+      subtitle: 'Laboratório de inovação e prototipagem',
+      capacity: 120,
+      color: '#2196F3',
+      icon: '<i class="ph ph-flask" style="font-size: 1.2em; vertical-align: middle;"></i>',
       durationHours: 2,
-      bufferMinutes: 30,
-      startHour: 8,
-      endHour: 22,
-      prefix: 'AUD',
-      defaultOrientacoes: 'Não colar fitas na parede.\\nEquipamento de som incluso.'
-    },
-    'secitece': {
-      id: 'secitece',
-      name: 'SECITECE',
-      subtitle: 'Ciência, Tecnologia e Educação Superior — sessões de 1 hora',
-      color: '#FF9800',
-      icon: '<i class="ph ph-binoculars" style="font-size: 1.2em; vertical-align: middle;"></i>',
-      durationHours: 1,
       bufferMinutes: 15,
-      startHour: 8,
-      endHour: 17,
-      prefix: 'SEC',
-      defaultOrientacoes: 'Atendimento por ordem de agendamento.\\nTrazer documentos impressos.'
+      operatingHours: [
+        { start: 8, end: 12 },
+        { start: 13, end: 17 }
+      ],
+      prefix: 'LAB',
+      defaultOrientacoes: 'Uso das máquinas requer aprovação prévia.\\nTrazer EPI se necessário.'
+    },
+    'salatreinamento': {
+      id: 'salatreinamento',
+      name: 'Sala de Treinamento',
+      subtitle: 'Espaço para treinamentos, workshops e capacitações',
+      capacity: 30,
+      color: '#FF9800',
+      icon: '<i class="ph ph-book" style="font-size: 1.2em; vertical-align: middle;"></i>',
+      durationHours: 2,
+      bufferMinutes: 15,
+      operatingHours: [
+        { start: 8, end: 12 },
+        { start: 13, end: 17 },
+        { start: 18, end: 21 }
+      ],
+      prefix: 'TRN',
+      defaultOrientacoes: 'Atendimento por ordem de agendamento.\\nMaterialidade disponível sob consulta.'
     },
     'atrio': {
       id: 'atrio',
       name: 'Átrio',
-      subtitle: 'Espaço de convivência e eventos — sessões de 2 horas',
+      subtitle: 'Espaço de convivência e eventos para a comunidade',
+      capacity: 150,
       color: '#51B7DE',
       icon: '<i class="ph ph-bank" style="font-size: 1.2em; vertical-align: middle;"></i>',
       durationHours: 2,
       bufferMinutes: 30,
-      startHour: 8,
-      endHour: 20,
+      operatingHours: [
+        { start: 8, end: 12 },
+        { start: 13, end: 17 },
+        { start: 18, end: 21 }
+      ],
       prefix: 'ATR',
       defaultOrientacoes: 'Sujeito a lotação.\\nEventos com música precisam de alvará especial.'
-    },
-    'podcasts': {
-      id: 'podcasts',
-      name: 'Podcasts',
-      subtitle: 'Estúdio de podcasts — gravação profissional de áudio — sessões de 1,5 horas',
-      color: '#D946EF',
-      icon: '<i class="ph ph-microphone" style="font-size: 1.2em; vertical-align: middle;"></i>',
-      durationHours: 1.5,
-      bufferMinutes: 15,
-      startHour: 8,
-      endHour: 18,
-      prefix: 'POD',
-      defaultOrientacoes: 'Chegar 10 minutos antes.\\nEste é um espaço silencioso.\\nTodos devem desligar celulares.'
     }
   };
 
-  // Default Questions
+  // Default Questions - Unified form for all departments
   const DEFAULT_QUESTIONS = {
-    'studio': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%' },
-      { id: 'q2', label: 'CPF', type: 'text', required: true, width: '50%', placeholder: '000.000.000-00', mask: 'cpf' },
-      { id: 'q3', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '50%', placeholder: '(00) 00000-0000', mask: 'phone' },
-      { id: 'q4', label: 'E-mail', type: 'email', required: false, width: '100%' },
-      { id: 'q5', label: 'Tipo de Gravação', type: 'select', required: true, width: '50%', options: ['Vídeo Institucional', 'Podcast', 'Videoaula', 'Entrevista', 'Ensaio Fotográfico', 'Live', 'Outro'] },
-      { id: 'q6', label: 'Trará Equipamento Próprio?', type: 'select', required: true, width: '50%', options: ['Não', 'Sim câmera', 'Sim notebook', 'Sim ambos', 'Outro'] },
-      { id: 'q7', label: 'Descrição do Projeto', type: 'textarea', required: true, width: '100%' }
-    ],
-    'sebrae': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%' },
-      { id: 'q2', label: 'CNPJ/MEI', type: 'text', required: true, width: '50%', placeholder: '00.000.000/0000-00', mask: 'cnpj' },
-      { id: 'q3', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '50%', mask: 'phone' },
-      { id: 'q4', label: 'Equipamento Necessário', type: 'select', required: true, width: '100%', options: ['Impressora 3D', 'Cortadora Laser', 'Plotter', 'Scanner 3D', 'Bancada Eletrônica', 'Apenas espaço', 'Múltiplos'] },
-      { id: 'q5', label: 'Descrição do Projeto', type: 'textarea', required: true, width: '100%' }
-    ],
     'coworking': [
-       { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%' },
-       { id: 'q2', label: 'CPF', type: 'text', required: true, width: '50%', mask: 'cpf' },
-       { id: 'q3', label: 'Telefone', type: 'tel', required: true, width: '50%', mask: 'phone' },
-       { id: 'q4', label: 'Finalidade', type: 'select', required: true, width: '100%', options: ['Trabalho Remoto', 'Estudo', 'Reunião', 'Desenvolvimento', 'Outro'] },
-       { id: 'q5', label: 'Observações', type: 'textarea', required: false, width: '100%' }
+      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
+      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
+      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
+      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
+      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
+      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
+      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
+      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
+      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
+      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
+      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
+      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
+      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
+      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
+      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
     ],
-    'podcasts': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%' },
-      { id: 'q2', label: 'CPF', type: 'text', required: true, width: '50%', placeholder: '000.000.000-00', mask: 'cpf' },
-      { id: 'q3', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '50%', placeholder: '(00) 00000-0000', mask: 'phone' },
-      { id: 'q4', label: 'E-mail', type: 'email', required: false, width: '100%' },
-      { id: 'q5', label: 'Nome do Podcast', type: 'text', required: true, width: '100%' },
-      { id: 'q6', label: 'Assunto/Tema do Episódio', type: 'textarea', required: true, width: '100%' },
-      { id: 'q7', label: 'Número de Participantes', type: 'select', required: true, width: '50%', options: ['1 (Solo)', '2 (Dupla)', '3 (Trio)', '4+'] },
-      { id: 'q8', label: 'Possui Roteiro?', type: 'select', required: true, width: '50%', options: ['Sim', 'Não', 'Parcial'] }
+    'linklab': [
+      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
+      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
+      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
+      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
+      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
+      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
+      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
+      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
+      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
+      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
+      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
+      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
+      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
+      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
+      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
+    ],
+    'salatreinamento': [
+      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
+      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
+      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
+      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
+      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
+      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
+      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
+      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
+      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
+      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
+      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
+      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
+      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
+      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
+      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
+    ],
+    'atrio': [
+      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
+      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
+      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
+      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
+      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
+      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
+      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
+      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
+      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
+      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
+      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
+      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
+      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
+      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
+      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
     ]
   };
 
@@ -4307,30 +4325,35 @@
   function generateTimeSlots() {
     const container = document.getElementById('dynamic-slots-container');
     const selectedDate = document.getElementById('dynamic-date').value;
-    
+
     if (!selectedDate) {
       container.innerHTML = '<div style="grid-column: 1/-1; color: var(--gray-500); font-size: 14px;">Por favor, selecione uma data acima.</div>';
       return;
     }
-    
+
     container.innerHTML = '';
-    
+
     const dept = DEPARTMENTS[currentDeptId];
-    let currentMin = dept.startHour * 60; // 08:00 = 480
-    const endMin = dept.endHour * 60;
-    
     const slots = [];
     const sessionMins = dept.durationHours * 60;
-    
-    while(currentMin + sessionMins <= endMin) {
-      const startStr = formatMin(currentMin);
-      const endStr = formatMin(currentMin + sessionMins);
-      slots.push(`${startStr} - ${endStr}`);
-      
-      // Next slot logic: add duration + buffer
-      currentMin += sessionMins + dept.bufferMinutes;
-    }
-    
+
+    // Generate slots for each operating hour period
+    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }]; // Fallback for backwards compatibility
+
+    operatingHours.forEach(period => {
+      let currentMin = period.start * 60; // Convert hour to minutes
+      const endMin = period.end * 60;
+
+      while(currentMin + sessionMins <= endMin) {
+        const startStr = formatMin(currentMin);
+        const endStr = formatMin(currentMin + sessionMins);
+        slots.push(`${startStr} - ${endStr}`);
+
+        // Next slot logic: add duration + buffer
+        currentMin += sessionMins + dept.bufferMinutes;
+      }
+    });
+
     // Get real bookings for this date and dept
     const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const bookedTimes = allAppts
@@ -4361,6 +4384,26 @@
     return `${h}:${m}`;
   }
 
+  function generateTimeSlots(dept) {
+    const slots = [];
+    const sessionMins = dept.durationHours * 60;
+    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }];
+
+    operatingHours.forEach(period => {
+      let currentMin = period.start * 60;
+      const endMin = period.end * 60;
+
+      while(currentMin + sessionMins <= endMin) {
+        const startStr = formatMin(currentMin);
+        const endStr = formatMin(currentMin + sessionMins);
+        slots.push(`${startStr} - ${endStr}`);
+        currentMin += sessionMins + dept.bufferMinutes;
+      }
+    });
+
+    return slots;
+  }
+
   // ==========================================
   // SUBMIT & QR CODE (FINALIZAR)
   // ==========================================
@@ -4370,10 +4413,34 @@
       alert("Você deve concordar com os termos.");
       return;
     }
-    
+
     // Generate Codes
     const dept = DEPARTMENTS[currentDeptId];
-    
+
+    // Validate capacity
+    const numParticipants = parseInt(formData['Quantas pessoas participarão desta sessão?'] || formData['q12b'] || 0);
+    if (isNaN(numParticipants) || numParticipants < 1) {
+      alert("Por favor, indique um número válido de participantes.");
+      return;
+    }
+
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const slotBookings = appointments.filter(a =>
+      a.deptId === currentDeptId &&
+      a.date === formData.date &&
+      a.time === formData.time
+    );
+
+    const currentCapacity = slotBookings.reduce((sum, appt) => {
+      const participants = parseInt(appt.numParticipants || 0);
+      return sum + participants;
+    }, 0);
+
+    if (currentCapacity + numParticipants > dept.capacity) {
+      alert(`⚠️ Capacidade insuficiente!\n\nCapacidade máxima: ${dept.capacity} pessoas\nJá reservadas: ${currentCapacity} pessoas\nVocê quer: ${numParticipants} pessoas\n\nEscolha outro horário.`);
+      return;
+    }
+
     // Counter logic
     let counters = JSON.parse(localStorage.getItem('cadeia_counters') || '{}');
     counters[currentDeptId] = (counters[currentDeptId] || 0) + 1;
@@ -4398,6 +4465,7 @@
         date: formData.date,
         time: formData.time,
         data: formData,
+        numParticipants: numParticipants,
         status: 'PENDENTE',  // Waiting for admin approval
         user_id: userSession ? userSession.id : null,  // Connect to user if logged in
         user_email: userSession ? userSession.email : null,
@@ -4908,27 +4976,16 @@
     const deptId = document.getElementById('consultar-dept').value;
     const date = document.getElementById('consultar-date').value;
     const container = document.getElementById('consultar-slots-container');
-    
+
     if (!deptId || !date) {
       container.innerHTML = '<div style="grid-column: 1/-1; color: var(--gray-500); font-size: 14px; text-align: center; padding: 20px; border: 1px dashed var(--gray-300); border-radius: 8px;">Selecione um espaço e uma data acima para visualizar a disponibilidade.</div>';
       return;
     }
-    
+
     container.innerHTML = '';
-    
+
     const dept = DEPARTMENTS[deptId];
-    let currentMin = dept.startHour * 60;
-    const endMin = dept.endHour * 60;
-    
-    const slots = [];
-    const sessionMins = dept.durationHours * 60;
-    
-    while(currentMin + sessionMins <= endMin) {
-      const startStr = formatMin(currentMin);
-      const endStr = formatMin(currentMin + sessionMins);
-      slots.push(`${startStr} - ${endStr}`);
-      currentMin += sessionMins + dept.bufferMinutes;
-    }
+    const slots = generateTimeSlots(dept);
     
     const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const bookedTimes = allAppts
@@ -5243,17 +5300,7 @@
     if (!date || !deptId) return;
 
     const dept = DEPARTMENTS[deptId];
-    let currentMin = dept.startHour * 60;
-    const endMin = dept.endHour * 60;
-    const slots = [];
-    const sessionMins = dept.durationHours * 60;
-
-    while(currentMin + sessionMins <= endMin) {
-      const startStr = formatMin(currentMin);
-      const endStr = formatMin(currentMin + sessionMins);
-      slots.push(`${startStr} - ${endStr}`);
-      currentMin += sessionMins + dept.bufferMinutes;
-    }
+    const slots = generateTimeSlots(dept);
 
     const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const bookedTimes = allAppts
@@ -5446,17 +5493,7 @@
 
     // Load time slots — baseados no departamento do próprio agendamento
     const dept = DEPARTMENTS[appt.deptId];
-    let currentMin = dept.startHour * 60;
-    const endMin = dept.endHour * 60;
-    const slots = [];
-    const sessionMins = dept.durationHours * 60;
-
-    while(currentMin + sessionMins <= endMin) {
-      const startStr = formatMin(currentMin);
-      const endStr = formatMin(currentMin + sessionMins);
-      slots.push(`${startStr} - ${endStr}`);
-      currentMin += sessionMins + dept.bufferMinutes;
-    }
+    const slots = generateTimeSlots(dept);
 
     const timeSelect = document.getElementById('edit-time');
     timeSelect.innerHTML = '';
@@ -5523,8 +5560,12 @@
     const horarios = JSON.parse(localStorage.getItem('cadeia_horarios') || '{}');
     const saved = horarios[deptId];
 
-    aberturaEl.value = saved ? saved.abertura : `0${dept.startHour}:00`.slice(-5);
-    fechamentoEl.value = saved ? saved.fechamento : `0${dept.endHour}:00`.slice(-5);
+    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }];
+    const firstStart = operatingHours[0].start;
+    const lastEnd = operatingHours[operatingHours.length - 1].end;
+
+    aberturaEl.value = saved ? saved.abertura : `0${firstStart}:00`.slice(-5);
+    fechamentoEl.value = saved ? saved.fechamento : `0${lastEnd}:00`.slice(-5);
   }
 
   function saveOperatingHours() {
@@ -5558,8 +5599,12 @@
     if (!deptId) { alert('Selecione o departamento.'); return; }
 
     const dept = DEPARTMENTS[deptId];
-    document.getElementById('horario-abertura').value = `0${dept.startHour}:00`.slice(-5);
-    document.getElementById('horario-fechamento').value = `0${dept.endHour}:00`.slice(-5);
+    const operatingHours = dept.operatingHours || [{ start: 8, end: 17 }];
+    const firstStart = operatingHours[0].start;
+    const lastEnd = operatingHours[operatingHours.length - 1].end;
+
+    document.getElementById('horario-abertura').value = `0${firstStart}:00`.slice(-5);
+    document.getElementById('horario-fechamento').value = `0${lastEnd}:00`.slice(-5);
   }
 
   // ==========================================
@@ -5582,12 +5627,8 @@
     // Calculate occupancy (approximation)
     const allSlots = filtered.reduce((acc, a) => {
       const dept = DEPARTMENTS[a.deptId];
-      let current = dept.startHour * 60;
-      const end = dept.endHour * 60;
-      while(current + (dept.durationHours * 60) <= end) {
-        acc++;
-        current += (dept.durationHours * 60) + dept.bufferMinutes;
-      }
+      const slots = generateTimeSlots(dept);
+      acc += slots.length;
       return acc;
     }, 0);
 
