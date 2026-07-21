@@ -1,8 +1,35 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.3  
-**Status Geral:** 🟢 Em Produção - RBAC com 4 Acessos Distintos + Auditoria + Consentimento LGPD Integrado
+**Versão:** 2.9.4  
+**Status Geral:** 🟢 Em Produção - UI/UX com Vectors SVG + Cards Centralizados
+
+---
+
+## Atualização — 2026-07-21 (v2.9.4) — UI/UX Refinement: SVG Vectors + Card Layout Centering
+
+### Concluído
+- [x] **Grid de departamentos centralizado**: Últimos 2 cards (Átrio e Stúdio) agora centralizados na mesma linha
+- [x] **SVG inline para todos os ícones**: Substituídos Phosphor Icons por vetores SVG customizados
+  - ✅ Ícone Coworking (desktop)
+  - ✅ Ícone Link Lab (laboratório)
+  - ✅ Ícone Sala de Treinamento (livro)
+  - ✅ Ícone Átrio (edifício)
+  - ✅ Ícone Stúdio de Música (microfone)
+  - ✅ Ícones de ação (calendário, busca)
+- [x] **Remoção de emojis visuais**: Removidos emojis de toda a interface
+  - ✅ Removidos de admin dropdown (🏛️, 📋, 🎵)
+  - ✅ Removidos de avisos (⚠️)
+  - ✅ Removidos de abas de formulário (⚙️)
+  - ✅ Removidos de instruções (📋)
+  - ✅ Removidos de status e ações
+- [x] **Melhor responsividade visual**: Layout mais limpo e profissional
+
+### Impacto
+- ✅ Interface mais moderna e consistente
+- ✅ Melhor alinhamento visual
+- ✅ Carregamento mais rápido (SVG inline vs ícones)
+- ✅ Melhor acessibilidade (sem dependência de fontes externas)
 
 ---
 
