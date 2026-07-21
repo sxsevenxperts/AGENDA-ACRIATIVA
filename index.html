@@ -742,19 +742,31 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       padding: 60px 0;
-      justify-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    /* Desktop (3 colunas) — Centralize last 2 cards when alone in final row */
+    /* Desktop (3 primeiros cards + 2 últimos centralizados) */
+    .dept-grid .dept-card:nth-child(1),
+    .dept-grid .dept-card:nth-child(2),
+    .dept-grid .dept-card:nth-child(3) {
+      max-width: 340px;
+      justify-self: center;
+    }
+
     .dept-grid .dept-card:nth-child(4) {
       grid-column: 2 / 3;
+      max-width: 340px;
+      justify-self: center;
     }
 
     .dept-grid .dept-card:nth-child(5) {
       grid-column: 3 / 4;
+      max-width: 340px;
+      justify-self: center;
     }
 
-    /* Tablet (2 colunas) — Centralize last card when alone */
+    /* Tablet (2 colunas lado a lado, centralizadas) */
     @media (max-width: 1024px) {
       .dept-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -762,32 +774,41 @@
 
       .dept-grid .dept-card:nth-child(4) {
         grid-column: 1 / 2;
+        justify-self: center;
       }
 
       .dept-grid .dept-card:nth-child(5) {
         grid-column: 2 / 3;
+        justify-self: center;
       }
     }
 
-    /* Tablet Portrait (1-2 colunas) */
+    /* Tablet Portrait (1 coluna) */
     @media (max-width: 768px) {
       .dept-grid {
         grid-template-columns: 1fr;
         padding: 40px 0;
       }
 
-      .dept-grid .dept-card:nth-child(4),
-      .dept-grid .dept-card:nth-child(5) {
-        grid-column: auto;
+      .dept-grid .dept-card {
+        max-width: none;
+        grid-column: auto !important;
+        justify-self: auto;
       }
     }
 
-    /* Mobile (1 coluna) */
+    /* Mobile (1 coluna otimizado) */
     @media (max-width: 480px) {
       .dept-grid {
         grid-template-columns: 1fr;
         gap: 16px;
         padding: 32px 0;
+      }
+
+      .dept-grid .dept-card {
+        max-width: none;
+        grid-column: auto !important;
+        justify-self: auto;
       }
     }
 
