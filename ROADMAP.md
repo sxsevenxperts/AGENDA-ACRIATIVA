@@ -1,8 +1,25 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.3.2  
+**Versão:** 2.3.3  
 **Status Geral:** 🟢 Produção - Pronto para Deploy (Agendar/Consultar por card + Painel Diretoria)
+
+---
+
+## Atualização — 2026-07-21 (v2.3.3) — Footer Redesign com Google Maps
+
+### Concluído
+- [x] **Footer completamente redesenhado**: Substituído layout antigo por novo design com 3 instituições (Prefeitura de Sobral | Cadeia Criativa | STDE).
+- [x] **Integração Google Maps**: Cada instituição tem botão direto para Google Maps com coordenadas precisas.
+- [x] **Cards interativos com hover effects**: Cada instituição em card com ícone, descrição, endereço completo e links.
+- [x] **Responsividade mobile**: Layout colapsa para 1 coluna em viewports ≤ 640px, sem horizontal overflow.
+- [x] **Links funcionais**: Botões para Google Maps, portal, telefone e WhatsApp em cada seção.
+- [x] **Validação visual**: Desktop (1200px) e mobile (390px) testados e funcionando perfeitamente.
+
+### Impactos
+- **Usuário:** Footer muito mais informativo e fácil de acessar informações/endereços das 3 instituições.
+- **UX:** Hovering nos cards cria feedback visual; links diretos para Google Maps eliminam navegação extra.
+- **Branding:** Design moderno com cores do sistema (cyan gradient nos botões).
 
 ---
 

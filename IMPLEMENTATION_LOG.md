@@ -1,8 +1,60 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.3.2  
+**Versão Atual:** 2.3.3  
 **Status:** ✅ Implementação Completa + Produção
+
+---
+
+## 2026-07-21 — Footer Redesign com Google Maps integrado
+
+### Objetivo
+Criar um footer mais interessante e informativo, destacando as 3 instituições principais (Prefeitura de Sobral, Cadeia Criativa, STDE) com links diretos para Google Maps e canais de contato.
+
+### Alterações realizadas
+- **Nova estrutura HTML do footer**: Substituído layout antigo (grid 2fr 1fr 1fr genérico) por 3 cards institucionais.
+  - **Estrutura**: `.footer-container` (grid 1fr 1fr 1fr) → 3x `.footer-institution` (cards com ícone, título, descrição, endereço, links)
+  - **Conteúdo**:
+    1. **Prefeitura de Sobral**: 🏛️ — Praça Lampião do Nordeste, 1 — Links: Google Maps + Portal
+    2. **Cadeia Criativa**: ✨ — Rua Viriato de Medeiros, 1250 — Links: Google Maps + Telefone
+    3. **STDE**: 💼 — Rua Viriato de Medeiros, 1250 — Links: Google Maps + WhatsApp
+  - **Coordenadas**: Google Maps com coordenadas precisas (-3.7691,-40.3486 para Prefeitura; -3.7639,-40.3519 para Cadeia/STDE)
+
+- **Novo CSS (`.footer-institution*`)**: 
+  - Cards com background rgba com border cyan semi-transparente
+  - Hover effects: translateY(-4px), shadow, background mais brilhante
+  - Botões em gradient cyan com hover translateX
+  - Responsividade: collapse para 1 coluna em mobile (≤640px)
+
+- **Links interativos**:
+  - Google Maps: `href="https://maps.google.com/?q=[latitude],[longitude]"`
+  - Botões com ícones Phosphor (ph-map-pin, ph-phone, ph-whatsapp, ph-globe)
+  - Hover effects nos links
+
+### Decisões técnicas
+- **Card-based design**: Melhor separação visual das 3 instituições; cada uma é uma entidade distinta
+- **Google Maps coordinates**: Precisão geográfica vs. query string; coords são mais robustos
+- **Gradient buttons**: Cyan gradient (cc-cyan → cc-cyan-dark) mantém consistência com design system
+- **Ícones Phosphor**: Já integrados no projeto; melhor que emojis para acessibilidade
+
+### Validações executadas
+- **Desktop (1200px)**: 3 cards em linha, hover effects funcionando, todos os 6 links clicáveis
+- **Mobile (390px)**: Layout colapsado para 1 coluna, sem horizontal overflow, botões acessíveis
+- **Visual**: Screenshots capturados em desktop-footer.png e footer-mobile.png
+- **Funcionalidade**: 3 instituições renderizadas, 6 links (2 por instituição), 0 erros de página
+
+### Impactos
+- **Usuário**: Acesso rápido a Google Maps, portais e contato das 3 instituições; visual mais atraente
+- **UX/UI**: Feedback visual com hover; cores (cyan) reforçam branding
+- **Acessibilidade**: Ícones Phosphor + texto alt em links; sem reliance em emojis
+
+### Pendências
+- Nenhuma — footer completamente implementado e validado
+
+### Arquivos principais envolvidos
+- `index.html` (CSS + HTML novo footer)
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
 
 ---
 

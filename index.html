@@ -1568,6 +1568,105 @@
     }
 
     /* ============================================
+       FOOTER V2 - REDESIGN COM GOOGLE MAPS
+       ============================================ */
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+      padding: 0 20px;
+    }
+
+    .footer-institution {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(81, 183, 222, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all 0.3s var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-institution:hover {
+      background: rgba(81, 183, 222, 0.1);
+      border-color: rgba(81, 183, 222, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(81, 183, 222, 0.15);
+    }
+
+    .footer-institution-icon {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .footer-institution-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin: 0;
+    }
+
+    .footer-institution-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .footer-institution-address {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+      margin: 8px 0 0 0;
+      padding: 12px 0 0 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-institution-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .footer-institution-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--cc-cyan) 0%, var(--cc-cyan-dark) 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.25s var(--ease-out);
+      border: none;
+      cursor: pointer;
+    }
+
+    .footer-institution-link:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(81, 183, 222, 0.3);
+    }
+
+    .footer-institution-link i {
+      font-size: 16px;
+    }
+
+    .footer-copyrights {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ============================================
        RESPONSIVE
        ============================================ */
     
@@ -1999,6 +2098,12 @@
       .footer { margin-top: 32px; }
       .footer-grid { text-align: center; }
       .footer-links { align-items: center; }
+
+      /* Novo footer responsivo */
+      .footer-container { grid-template-columns: 1fr; gap: 20px; padding: 0 16px; }
+      .footer-institution { padding: 20px; }
+      .footer-institution-title { font-size: 16px; }
+      .footer-institution-icon { font-size: 28px; }
     }
 
     /* Respeita usuários que preferem menos movimento */
@@ -2383,37 +2488,70 @@
   <!-- ==================== FOOTER ==================== -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <strong style="color:var(--white);font-family:'Montserrat',sans-serif;font-size:16px;">Cadeia Criativa</strong>
-          <p>Espaço de inovação, tecnologia e economia criativa da Prefeitura de Sobral. Sistema digital de agendamento de espaços.</p>
-        </div>
-        <div>
-          <div class="footer-title">Links Úteis</div>
-          <div class="footer-links">
-            <a href="https://sobral.ce.gov.br/" target="_blank">Portal da Prefeitura</a>
-            <a href="#">Secretaria do Trabalho e Desenvolvimento Econômico</a>
-            <a href="#">Cadeia Criativa</a>
-            <a href="#">Termos de Uso</a>
+      <!-- Novo Footer com 3 Instituições -->
+      <div class="footer-container">
+        <!-- Prefeitura de Sobral -->
+        <div class="footer-institution">
+          <div class="footer-institution-icon">🏛️</div>
+          <h3 class="footer-institution-title">Prefeitura de Sobral</h3>
+          <p class="footer-institution-desc">Governo Municipal — Sede Administrativa</p>
+          <p class="footer-institution-address">
+            Praça Lampião do Nordeste, 1<br>
+            Centro — Sobral, CE 63100-000
+          </p>
+          <div class="footer-institution-links">
+            <a href="https://maps.google.com/?q=-3.7691,-40.3486" target="_blank" rel="noopener noreferrer" class="footer-institution-link">
+              <i class="ph ph-map-pin"></i> Ver no Mapa
+            </a>
+            <a href="https://sobral.ce.gov.br/" target="_blank" rel="noopener noreferrer" class="footer-institution-link">
+              <i class="ph ph-globe"></i> Portal
+            </a>
           </div>
         </div>
-        <div>
-          <div class="footer-title">Localização</div>
-          <div class="footer-links">
-            <a href="https://maps.google.com/?q=Rua+Viriato+de+Medeiros,+1250,+Sobral,+CE" target="_blank" rel="noopener noreferrer">📍 Rua Viriato de Medeiros, 1250</a>
-            <a href="https://maps.google.com/?q=Rua+Viriato+de+Medeiros,+1250,+Sobral,+CE" target="_blank" rel="noopener noreferrer">Centro — Sobral, CE</a>
+
+        <!-- Cadeia Criativa (Centro) -->
+        <div class="footer-institution">
+          <div class="footer-institution-icon">✨</div>
+          <h3 class="footer-institution-title">Cadeia Criativa</h3>
+          <p class="footer-institution-desc">Espaço de Inovação e Economia Criativa</p>
+          <p class="footer-institution-address">
+            Rua Viriato de Medeiros, 1250<br>
+            Centro — Sobral, CE 63100-000
+          </p>
+          <div class="footer-institution-links">
+            <a href="https://maps.google.com/?q=-3.7639,-40.3519" target="_blank" rel="noopener noreferrer" class="footer-institution-link">
+              <i class="ph ph-map-pin"></i> Ver no Mapa
+            </a>
+            <a href="tel:+558836771100" class="footer-institution-link">
+              <i class="ph ph-phone"></i> (88) 3677-1100
+            </a>
           </div>
         </div>
-        <div>
-          <div class="footer-title">Telefone</div>
-          <div class="footer-links">
-            <a href="tel:+558836771100">📞 (88) 3677-1100</a>
-            <a href="https://wa.me/558836771100" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+
+        <!-- STDE - Secretaria do Trabalho -->
+        <div class="footer-institution">
+          <div class="footer-institution-icon">💼</div>
+          <h3 class="footer-institution-title">STDE</h3>
+          <p class="footer-institution-desc">Secretaria do Trabalho e Desenvolvimento Econômico</p>
+          <p class="footer-institution-address">
+            Rua Viriato de Medeiros, 1250<br>
+            Centro — Sobral, CE 63100-000
+          </p>
+          <div class="footer-institution-links">
+            <a href="https://maps.google.com/?q=-3.7639,-40.3519" target="_blank" rel="noopener noreferrer" class="footer-institution-link">
+              <i class="ph ph-map-pin"></i> Ver no Mapa
+            </a>
+            <a href="https://wa.me/558836771100" target="_blank" rel="noopener noreferrer" class="footer-institution-link">
+              <i class="ph ph-whatsapp"></i> WhatsApp
+            </a>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        &copy; 2026 Prefeitura Municipal de Sobral — Cadeia Criativa. Todos os direitos reservados.
+
+      <!-- Copyright -->
+      <div class="footer-copyrights">
+        &copy; 2026 Prefeitura Municipal de Sobral — Cadeia Criativa. Todos os direitos reservados. |
+        <a href="#" style="color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 12px;">Termos de Uso</a>
       </div>
     </div>
   </footer>
