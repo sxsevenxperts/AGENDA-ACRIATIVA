@@ -1,8 +1,23 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.8.2  
+**Versão Atual:** 2.8.3  
 **Status:** ✅ Department Restructure + Stúdio de Música (5 Spaces + Unified Form + Capacity Validation + LGPD)
+
+---
+
+## 2026-07-21 — Stúdio de Música Capacity Correction (v2.8.3)
+
+### Objetivo
+Corrigir a capacidade do Stúdio de Música de 20 para 10 pessoas, conforme especificado nos requisitos finais.
+
+### Alterações realizadas
+- **Capacidade corrigida**: `capacity: 10` (antes: 20)
+- Validação de capacidade no sistema continua funcionando normalmente
+- Todos os horários e funcionalidades mantidos
+
+### Arquivos Alterados
+- `index.html`: Departamento 'musica' com capacity: 10
 
 ---
 

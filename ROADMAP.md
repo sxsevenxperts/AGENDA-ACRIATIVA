@@ -6,11 +6,16 @@
 
 ---
 
+## Atualização — 2026-07-21 (v2.8.3) — Stúdio de Música Capacity Correction
+
+### Concluído
+- [x] **Capacidade corrigida**: Stúdio de Música agora com 10 pessoas (v2.8.2 had 20)
+
 ## Atualização — 2026-07-21 (v2.8.2) — Stúdio de Música Department
 
 ### Concluído
 - [x] **Novo departamento**: Stúdio de Música adicionado ao sistema
-- [x] **Configuração**: Capacidade máxima de 20 pessoas, 3h por sessão
+- [x] **Configuração**: Capacidade máxima de 10 pessoas, 3h por sessão
 - [x] **Horários**: 08h-12h, 13h-17h, 18h-21h (suporta eventos noturnos)
 - [x] **Formulário unificado**: Formulário personalizado com tipo de evento adaptado (Gravação, Ensaio, Masterclass, Workshop Musical, Produção, Performance)
 - [x] **Login de admin**: Senha padrão "musica123" com acesso ao dashboard administrativo
