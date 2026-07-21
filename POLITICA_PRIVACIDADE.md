@@ -140,6 +140,19 @@ Se você tiver dúvidas sobre esta Política de Privacidade ou como tratamos seu
 
 Este serviço está em conformidade com a Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018) e regulamentações brasileiras de proteção de dados.
 
+**⚠️ IMPORTANTE:** Para a política de proteção de dados completa, com todas as garantias legais, cláusulas de conformidade regulatória, definições jurídicas e procedimentos detalhados, consulte o documento:
+
+📄 **LGPD_Cadeia_Criativa_v1.0.docx**
+
+Este documento contém:
+- Bases legais de tratamento (Artigo 7º LGPD)
+- Direitos garantidos do Titular (Artigos 17-22 LGPD)  
+- Medidas de segurança técnicas, administrativas e físicas
+- Procedimentos de notificação de incidentes
+- Contatos do Encarregado de Proteção de Dados (DPO)
+- Conformidade com legislação federal brasileira
+- Termo de aceite legalmente válido
+
 **Data de Atualização:** 21 de julho de 2026  
 **Versão:** 1.0
 
