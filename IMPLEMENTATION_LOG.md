@@ -1,8 +1,29 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.8.3  
-**Status:** ✅ Department Restructure + Stúdio de Música (5 Spaces + Unified Form + Capacity Validation + LGPD)
+**Versão Atual:** 2.8.4  
+**Status:** ✅ Department Finalization (5 Final Spaces + Unified Form + Capacity Validation + LGPD)
+
+---
+
+## 2026-07-21 — Department Cleanup & Code Finalization (v2.8.4)
+
+### Objetivo
+Garantir que o sistema contenha apenas os 5 departamentos finais especificados, com todas as referências a departamentos antigos removidas.
+
+### Alterações realizadas
+- **Verificação de departamentos**: Confirmado que DEPARTMENTS contém exatamente 5 departamentos
+  - coworking (70 pessoas)
+  - linklab (120 pessoas)
+  - salatreinamento (30 pessoas)
+  - atrio (150 pessoas)
+  - musica (10 pessoas)
+- **Verificação de dropdowns**: Todos os 3 dropdowns (consultar-dept, admin-dept, manual-dept-select, horario-dept-select) têm apenas estes 5 departamentos
+- **Verificação de cards**: Todos os cards (data-dept) referem apenas aos 5 departamentos
+- **Fallback corrigido**: Linha 4041 alterada para usar DEFAULT_QUESTIONS['coworking'] em vez de 'studio' (descontinuado)
+
+### Resultado
+✅ Sistema 100% limpo com apenas os 5 departamentos finais
 
 ---
 

@@ -6,6 +6,18 @@
 
 ---
 
+## Atualização — 2026-07-21 (v2.8.4) — Department Cleanup & Finalization
+
+### Concluído
+- [x] **Departamentos finalizados**: Sistema contém apenas 5 departamentos confirmados
+  - ✅ Coworking (70 pessoas)
+  - ✅ Link Lab (120 pessoas)
+  - ✅ Sala de Treinamento (30 pessoas)
+  - ✅ Átrio (150 pessoas)
+  - ✅ Stúdio de Música (10 pessoas)
+- [x] **Limpeza de código**: Removidas referências a departamentos descontinuados
+- [x] **Fallback corrigido**: Formulário usa 'coworking' como fallback padrão
+
 ## Atualização — 2026-07-21 (v2.8.3) — Stúdio de Música Capacity Correction
 
 ### Concluído
