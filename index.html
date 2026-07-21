@@ -302,6 +302,229 @@
       backdrop-filter: blur(8px);
     }
 
+    /* Logo Section */
+    .hero-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(81,183,222,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-logo-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .hero-logo {
+      height: 80px;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(81, 183, 222, 0.25);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--cc-cyan-light);
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 52px !important;
+      font-weight: 800 !important;
+      color: var(--white) !important;
+      margin-bottom: 16px !important;
+      line-height: 1.1 !important;
+      letter-spacing: -0.03em !important;
+    }
+
+    .hero-description {
+      font-size: 16px !important;
+      color: rgba(255, 255, 255, 0.75) !important;
+      max-width: 580px;
+      margin: 0 auto 40px !important;
+      line-height: 1.6 !important;
+    }
+
+    /* Search Bar */
+    .hero-search {
+      display: flex;
+      gap: 8px;
+      max-width: 500px;
+      margin: 0 auto 32px;
+      animation: slideInUp 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--gray-800);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--gray-400);
+    }
+
+    .search-input:focus {
+      box-shadow: 0 8px 32px rgba(81, 183, 222, 0.3);
+      background: var(--white);
+    }
+
+    .search-btn {
+      padding: 14px 28px;
+      background: var(--cc-yellow);
+      color: var(--cc-navy);
+      border: none;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 15px;
+      box-shadow: 0 4px 20px rgba(245, 197, 24, 0.3);
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(245, 197, 24, 0.4);
+      background: #f0b811;
+    }
+
+    /* CTAs */
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+      animation: slideInUp 0.8s ease-out 0.4s both;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .cta-primary {
+      background: var(--cc-yellow);
+      color: var(--cc-navy);
+      box-shadow: 0 8px 24px rgba(245, 197, 24, 0.35);
+    }
+
+    .cta-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(245, 197, 24, 0.45);
+      background: #f0b811;
+    }
+
+    .cta-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--white);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .cta-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-3px);
+    }
+
+    /* Stats */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      animation: slideInUp 0.8s ease-out 0.6s both;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 20px 32px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(81, 183, 222, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--cc-yellow);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+
     /* ============================================
        DEPARTMENT GRID
        ============================================ */
@@ -1130,6 +1353,15 @@
       .header-nav { display: none; }
       .header-logos img { height: 36px; }
       .header-title { font-size: 15px; }
+      .hero { padding: 40px 0 60px; }
+      .hero-title { font-size: 36px !important; }
+      .hero-description { font-size: 15px !important; }
+      .hero-logo { height: 60px; }
+      .hero-search { flex-direction: column; }
+      .hero-ctas { flex-direction: column; gap: 12px; }
+      .cta-primary, .cta-secondary { width: 100%; justify-content: center; }
+      .hero-stats { gap: 16px; }
+      .stat-card { padding: 16px 24px; }
       .hero h1 { font-size: 28px; }
       .hero p { font-size: 15px; }
       .dept-grid { grid-template-columns: 1fr; }
@@ -1425,6 +1657,19 @@
     }
 
     @media (max-width: 640px) {
+      .hero { padding: 32px 0 48px; }
+      .hero-title { font-size: 28px !important; }
+      .hero-subtitle { font-size: 12px; }
+      .hero-logo { height: 50px; }
+      .hero-search { max-width: none; }
+      .search-input { padding: 12px 16px; font-size: 14px; }
+      .search-btn { padding: 12px 20px; font-size: 14px; }
+      .cta-primary, .cta-secondary { padding: 12px 24px; font-size: 14px; }
+      .stat-card { padding: 12px 16px; }
+      .stat-number { font-size: 24px; }
+      .stat-label { font-size: 12px; }
+      .hero-stats { gap: 12px; }
+
       .toast {
         max-width: none;
         margin: 0 10px;
@@ -1491,12 +1736,53 @@
 
   <!-- ==================== HERO ==================== -->
   <section class="hero">
+    <div class="hero-gradient"></div>
     <div class="container hero-content">
-      <div class="hero-badge">
-        <i class="ph ph-calendar-blank"></i> Agendamento Digital
+      <!-- Logo Destaque -->
+      <div class="hero-logo-section">
+        <img src="assets/logo-cadeia-criativa.jpg" alt="Cadeia Criativa" class="hero-logo" onerror="this.style.display='none'">
+        <div class="hero-subtitle">CADEIA CRIATIVA</div>
       </div>
-      <h1>Agende seu espaço na<br><span class="accent">Cadeia Criativa</span></h1>
-      <p>Reserve estúdios, laboratórios, coworking, auditório e mais. Escolha o departamento, selecione o horário e receba sua senha digital com QR Code.</p>
+
+      <!-- Título Principal -->
+      <h1 class="hero-title">
+        Agende seu Espaço
+      </h1>
+      <p class="hero-description">
+        Reserve estúdios, laboratórios, coworking, auditório e mais. Escolha o departamento, selecione o horário e receba sua senha digital com QR Code.
+      </p>
+
+      <!-- Barra de Busca -->
+      <div class="hero-search">
+        <input type="text" class="search-input" placeholder="Buscar serviço, unidade ou departamento" id="hero-search">
+        <button class="search-btn">🔍 Buscar</button>
+      </div>
+
+      <!-- CTAs Principais -->
+      <div class="hero-ctas">
+        <button class="cta-primary" onclick="document.querySelector('[data-dept=studio]').click()">
+          <i class="ph ph-calendar-plus"></i> Fazer Agendamento
+        </button>
+        <button class="cta-secondary" onclick="openConsultarModal()">
+          <i class="ph ph-magnifying-glass"></i> Consultar Agendamento
+        </button>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-number">6</div>
+          <div class="stat-label">Departamentos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">135+</div>
+          <div class="stat-label">Serviços</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">99.1%</div>
+          <div class="stat-label">Confiabilidade</div>
+        </div>
+      </div>
     </div>
   </section>
 
