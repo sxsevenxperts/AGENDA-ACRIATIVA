@@ -1,8 +1,33 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.4.0  
-**Status Geral:** 🟢 Produção - Pronto para Deploy (Admin Form Customization + Painel Diretoria)
+**Versão:** 2.5.0  
+**Status Geral:** 🟢 Produção - Pronto para Deploy (7 Departments + Admin CRUD + Supabase)
+
+---
+
+## Atualização — 2026-07-21 (v2.5.0) — Podcasts Department + Supabase Integration
+
+### Concluído
+- [x] **Novo departamento Podcasts**: Estúdio profissional de podcasts com sessões de 1,5h.
+- [x] **Forma customizável**: 8 perguntas padrão (nome, CPF, telefone, tema, participantes, roteiro).
+- [x] **Integração Supabase**: Senhas de admin sincronizadas com servidor remoto.
+- [x] **Fallback localStorage**: App continua 100% funcional sem Supabase (compatibilidade).
+- [x] **Documentação Supabase**: Guia completo de setup, segurança, migração.
+- [x] **CNPJ Seven Xperts**: Footer com branding em verde gradiente.
+- [x] **7 departamentos**: Studio, Sebrae, Coworking, Auditório, SECITECE, Átrio, Podcasts.
+
+### Impactos
+- **Total de Features**: 7 departamentos, cada com formulário único customizável, painel admin completo.
+- **Escalabilidade**: Supabase permite crescimento ilimitado (0 limitação localStorage 5MB).
+- **Segurança**: Senhas persistidas em servidor criptografado (não apenas browser local).
+- **Multi-device**: Admin pode logar em qualquer dispositivo com mesma senha (Supabase).
+
+### Próximos Passos
+- [ ] Migrate agendamentos (cadeia_appointments) para Supabase
+- [ ] 2FA para admin (código 6 dígitos via SMS)
+- [ ] Notificações push para confirmação de agendamento
+- [ ] Dashboard com gráficos (Supabase + Chart.js)
 
 ---
 

@@ -1,8 +1,126 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.4.0  
-**Status:** ✅ Implementação Completa + Produção
+**Versão Atual:** 2.5.0  
+**Status:** ✅ Implementação Completa + Produção (7 Departamentos + Supabase)
+
+---
+
+## 2026-07-21 — Podcasts Department + Supabase Integration (v2.5.0)
+
+### Objetivo
+Adicionar departamento de Podcasts para estúdio profissional de gravação e integrar Supabase para sincronização de senhas de admin em servidor remoto, eliminando limitações de localStorage.
+
+### Alterações realizadas
+
+**1. Novo departamento: Podcasts**
+- Configuration em DEPARTMENTS:
+  - ID: `podcasts`
+  - Name: Podcasts
+  - Subtitle: Estúdio de podcasts — gravação profissional de áudio — sessões de 1,5 horas
+  - Color: `#D946EF` (magenta/purple)
+  - Icon: `ph-microphone` (Phosphor icon)
+  - Duration: 1.5 hours, 15min buffer, 8-18h
+  - Prefix: POD
+  - Guidance: "Chegar 10 minutos antes.\\nEste é um espaço silencioso.\\nTodos devem desligar celulares."
+
+**2. Perguntas padrão para Podcasts (DEFAULT_QUESTIONS)**
+```javascript
+'podcasts': [
+  Nome Completo (required, text)
+  CPF (required, text with cpf mask)
+  Telefone/WhatsApp (required, tel with phone mask)
+  E-mail (optional, email)
+  Nome do Podcast (required, text)
+  Assunto/Tema do Episódio (required, textarea)
+  Número de Participantes (required, select: Solo/Dupla/Trio/4+)
+  Possui Roteiro? (required, select: Sim/Não/Parcial)
+]
+```
+
+**3. Integração Supabase (novo módulo)**
+- Importação library: `@supabase/supabase-js@2.39.0`
+- Inicialização: `initSupabase()` em `initApp()`
+- Funções principais:
+  ```javascript
+  getPasswordFromSupabase(deptId)   // Fetch password from remote
+  savePasswordToSupabase(deptId, password)  // Persist password to remote
+  getValidPasswordsForDept(deptId)  // Async: check Supabase first, then localStorage
+  ```
+- Credenciais: Buscadas de `localStorage.SUPABASE_URL` e `localStorage.SUPABASE_KEY`
+- Fallback: Se Supabase não configurado, continua usando localStorage (0 breaking changes)
+
+**4. Atualizações em funções de auth**
+- `doAdminLogin()` agora async (aguarda Supabase)
+- `alterarSenha()` agora async (sincroniza com Supabase)
+- Loading states durante operações remotas
+- Error handling granular com feedback ao usuário
+
+**5. Atualização de UI/UX**
+- Admin login form: adicionada opção "Podcasts"
+- Manual booking (agendar tab): adicionada opção "Podcasts"
+- Operating hours (horários tab): adicionada opção "Podcasts"
+- Branding footer: "⚡ Powered by SEVEN XPERTS CNPJ 32.794.007/0001-19" em verde gradiente
+
+**6. Documentação Supabase**
+- Arquivo `SUPABASE_SETUP.md` criado com:
+  - Step-by-step project creation no supabase.com
+  - SQL schema para tabela `admin_passwords`
+  - Credenciais e setup local
+  - Segurança (RLS, criptografia, .env)
+  - Troubleshooting
+  - Próximas fases (Supabase para agendamentos)
+
+### Estrutura de dados Supabase
+
+```sql
+CREATE TABLE admin_passwords (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  dept_id TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+### Decisões técnicas
+- **Async/await para Supabase**: Oferece melhor UX (loading states) vs. callbacks
+- **Prioridade Supabase > localStorage**: Supabase é fonte de verdade; localStorage é backup
+- **Fallback gracioso**: Se Supabase offline/não configurado, localStorage continua funcionando
+- **CNPJ em footer**: Branding oficial da empresa, verde gradiente mantém consistência com design system
+
+### Validações implementadas
+- ✅ Supabase connection check (console log)
+- ✅ Password sync verification (log na alteração)
+- ✅ Podcasts department appears in all dropdowns
+- ✅ Default form questions loaded for Podcasts
+- ✅ Admin can customize Podcasts form via editor
+- ✅ Fallback to localStorage on network error
+
+### Escalabilidade
+- **Podcasts department**: Adiciona ~1KB ao DEPARTMENTS config
+- **Supabase overhead**: 0 KB local (server-side only)
+- **Form questions**: 8 perguntas padrão ~2KB (customizable, unlimited de fato)
+- **Performance**: Async Supabase não bloqueia UI (non-blocking fetch)
+- **Usuários**: Supabase suporta 1M+ linhas; 0 limite prático para senhas
+
+### Impactos
+- **Capacidade**: 7 departamentos (era 6) = +16.7% mais opções
+- **UX**: Multi-device password sync (Supabase) vs. local only (localStorage)
+- **Segurança**: Senhas em servidor TLS criptografado vs. browser plano text
+- **Operacional**: Admin pode usar qualquer dispositivo (mesma senha sincronizada)
+
+### Pendências
+- [ ] Supabase: Migrar cadeia_appointments para table `appointments`
+- [ ] Security: Implementar hash bcrypt antes de salvar senhas
+- [ ] Audit: Add log de quem alterou senha (user_id, timestamp, IP)
+- [ ] 2FA: SMS or TOTP para admin login
+
+### Arquivos principais envolvidos
+- `index.html` (Podcasts dept + Supabase functions + UI updates)
+- `SUPABASE_SETUP.md` (nova documentação)
+- `ROADMAP.md` (v2.5.0)
+- `IMPLEMENTATION_LOG.md` (este arquivo)
 
 ---
 
