@@ -6,6 +6,15 @@
 
 ---
 
+## Atualização — 2026-07-21 (v2.2.1)
+
+### Concluído
+- [x] **Correção funcional:** removido o listener de clique no card inteiro que disparava `openForm` por bubbling — o botão "Consultar" abria o formulário de agendamento por cima. Agora "Agendar" e "Consultar" levam **cada um ao destino correto** do respectivo departamento (validado por clique real nos 6 cards).
+- [x] **Alinhamento:** `.dept-card` vira flex-column com `height:100%` e `.dept-card-header` com `flex:1`, alinhando rodapés e botões na base em todos os cards da linha (rodapés no mesmo Y). Botões com largura igual (`flex:1 1 0`, `box-sizing:border-box`), ícone+texto centralizados.
+- [x] Cursor do card alterado para `default` (apenas os botões são clicáveis).
+
+---
+
 ## Atualização — 2026-07-21 (v2.2.0)
 
 ### Concluído

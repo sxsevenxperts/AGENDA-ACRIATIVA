@@ -750,8 +750,11 @@
       overflow: hidden;
       box-shadow: var(--shadow-card);
       transition: all 0.4s var(--ease-out);
-      cursor: pointer;
+      cursor: default;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     .dept-card:hover {
@@ -770,6 +773,7 @@
       padding: 24px 24px 20px;
       position: relative;
       overflow: hidden;
+      flex: 1 1 auto;
     }
 
     .dept-card-header::before {
@@ -836,9 +840,14 @@
     }
 
     .dept-card-actions .dept-btn {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
+      box-sizing: border-box;
       justify-content: center;
       padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.2;
+      white-space: nowrap;
     }
 
     .dept-meta {
@@ -2791,13 +2800,9 @@
       localStorage.setItem('cadeia_departments', JSON.stringify(config));
     }
     
-    // Hook up card clicks
-    document.querySelectorAll('.dept-card').forEach(card => {
-      card.addEventListener('click', () => {
-        openForm(card.dataset.dept);
-      });
-    });
-    
+    // Os cards usam botões dedicados (Agendar / Consultar); não há mais clique no card inteiro
+    // para evitar disparo duplo (ex.: "Consultar" abrindo o formulário de agendamento por cima).
+
     // Date constraints
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);

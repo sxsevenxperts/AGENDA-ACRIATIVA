@@ -6,6 +6,27 @@
 
 ---
 
+## 2026-07-21 — Correção dos botões dos cards + alinhamento
+
+### Objetivo
+Garantir que os botões "Agendar" e "Consultar" de cada departamento estejam alinhados (botões, textos, ícones) e realmente funcionais, levando ao destino certo (agendamento ou consulta daquele setor).
+
+### Alterações realizadas
+- **Bug funcional (`index.html`):** removido o listener `document.querySelectorAll('.dept-card').forEach(... addEventListener('click', openForm))`. Como os botões ficam dentro do card, o clique em "Consultar" subia (bubbling) até o card e disparava `openForm`, abrindo o agendamento por cima da consulta. Sem esse listener, cada botão chama apenas sua própria ação.
+- **Alinhamento (CSS):** `.dept-card` agora é `display:flex; flex-direction:column; height:100%`; `.dept-card-header` recebeu `flex:1 1 auto` (empurra o rodapé para a base). `.dept-card-actions .dept-btn` com `flex:1 1 0; min-width:0; box-sizing:border-box; white-space:nowrap` para botões de largura igual e ícone+texto centralizados. `cursor` do card passou a `default`.
+
+### Validações executadas
+- Teste headless com **clique real** nos 12 botões: os 6 "Agendar" abrem `form-dynamic` com o nome do departamento correto no cabeçalho e mantêm a consulta fechada; os 6 "Consultar" abrem `form-consultar` com o departamento certo **travado** e mantêm o agendamento fechado. **0 erros de página.**
+- Alinhamento: rodapés dos cards no mesmo Y por linha (378px / 706px) e alturas iguais por linha (325 / 304). Screenshot conferido.
+- Diferença residual de ~2px na largura dos botões é subpixel e visualmente imperceptível.
+
+### Arquivos principais envolvidos
+- `index.html`
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
+
+---
+
 ## 2026-07-21 — Agendar/Consultar por card + Painel da Diretoria
 
 ### Objetivo
