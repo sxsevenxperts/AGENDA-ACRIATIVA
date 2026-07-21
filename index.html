@@ -826,8 +826,19 @@
       background: var(--gray-50);
       border-top: 1px solid var(--gray-100);
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dept-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dept-card-actions .dept-btn {
+      flex: 1;
+      justify-content: center;
+      padding: 10px 12px;
     }
 
     .dept-meta {
@@ -867,6 +878,19 @@
     .dept-btn:hover {
       transform: scale(1.05);
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Botão "Consultar" — variante secundária (outline), sempre neutro */
+    .dept-card .dept-btn-consultar {
+      background: var(--white) !important;
+      color: var(--cc-navy) !important;
+      border: 1.5px solid var(--gray-300) !important;
+    }
+
+    .dept-card .dept-btn-consultar:hover {
+      border-color: var(--cc-cyan) !important;
+      color: var(--cc-cyan) !important;
+      box-shadow: 0 4px 12px rgba(81, 183, 222, 0.2);
     }
 
     /* ============================================
@@ -1957,28 +1981,12 @@
 
       <!-- CTAs Principais -->
       <div class="hero-ctas">
-        <button class="cta-primary" onclick="document.querySelector('[data-dept=studio]').click()">
+        <button class="cta-primary" onclick="document.querySelector('.dept-grid').scrollIntoView({behavior:'smooth'})">
           <i class="ph ph-calendar-plus"></i> Fazer Agendamento
         </button>
         <button class="cta-secondary" onclick="openConsultarModal()">
           <i class="ph ph-magnifying-glass"></i> Consultar Agendamento
         </button>
-      </div>
-
-      <!-- Estatísticas -->
-      <div class="hero-stats">
-        <div class="stat-card">
-          <div class="stat-number">6</div>
-          <div class="stat-label">Departamentos</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">135+</div>
-          <div class="stat-label">Serviços</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">99.1%</div>
-          <div class="stat-label">Confiabilidade</div>
-        </div>
       </div>
     </div>
   </section>
@@ -1992,7 +2000,7 @@
       </div>
 
       <!-- STÚDIO -->
-      <div class="dept-card" data-dept="studio" onclick="openForm('studio')">
+      <div class="dept-card" data-dept="studio">
         <div class="dept-card-header">
           <div class="dept-icon"><i class="ph ph-video-camera" style="font-size: 1.2em; vertical-align: middle;"></i></div>
           <div class="dept-name">Stúdio</div>
@@ -2003,12 +2011,15 @@
             <div class="dept-meta-item">⏱ 2h por sessão</div>
             <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
           </div>
-          <button class="dept-btn">Agendar →</button>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('studio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('studio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
         </div>
       </div>
 
       <!-- SEBRAE LABS -->
-      <div class="dept-card" data-dept="sebrae" onclick="openForm('sebrae')">
+      <div class="dept-card" data-dept="sebrae">
         <div class="dept-card-header">
           <div class="dept-icon"><i class="ph ph-flask" style="font-size: 1.2em; vertical-align: middle;"></i></div>
           <div class="dept-name">Sebrae Labs</div>
@@ -2019,12 +2030,15 @@
             <div class="dept-meta-item">⏱ 1h por sessão</div>
             <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
           </div>
-          <button class="dept-btn">Agendar →</button>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('sebrae')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('sebrae')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
         </div>
       </div>
 
       <!-- COWORKING -->
-      <div class="dept-card" data-dept="coworking" onclick="openForm('coworking')">
+      <div class="dept-card" data-dept="coworking">
         <div class="dept-card-header">
           <div class="dept-icon"><i class="ph ph-desktop" style="font-size: 1.2em; vertical-align: middle;"></i></div>
           <div class="dept-name">Coworking</div>
@@ -2035,12 +2049,15 @@
             <div class="dept-meta-item">⏱ 4h (meio período)</div>
             <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
           </div>
-          <button class="dept-btn">Agendar →</button>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('coworking')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('coworking')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
         </div>
       </div>
 
       <!-- AUDITÓRIO -->
-      <div class="dept-card" data-dept="auditorio" onclick="openForm('auditorio')">
+      <div class="dept-card" data-dept="auditorio">
         <div class="dept-card-header">
           <div class="dept-icon"><i class="ph ph-microphone-stage" style="font-size: 1.2em; vertical-align: middle;"></i></div>
           <div class="dept-name">Auditório</div>
@@ -2051,12 +2068,15 @@
             <div class="dept-meta-item">⏱ 2h por sessão</div>
             <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
           </div>
-          <button class="dept-btn">Agendar →</button>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('auditorio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('auditorio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
         </div>
       </div>
 
       <!-- SECITECE -->
-      <div class="dept-card" data-dept="secitece" onclick="openForm('secitece')">
+      <div class="dept-card" data-dept="secitece">
         <div class="dept-card-header">
           <div class="dept-icon"><i class="ph ph-binoculars" style="font-size: 1.2em; vertical-align: middle;"></i></div>
           <div class="dept-name">SECITECE</div>
@@ -2067,12 +2087,15 @@
             <div class="dept-meta-item">⏱ 1h por sessão</div>
             <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
           </div>
-          <button class="dept-btn">Agendar →</button>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('secitece')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('secitece')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
         </div>
       </div>
 
       <!-- ÁTRIO -->
-      <div class="dept-card" data-dept="atrio" onclick="openForm('atrio')">
+      <div class="dept-card" data-dept="atrio">
         <div class="dept-card-header">
           <div class="dept-icon"><i class="ph ph-bank" style="font-size: 1.2em; vertical-align: middle;"></i></div>
           <div class="dept-name">Átrio</div>
@@ -2083,7 +2106,10 @@
             <div class="dept-meta-item">⏱ 2h por sessão</div>
             <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
           </div>
-          <button class="dept-btn">Agendar →</button>
+          <div class="dept-card-actions">
+            <button class="dept-btn" onclick="openForm('atrio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('atrio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2346,7 +2372,7 @@
             <option value="auditorio">Auditório</option>
             <option value="secitece">SECITECE</option>
             <option value="atrio">Átrio</option>
-            <option value="super">Super Administrador</option>
+            <option value="super">🏛️ Diretoria / Administração Geral</option>
           </select>
         </div>
         <div class="form-group">
@@ -2402,6 +2428,19 @@
         <div id="dash-view-agendar" style="display: none;">
           <h3>Agendar Manualmente</h3>
           <p class="subtitle" style="margin-bottom: 24px;">Crie um novo agendamento para um cliente.</p>
+
+          <div class="form-group" id="manual-dept-group" style="display: none; margin-bottom: 16px; max-width: 400px;">
+            <label class="form-label">Departamento <span class="required">*</span></label>
+            <select id="manual-dept-select" class="form-input form-select" onchange="updateManualTimeSlots()">
+              <option value="">Selecione o departamento</option>
+              <option value="studio">Stúdio</option>
+              <option value="sebrae">Sebrae Labs</option>
+              <option value="coworking">Coworking</option>
+              <option value="auditorio">Auditório</option>
+              <option value="secitece">SECITECE</option>
+              <option value="atrio">Átrio</option>
+            </select>
+          </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
             <div class="form-group">
@@ -2511,6 +2550,19 @@
           <h3>Horários de Funcionamento</h3>
           <p class="subtitle" style="margin-bottom: 24px;">Configure o horário de operação para este departamento.</p>
 
+          <div class="form-group" id="horario-dept-group" style="display: none; margin-bottom: 16px; max-width: 600px;">
+            <label class="form-label">Departamento</label>
+            <select id="horario-dept-select" class="form-input form-select" onchange="loadOperatingHours()">
+              <option value="">Selecione o departamento</option>
+              <option value="studio">Stúdio</option>
+              <option value="sebrae">Sebrae Labs</option>
+              <option value="coworking">Coworking</option>
+              <option value="auditorio">Auditório</option>
+              <option value="secitece">SECITECE</option>
+              <option value="atrio">Átrio</option>
+            </select>
+          </div>
+
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 600px;">
             <div class="form-group">
               <label class="form-label">Hora de Abertura</label>
@@ -2557,6 +2609,14 @@
             <div style="padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #FF6B6B;">
               <p style="font-size: 12px; color: var(--gray-600); margin: 0 0 8px 0;">Taxa Ocupação</p>
               <p style="font-size: 32px; font-weight: 700; margin: 0; color: #FF6B6B;" id="stat-occupancy">0%</p>
+            </div>
+          </div>
+
+          <!-- Compilado por Departamento (somente Diretoria/Administração Geral) -->
+          <div id="dashboard-dept-breakdown" style="display: none; margin-bottom: 32px;">
+            <h4 style="margin: 0 0 16px 0;">Compilado por Departamento</h4>
+            <div id="dept-breakdown-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+              <!-- Rendered via JS -->
             </div>
           </div>
 
@@ -3206,9 +3266,9 @@
       return;
     }
 
-    // Validar senha (super admin: super123, outros: admin123)
-    const correctPass = (deptId === 'super') ? 'super123' : 'admin123';
-    if(pass !== correctPass) {
+    // Validar senha (Diretoria/Administração Geral: diretoria123 ou super123; setores: admin123)
+    const validPasswords = (deptId === 'super') ? ['diretoria123', 'super123'] : ['admin123'];
+    if(!validPasswords.includes(pass)) {
       err.innerText = 'Senha incorreta.';
       err.style.display = 'block';
       return;
@@ -3223,8 +3283,8 @@
   
   function openAdminDash() {
     document.getElementById('form-admin-dash').classList.add('active');
-    document.getElementById('dash-dept-name').innerText = adminSession === 'super' ? 'Visão Global (Super Admin)' : DEPARTMENTS[adminSession].name;
-    
+    document.getElementById('dash-dept-name').innerText = adminSession === 'super' ? 'Diretoria — Visão Geral' : DEPARTMENTS[adminSession].name;
+
     // Default to today
     document.getElementById('dash-date-filter').value = new Date().toISOString().split('T')[0];
     loadAppointments();
@@ -3241,12 +3301,23 @@
     alert('Sessão encerrada com sucesso.');
   }
   
-  function openConsultarModal() {
-    document.getElementById('consultar-dept').value = '';
+  function openConsultarModal(deptId) {
+    const select = document.getElementById('consultar-dept');
     const today = new Date();
     const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
     document.getElementById('consultar-date').value = todayStr;
-    document.getElementById('consultar-slots-container').innerHTML = '<div style="grid-column: 1/-1; color: var(--gray-500); font-size: 14px; text-align: center; padding: 20px; border: 1px dashed var(--gray-300); border-radius: 8px;">Selecione um espaço acima para visualizar a disponibilidade.</div>';
+
+    // Quando aberto a partir de um card, fixa o departamento (calendário separado por espaço)
+    if (deptId && typeof deptId === 'string' && DEPARTMENTS[deptId]) {
+      select.value = deptId;
+      select.disabled = true;
+      renderConsultarAgenda();
+    } else {
+      select.value = '';
+      select.disabled = false;
+      document.getElementById('consultar-slots-container').innerHTML = '<div style="grid-column: 1/-1; color: var(--gray-500); font-size: 14px; text-align: center; padding: 20px; border: 1px dashed var(--gray-300); border-radius: 8px;">Selecione um espaço acima para visualizar a disponibilidade.</div>';
+    }
+
     document.getElementById('form-consultar').classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -3335,7 +3406,14 @@
       loadEditableAppointments();
     }
 
+    if(tabId === 'agendar') {
+      const g = document.getElementById('manual-dept-group');
+      if(g) g.style.display = (adminSession === 'super') ? 'block' : 'none';
+    }
+
     if(tabId === 'horarios') {
+      const g = document.getElementById('horario-dept-group');
+      if(g) g.style.display = (adminSession === 'super') ? 'block' : 'none';
       loadOperatingHours();
     }
 
@@ -3498,14 +3576,28 @@
   // MANUAL SCHEDULING (Agendar)
   // ==========================================
 
+  // Departamento-alvo das operações manuais: setor do admin, ou o escolhido pela Diretoria
+  function getManualDeptId() {
+    return adminSession === 'super'
+      ? (document.getElementById('manual-dept-select') || {}).value || ''
+      : adminSession;
+  }
+
+  function getHorarioDeptId() {
+    return adminSession === 'super'
+      ? (document.getElementById('horario-dept-select') || {}).value || ''
+      : adminSession;
+  }
+
   function updateManualTimeSlots() {
     const date = document.getElementById('manual-date').value;
     const select = document.getElementById('manual-time');
     select.innerHTML = '<option value="">Selecione um horário</option>';
 
-    if (!date) return;
+    const deptId = getManualDeptId();
+    if (!date || !deptId) return;
 
-    const dept = DEPARTMENTS[adminSession];
+    const dept = DEPARTMENTS[deptId];
     let currentMin = dept.startHour * 60;
     const endMin = dept.endHour * 60;
     const slots = [];
@@ -3520,7 +3612,7 @@
 
     const allAppts = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const bookedTimes = allAppts
-      .filter(a => a.deptId === adminSession && a.date === date)
+      .filter(a => a.deptId === deptId && a.date === date)
       .map(a => a.time);
 
     slots.forEach(s => {
@@ -3542,25 +3634,27 @@
     const time = document.getElementById('manual-time').value;
     const notes = document.getElementById('manual-notes').value.trim();
 
+    const deptId = getManualDeptId();
+    if (!deptId) { alert('Selecione o departamento.'); return; }
     if (!nome) { alert('Digite o nome completo.'); return; }
     if (!cpf) { alert('Digite CPF/CNPJ.'); return; }
     if (!phone) { alert('Digite o telefone.'); return; }
     if (!date) { alert('Selecione a data.'); return; }
     if (!time) { alert('Selecione o horário.'); return; }
 
-    const dept = DEPARTMENTS[adminSession];
+    const dept = DEPARTMENTS[deptId];
     let counters = JSON.parse(localStorage.getItem('cadeia_counters') || '{}');
-    counters[adminSession] = (counters[adminSession] || 0) + 1;
+    counters[deptId] = (counters[deptId] || 0) + 1;
     localStorage.setItem('cadeia_counters', JSON.stringify(counters));
 
-    const senhaPrefix = `${dept.prefix}-${counters[adminSession].toString().padStart(3, '0')}`;
+    const senhaPrefix = `${dept.prefix}-${counters[deptId].toString().padStart(3, '0')}`;
     const validationCode = Math.random().toString(36).substring(2,5).toUpperCase() + '-' + Math.random().toString(36).substring(2,5).toUpperCase();
 
     const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
     const newAppt = {
       id: validationCode,
       senha: senhaPrefix,
-      deptId: adminSession,
+      deptId: deptId,
       date: date,
       time: time,
       data: {
@@ -3705,8 +3799,8 @@
     document.getElementById('edit-email').value = appt.data[emailKey] || '';
     document.getElementById('edit-notes').value = appt.data['Observações'] || '';
 
-    // Load time slots
-    const dept = DEPARTMENTS[adminSession];
+    // Load time slots — baseados no departamento do próprio agendamento
+    const dept = DEPARTMENTS[appt.deptId];
     let currentMin = dept.startHour * 60;
     const endMin = dept.endHour * 60;
     const slots = [];
@@ -3769,15 +3863,29 @@
   // ==========================================
 
   function loadOperatingHours() {
-    const dept = DEPARTMENTS[adminSession];
-    const abertura = `0${dept.startHour}:00`.slice(-5);
-    const fechamento = `0${dept.endHour}:00`.slice(-5);
+    const deptId = getHorarioDeptId();
+    const aberturaEl = document.getElementById('horario-abertura');
+    const fechamentoEl = document.getElementById('horario-fechamento');
 
-    document.getElementById('horario-abertura').value = abertura;
-    document.getElementById('horario-fechamento').value = fechamento;
+    if (!deptId) {
+      aberturaEl.value = '';
+      fechamentoEl.value = '';
+      return;
+    }
+
+    const dept = DEPARTMENTS[deptId];
+    // Usa horário salvo (se existir), senão o padrão do departamento
+    const horarios = JSON.parse(localStorage.getItem('cadeia_horarios') || '{}');
+    const saved = horarios[deptId];
+
+    aberturaEl.value = saved ? saved.abertura : `0${dept.startHour}:00`.slice(-5);
+    fechamentoEl.value = saved ? saved.fechamento : `0${dept.endHour}:00`.slice(-5);
   }
 
   function saveOperatingHours() {
+    const deptId = getHorarioDeptId();
+    if (!deptId) { alert('Selecione o departamento.'); return; }
+
     const abertura = document.getElementById('horario-abertura').value;
     const fechamento = document.getElementById('horario-fechamento').value;
 
@@ -3786,8 +3894,13 @@
       return;
     }
 
+    if (abertura >= fechamento) {
+      alert('A hora de abertura deve ser menor que a de fechamento.');
+      return;
+    }
+
     let horarios = JSON.parse(localStorage.getItem('cadeia_horarios') || '{}');
-    horarios[adminSession] = {
+    horarios[deptId] = {
       abertura: abertura,
       fechamento: fechamento
     };
@@ -3796,12 +3909,12 @@
   }
 
   function resetOperatingHours() {
-    const dept = DEPARTMENTS[adminSession];
-    const abertura = `0${dept.startHour}:00`.slice(-5);
-    const fechamento = `0${dept.endHour}:00`.slice(-5);
+    const deptId = getHorarioDeptId();
+    if (!deptId) { alert('Selecione o departamento.'); return; }
 
-    document.getElementById('horario-abertura').value = abertura;
-    document.getElementById('horario-fechamento').value = fechamento;
+    const dept = DEPARTMENTS[deptId];
+    document.getElementById('horario-abertura').value = `0${dept.startHour}:00`.slice(-5);
+    document.getElementById('horario-fechamento').value = `0${dept.endHour}:00`.slice(-5);
   }
 
   // ==========================================
@@ -3839,6 +3952,41 @@
     document.getElementById('stat-today').innerText = todayAppts;
     document.getElementById('stat-noshow').innerText = noShows;
     document.getElementById('stat-occupancy').innerText = occupancy + '%';
+
+    // Compilado por departamento — exclusivo da Diretoria/Administração Geral
+    const breakdownBox = document.getElementById('dashboard-dept-breakdown');
+    const breakdownGrid = document.getElementById('dept-breakdown-grid');
+    if(adminSession === 'super') {
+      breakdownBox.style.display = 'block';
+      breakdownGrid.innerHTML = '';
+
+      Object.keys(DEPARTMENTS).forEach(deptId => {
+        const dept = DEPARTMENTS[deptId];
+        const deptAppts = allAppts.filter(a => a.deptId === deptId);
+        const deptTotal = deptAppts.length;
+        const deptToday = deptAppts.filter(a => a.date === today).length;
+        const deptValidated = deptAppts.filter(a => a.status === 'VALIDADO').length;
+        const deptNoShow = deptAppts.filter(a => a.status === 'NAO_COMPARECEU').length;
+
+        const card = document.createElement('div');
+        card.style.cssText = 'background: white; border-radius: 12px; padding: 20px; border-top: 4px solid ' + dept.color + '; box-shadow: var(--shadow-sm);';
+        card.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+            <span style="font-size:20px; color:${dept.color};">${dept.icon}</span>
+            <strong style="font-size:16px; color:var(--gray-900);">${dept.name}</strong>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div><div style="font-size:24px; font-weight:700; color:var(--cc-navy);">${deptTotal}</div><div style="font-size:11px; color:var(--gray-500);">Total</div></div>
+            <div><div style="font-size:24px; font-weight:700; color:var(--cc-cyan);">${deptToday}</div><div style="font-size:11px; color:var(--gray-500);">Hoje</div></div>
+            <div><div style="font-size:24px; font-weight:700; color:var(--success);">${deptValidated}</div><div style="font-size:11px; color:var(--gray-500);">Validados</div></div>
+            <div><div style="font-size:24px; font-weight:700; color:#FF6B6B;">${deptNoShow}</div><div style="font-size:11px; color:var(--gray-500);">Faltas</div></div>
+          </div>
+        `;
+        breakdownGrid.appendChild(card);
+      });
+    } else {
+      breakdownBox.style.display = 'none';
+    }
 
     // Display recent appointments
     const recent = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);

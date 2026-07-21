@@ -1,8 +1,29 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.1.2  
-**Status Geral:** 🟢 Produção - Pronto para Deploy (Header Redesign Complete)
+**Versão:** 2.2.0  
+**Status Geral:** 🟢 Produção - Pronto para Deploy (Agendar/Consultar por card + Painel Diretoria)
+
+---
+
+## Atualização — 2026-07-21 (v2.2.0)
+
+### Concluído
+- [x] Cada card de departamento agora tem **dois botões**: "Agendar" e "Consultar".
+- [x] "Consultar" abre a disponibilidade **do próprio departamento** (calendário separado por espaço), com o seletor de espaço travado.
+- [x] Criado acesso de **Diretoria / Administração Geral** (login `super`, senhas `diretoria123` ou `super123`) com **painel compilado por departamento** (total, hoje, validados, faltas de cada setor).
+- [x] Removido o "dashboard" (estatísticas) da **página inicial** (hero). As métricas passam a existir apenas: (a) na aba Dashboard de cada departamento; (b) no compilado da Diretoria.
+- [x] Aba "Agendar" e "Horários" da Diretoria ganharam **seletor de departamento** (a Diretoria pode agendar/configurar horário de qualquer setor).
+- [x] Correção: aba "Editar" agora gera os horários com base no departamento **do próprio agendamento**, não no do admin logado.
+- [x] Horários de funcionamento salvos passam a ser **relidos** ao reabrir a aba (persistência efetiva em `cadeia_horarios`).
+
+### Riscos e débitos técnicos
+- Os horários salvos em `cadeia_horarios` ainda **não alteram** a geração de slots do fluxo público de agendamento/consulta (que usa `startHour`/`endHour` fixos de `DEPARTMENTS`). Próximo passo recomendado: aplicar o override salvo em `renderConsultarAgenda`, `updateManualTimeSlots` e no formulário público.
+- Senhas de administração continuam **hardcoded** no front-end (localStorage/JS). Para produção real, migrar autenticação para backend.
+
+### Próximos passos
+- [ ] Aplicar horários personalizados salvos na geração de slots pública.
+- [ ] Autenticação de administradores via backend (remover senhas do front).
 
 ---
 

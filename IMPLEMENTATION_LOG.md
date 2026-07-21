@@ -1,8 +1,49 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.1.2  
+**Versão Atual:** 2.2.0  
 **Status:** ✅ Implementação Completa + Produção
+
+---
+
+## 2026-07-21 — Agendar/Consultar por card + Painel da Diretoria
+
+### Objetivo
+Dar a cada departamento os botões "Agendar" e "Consultar" (com calendário separado por espaço), criar um acesso de Diretoria/Administração Geral com painel compilado dos dados de cada departamento, e remover o dashboard de estatísticas da página inicial — mantendo-o apenas dentro de cada departamento e no acesso da Diretoria.
+
+### Alterações realizadas
+- **`index.html` (cards de departamento):** removido o `onclick` do card; adicionado `.dept-card-actions` com dois botões por card — "Agendar" (`openForm(dept)`) e "Consultar" (`openConsultarModal(dept)`), nos 6 departamentos.
+- **`index.html` (hero):** removida a seção `.hero-stats` (dashboard da página inicial). CTA "Fazer Agendamento" agora rola até a grade de departamentos.
+- **`index.html` (Consultar):** `openConsultarModal(deptId)` passa a aceitar um departamento; quando informado, pré-seleciona e trava o seletor e já renderiza a disponibilidade daquele espaço.
+- **`index.html` (login):** opção "Super Administrador" renomeada para "🏛️ Diretoria / Administração Geral"; `doAdminLogin` aceita `diretoria123` ou `super123` para esse perfil. Título do painel passa a "Diretoria — Visão Geral".
+- **`index.html` (Dashboard):** adicionado bloco "Compilado por Departamento" (`#dashboard-dept-breakdown`) visível apenas para a Diretoria, com card por departamento (total, hoje, validados, faltas), renderizado em `loadDashboardStats`.
+- **`index.html` (Agendar/Horários da Diretoria):** adicionados seletores de departamento (`#manual-dept-select`, `#horario-dept-select`) exibidos apenas para a Diretoria; novos helpers `getManualDeptId()`/`getHorarioDeptId()`. `updateManualTimeSlots`, `createManualAppointment`, `loadOperatingHours`, `saveOperatingHours`, `resetOperatingHours` passaram a usar o departamento-alvo em vez de `DEPARTMENTS[adminSession]` (que quebrava para `super`).
+- **`index.html` (Editar):** `editAppointment` passou a gerar slots com base em `appt.deptId` (correção de bug).
+- **CSS:** `.dept-card-footer` vira coluna; novas regras `.dept-card-actions` e `.dept-btn-consultar` (variante outline neutra).
+
+### Decisões técnicas
+- Reaproveitado o perfil `super` já existente como "Diretoria", em vez de criar um novo tipo de sessão, mantendo compatibilidade com todas as filtragens `adminSession === 'super'` já presentes (Agendamentos, Desmarcar, Editar, Scanner) — evita duplicação de lógica.
+- Senha `super123` mantida válida junto de `diretoria123` para não quebrar acesso já conhecido.
+- Correção do `editAppointment` para usar o departamento do agendamento resolve inclusive o caso da Diretoria editar agendamentos de qualquer setor.
+
+### Validações executadas
+- Teste headless (Chromium/Playwright), fluxo Diretoria: 6 cards com 2 botões; `.hero-stats` ausente; Consultar('studio') com seletor travado e slots renderizados; login `diretoria123` → "Diretoria — Visão Geral"; compilado visível com 6 cards e total agregado correto; seletor de agendar visível; criação manual de agendamento (auditório) persistiu; seletor de horários visível. **0 erros de página.**
+- Teste headless, fluxo admin de setor (`studio`/`admin123`): compilado oculto, seletores ocultos, horário padrão carregado, senha incorreta bloqueada. **0 erros de página.**
+- Observação: os únicos erros de console são `ERR_CONNECTION_RESET` de CDNs externos (Phosphor, qrcode, jsQR), bloqueados apenas no sandbox — não afetam produção.
+
+### Impactos
+- **Usuário:** consulta de disponibilidade direta pelo card do espaço; página inicial mais enxuta.
+- **Negócio:** Diretoria passa a ter visão consolidada por departamento em um único acesso.
+- **Arquitetura:** sem novas dependências; tudo em `index.html` + localStorage.
+
+### Pendências
+- Aplicar horários salvos (`cadeia_horarios`) na geração de slots do fluxo público (hoje só afetam a exibição na aba Horários).
+- Migrar autenticação de administradores para backend (senhas ainda no front).
+
+### Arquivos principais envolvidos
+- `index.html`
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
 
 ---
 
