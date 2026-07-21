@@ -2434,7 +2434,7 @@
 
                <label class="checkbox-label" style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer;">
                  <input type="checkbox" id="dynamic-lgpd" required style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
-                 <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito a LGPD e Política de Privacidade</strong><br><small style="color: var(--gray-600);">Autorizo o tratamento de meus dados pessoais de acordo com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).</small></span>
+                 <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito a LGPD e Política de Privacidade</strong><br><small style="color: var(--gray-600);">Autorizo o tratamento de meus dados pessoais de acordo com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018). <a href="javascript:void(0);" onclick="openPrivacyPolicy()" style="color: var(--cc-cyan); text-decoration: underline; font-weight: 500;">Ler Política Completa</a></small></span>
                </label>
 
                <label class="checkbox-label" style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer;">
@@ -2591,6 +2591,70 @@
       </div>
     </div>
   </footer>
+
+  <!-- PRIVACY POLICY MODAL -->
+  <div class="form-overlay" id="privacy-policy-modal" style="display: none;">
+    <div class="form-container" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+      <div class="form-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Política de Privacidade</h2>
+        <button class="form-close-btn" onclick="closePrivacyPolicy()">✕</button>
+      </div>
+
+      <div class="form-body" style="padding: 24px; font-size: 14px; line-height: 1.8; color: var(--gray-800);">
+        <h3 style="color: var(--cc-navy); margin-top: 20px; margin-bottom: 12px;">Política de Privacidade</h3>
+        <p>A sua privacidade é importante para nós. É política do Centro de Inovação – Cadeia Criativa de Sobral respeitar a sua privacidade em relação a qualquer informação sua que possamos coletar no site de agendamento de espaços e outros serviços que oferecemos.</p>
+
+        <h4 style="color: var(--gray-900); margin-top: 16px; margin-bottom: 10px;">Coleta de Informações Pessoais</h4>
+        <p>Solicitamos informações pessoais apenas quando realmente precisamos delas para lhe fornecer um serviço de agendamento ou informações sobre nossos espaços. Fazemo-lo por meios justos e legais, com o seu conhecimento e consentimento.</p>
+
+        <h4 style="color: var(--gray-900); margin-top: 16px; margin-bottom: 10px;">Retenção de Dados</h4>
+        <p>Apenas retemos as informações coletadas pelo tempo necessário para fornecer o serviço solicitado, gerenciar seu agendamento e cumprir com obrigações legais. Protegemos seus dados dentro de meios comercialmente aceitáveis.</p>
+
+        <h4 style="color: var(--gray-900); margin-top: 16px; margin-bottom: 10px;">Compartilhamento de Informações</h4>
+        <p>Não compartilhamos informações de identificação pessoal publicamente ou com terceiros, exceto quando exigido pela Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018) ou por autoridades competentes.</p>
+
+        <h4 style="color: var(--gray-900); margin-top: 16px; margin-bottom: 10px;">Direitos do Usuário (LGPD)</h4>
+        <p>Você possui direitos conforme a LGPD, incluindo:</p>
+        <ul style="margin-left: 20px;">
+          <li>Acesso aos dados pessoais coletados</li>
+          <li>Correção de dados imprecisos</li>
+          <li>Exclusão de dados quando apropriado</li>
+          <li>Portabilidade dos dados</li>
+          <li>Oposição ao processamento</li>
+        </ul>
+
+        <h3 style="color: var(--cc-navy); margin-top: 20px; margin-bottom: 12px;">Política de Cookies</h3>
+        <p>Este site usa cookies para melhorar sua experiência. Utilizamos cookies para:</p>
+        <ul style="margin-left: 20px;">
+          <li><strong>Autenticação:</strong> Gerenciamento de login e sessão</li>
+          <li><strong>Agendamentos:</strong> Armazenamento de informações do formulário</li>
+          <li><strong>Preferências:</strong> Lembrete de suas configurações</li>
+          <li><strong>Análise:</strong> Entender como você usa o site (Google Analytics)</li>
+        </ul>
+
+        <h4 style="color: var(--gray-900); margin-top: 16px; margin-bottom: 10px;">Como Desativar Cookies</h4>
+        <p>Você pode gerenciar cookies ajustando as configurações do seu navegador. Esteja ciente de que desativar cookies pode prejudicar a funcionalidade desta plataforma.</p>
+
+        <h3 style="color: var(--cc-navy); margin-top: 20px; margin-bottom: 12px;">Compromisso do Usuário</h3>
+        <p>Ao usar esta plataforma, você se compromete a:</p>
+        <ul style="margin-left: 20px;">
+          <li>Não se envolver em atividades ilegais ou contrárias à boa fé</li>
+          <li>Não divulgar conteúdo ilícito ou ofensivo</li>
+          <li>Não causar danos aos sistemas da plataforma</li>
+          <li>Responsabilizar-se integralmente pelo uso dos espaços</li>
+          <li>Respeitar as normas de uso estabelecidas</li>
+        </ul>
+
+        <h3 style="color: var(--cc-navy); margin-top: 20px; margin-bottom: 12px;">Conformidade com LGPD</h3>
+        <p>Este serviço está em conformidade com a Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018) e regulamentações brasileiras de proteção de dados.</p>
+
+        <div style="background: var(--info-light, rgba(33, 150, 243, 0.1)); padding: 16px; border-radius: 8px; margin-top: 20px; border: 1px solid var(--info, #2196F3);">
+          <strong style="color: var(--info);">📋 Termo de Aceite</strong>
+          <p style="margin: 8px 0 0 0; font-size: 13px;">Ao clicar em "Aceito a Política de Privacidade", você confirma que leu e compreendeu esta política, autoriza o tratamento de seus dados pessoais conforme descrito, aceita o uso de cookies e entende seus direitos conforme a LGPD.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== JAVASCRIPT ==================== -->
 
@@ -4342,6 +4406,32 @@
     document.body.style.overflow = '';
     if(isEditMode) toggleEditMode(); // revert edit mode cleanly
   }
+
+  function openPrivacyPolicy() {
+    const modal = document.getElementById('privacy-policy-modal');
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePrivacyPolicy() {
+    const modal = document.getElementById('privacy-policy-modal');
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('DOMContentLoaded', () => {
+    const privacyModal = document.getElementById('privacy-policy-modal');
+    if (privacyModal) {
+      privacyModal.addEventListener('click', (e) => {
+        if (e.target === privacyModal) {
+          closePrivacyPolicy();
+        }
+      });
+    }
+  });
 
   // ==========================================
   // SLOTS GENERATION (15min buffer)
