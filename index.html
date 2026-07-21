@@ -739,9 +739,22 @@
 
     .dept-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       padding: 60px 0;
+    }
+
+    /* Centralize last 2 cards when alone in final row */
+    .dept-grid .dept-card:nth-child(n+4):nth-last-child(-n+2) {
+      grid-column: auto / span 1;
+    }
+
+    .dept-grid .dept-card:nth-child(4) {
+      grid-column: 2;
+    }
+
+    .dept-grid .dept-card:nth-child(5) {
+      grid-column: 3;
     }
 
     .dept-card {
@@ -2218,18 +2231,18 @@
       <!-- COWORKING -->
       <div class="dept-card" data-dept="coworking">
         <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-desktop" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4CAF50;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="17" x2="22" y2="17"/><line x1="6" y1="21" x2="6" y2="17"/><line x1="10" y1="21" x2="10" y2="17"/><line x1="14" y1="21" x2="14" y2="17"/><line x1="18" y1="21" x2="18" y2="17"/></svg></div>
           <div class="dept-name">Coworking</div>
           <div class="dept-desc">Espaço de trabalho compartilhado com internet de alta velocidade e salas de reunião.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 4h (meio período)</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 4h (meio período)</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sex</div>
           </div>
           <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('coworking')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('coworking')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+            <button class="dept-btn" onclick="openForm('coworking')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('coworking')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Consultar</button>
           </div>
         </div>
       </div>
@@ -2237,18 +2250,18 @@
       <!-- LINK LAB -->
       <div class="dept-card" data-dept="linklab">
         <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-flask" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2196F3;"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div>
           <div class="dept-name">Link Lab</div>
           <div class="dept-desc">Laboratório de inovação e prototipagem para empreendedores e projetos criativos.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 2h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sex</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 2h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sex</div>
           </div>
           <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('linklab')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('linklab')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+            <button class="dept-btn" onclick="openForm('linklab')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('linklab')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Consultar</button>
           </div>
         </div>
       </div>
@@ -2256,18 +2269,18 @@
       <!-- SALA DE TREINAMENTO -->
       <div class="dept-card" data-dept="salatreinamento">
         <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-book" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #FF9800;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2"/></svg></div>
           <div class="dept-name">Sala de Treinamento</div>
           <div class="dept-desc">Espaço para treinamentos, workshops e capacitações com estrutura completa.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 2h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 2h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
           </div>
           <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('salatreinamento')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('salatreinamento')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+            <button class="dept-btn" onclick="openForm('salatreinamento')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('salatreinamento')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Consultar</button>
           </div>
         </div>
       </div>
@@ -2275,18 +2288,18 @@
       <!-- ÁTRIO -->
       <div class="dept-card" data-dept="atrio">
         <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-bank" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #51B7DE;"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/><polyline points="12 12 9 9 12 6 15 9 12 12"/></svg></div>
           <div class="dept-name">Átrio</div>
           <div class="dept-desc">Espaço de convivência e eventos no hall central da Cadeia Criativa — exposições e feiras.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 2h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 2h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
           </div>
           <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('atrio')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('atrio')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+            <button class="dept-btn" onclick="openForm('atrio')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('atrio')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Consultar</button>
           </div>
         </div>
       </div>
@@ -2294,18 +2307,18 @@
       <!-- STÚDIO DE MÚSICA -->
       <div class="dept-card" data-dept="musica">
         <div class="dept-card-header">
-          <div class="dept-icon"><i class="ph ph-microphone" style="font-size: 1.2em; vertical-align: middle;"></i></div>
+          <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9C27B0;"><path d="M12 1v22M4.5 4.5C2.5 6.5 2 9 2 12c0 5 4 9 10 9s10-4 10-9c0-3-0.5-5.5-2.5-7.5"/><path d="M12 6v8M9 9h6"/></svg></div>
           <div class="dept-name">Stúdio de Música</div>
           <div class="dept-desc">Espaço profissional para gravação, ensaios e produção musical com equipamento de alta qualidade.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item">⏱ 3h por sessão</div>
-            <div class="dept-meta-item"><i class="ph ph-calendar-blank"></i> Seg-Sáb</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 3h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
           </div>
           <div class="dept-card-actions">
-            <button class="dept-btn" onclick="openForm('musica')"><i class="ph ph-calendar-plus"></i> Agendar</button>
-            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('musica')"><i class="ph ph-magnifying-glass"></i> Consultar</button>
+            <button class="dept-btn" onclick="openForm('musica')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
+            <button class="dept-btn dept-btn-consultar" onclick="openConsultarModal('musica')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Consultar</button>
           </div>
         </div>
       </div>
@@ -2390,12 +2403,12 @@
              <h3 class="step-title">🔐 Políticas, Privacidade e LGPD</h3>
 
              <div style="background: var(--error-light, rgba(244, 67, 54, 0.1)); padding: 16px; border-radius: var(--radius-md); font-size: 13px; color: var(--gray-900); margin-bottom: 24px; border: 1px solid var(--error, #F44336); border-left: 4px solid var(--error, #F44336); font-weight: 600;">
-               <strong style="color: var(--error, #F44336);">⚠️ IMPORTANTE:</strong>
+               <strong style="color: var(--error, #F44336);">IMPORTANTE:</strong>
                Você DEVE aceitar TODAS as políticas abaixo para completar seu agendamento. Sem os consentimentos obrigatórios, não será possível prosseguir.
              </div>
 
              <div style="background: var(--warning-light, rgba(255, 152, 0, 0.1)); padding: 16px; border-radius: var(--radius-md); font-size: 13px; color: var(--gray-800); margin-bottom: 20px; border: 1px solid var(--warning, #FF9800); border-left: 4px solid var(--warning, #FF9800);">
-               <strong style="color: var(--gray-900);">📋 ORIENTAÇÕES E RESPONSABILIDADES:</strong>
+               <strong style="color: var(--gray-900);">ORIENTAÇÕES E RESPONSABILIDADES:</strong>
                <ul style="margin: 12px 0 0 0; padding-left: 20px; line-height: 1.6;">
                  <li>A instituição/empresa responsável pelo evento responderá integralmente pela organização, execução e condução das atividades realizadas no espaço.</li>
                  <li>O Centro de Inovação – Cadeia Criativa de Sobral não se responsabiliza por materiais, equipamentos particulares, objetos pessoais, acidentes, danos ou quaisquer ocorrências relacionadas ao evento.</li>
@@ -2631,7 +2644,7 @@
         <p>Este serviço está em conformidade com a Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018) e regulamentações brasileiras de proteção de dados.</p>
 
         <div style="background: var(--info-light, rgba(33, 150, 243, 0.1)); padding: 16px; border-radius: 8px; margin-top: 20px; border: 1px solid var(--info, #2196F3);">
-          <strong style="color: var(--info);">📋 Termo de Aceite</strong>
+          <strong style="color: var(--info);">Termo de Aceite</strong>
           <p style="margin: 8px 0 0 0; font-size: 13px;">Ao clicar em "Aceito a Política de Privacidade", você confirma que leu e compreendeu esta política, autoriza o tratamento de seus dados pessoais conforme descrito, aceita o uso de cookies e entende seus direitos conforme a LGPD.</p>
         </div>
       </div>
@@ -2757,9 +2770,9 @@
           <label class="form-label">Departamento/Setor</label>
           <select class="form-input" id="admin-dept" style="cursor: pointer;">
             <option value="">-- Selecione seu acesso --</option>
-            <option value="super">🏛️ ADM Diretoria</option>
-            <option value="articulacao">📋 ADM Articulação e Conectividade</option>
-            <option value="musica">🎵 ADM Stúdio Musical</option>
+            <option value="super">ADM Diretoria</option>
+            <option value="articulacao">ADM Articulação e Conectividade</option>
+            <option value="musica">ADM Stúdio Musical</option>
           </select>
         </div>
         <div class="form-group">
@@ -2797,7 +2810,7 @@
         <div class="dash-tab" onclick="switchDashTab('dashboard')" id="tab-dashboard" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Dashboard</div>
         <div class="dash-tab" onclick="switchDashTab('scanner')" id="tab-scanner" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Scanner QR</div>
         <div class="dash-tab" onclick="switchDashTab('alterar-senha')" id="tab-alterar-senha" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">🔐 Alterar Senha</div>
-        <div class="dash-tab" onclick="switchDashTab('editar-formulario')" id="tab-editar-formulario" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">⚙️ Editar Formulário</div>
+        <div class="dash-tab" onclick="switchDashTab('editar-formulario')" id="tab-editar-formulario" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Editar Formulário</div>
       </div>
       
       <div class="form-body" style="flex: 1; overflow-y: auto; padding: 32px; background: var(--gray-50);">
@@ -3088,7 +3101,7 @@
         <!-- TAB 9: Editar Formulário -->
         <div id="dash-view-editar-formulario" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <h3>⚙️ Editar Formulário de Agendamento</h3>
+            <h3>Editar Formulário de Agendamento</h3>
             <button class="form-btn form-btn-primary" style="background: var(--success);" onclick="showAddQuestionForm()">
               ✚ Nova Pergunta
             </button>
@@ -4152,7 +4165,7 @@
                       ${appt.status === 'PENDENTE' || appt.status === 'APROVADO' ? `
                         <button class="form-btn form-btn-secondary" style="flex: 1; padding: 8px;"
                           onclick="cancelUserAppointment('${appt.id}'); document.getElementById('user-dashboard-modal').remove();">
-                          🗑️ Cancelar
+                          Cancelar
                         </button>
                       ` : ''}
                     </div>
