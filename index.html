@@ -2139,11 +2139,16 @@
 
     <!-- Navigation -->
     <nav class="header-nav-bar">
-      <div class="container">
-        <a href="#" class="nav-link active">Início</a>
-        <a href="#agendar" class="nav-link">Agendar</a>
-        <a href="#" onclick="openConsultarModal(); return false;" class="nav-link">Consultar</a>
-        <a href="#" class="nav-link">Admin</a>
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 24px;">
+          <a href="#" class="nav-link active">Início</a>
+          <a href="#agendar" class="nav-link">Agendar</a>
+          <a href="#" onclick="openConsultarModal(); return false;" class="nav-link">Consultar</a>
+          <a href="#" class="nav-link">Admin</a>
+        </div>
+        <button class="nav-link" id="user-auth-btn" style="background: none; border: none; cursor: pointer; font-weight: 500; white-space: nowrap;" onclick="openUserAuth('signup')">
+          🔐 Entrar / Cadastro
+        </button>
       </div>
     </nav>
 
@@ -2603,6 +2608,69 @@
                Selecione um espaço para visualizar a disponibilidade.
              </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER AUTH MODALS -->
+  <div class="form-overlay" id="form-user-auth">
+    <div class="form-container" style="max-width: 420px;">
+      <div class="form-header" style="text-align: center;">
+        <button class="form-close-btn" onclick="closeUserAuth()">✕</button>
+        <h2 id="auth-title">Criar Conta</h2>
+        <p class="subtitle" id="auth-subtitle">Cadastre-se para agendar seus eventos</p>
+      </div>
+      <div class="form-body">
+        <!-- SIGNUP FORM -->
+        <div id="auth-signup-form" style="display: block;">
+          <div class="form-group">
+            <label class="form-label">Nome Completo</label>
+            <input type="text" id="signup-nome" class="form-input" placeholder="Seu nome completo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="signup-email" class="form-input" placeholder="seu@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <input type="tel" id="signup-phone" class="form-input" placeholder="(00) 00000-0000" data-mask="phone">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" id="signup-senha" class="form-input" placeholder="Mín. 8 caracteres com maiúscula, número e símbolo">
+            <small style="color: var(--gray-500); margin-top: 4px; display: block;">✓ Maiúscula ✓ Minúscula ✓ Número ✓ Símbolo (!@#$%^&*)</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirmar Senha</label>
+            <input type="password" id="signup-senha-confirm" class="form-input" placeholder="Confirme sua senha">
+          </div>
+          <div id="auth-error-msg" style="background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none; font-size: 13px;"></div>
+          <div id="auth-success-msg" style="background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none; font-size: 13px;"></div>
+        </div>
+
+        <!-- LOGIN FORM (hidden by default) -->
+        <div id="auth-login-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="login-email" class="form-input" placeholder="seu@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" id="login-senha" class="form-input" placeholder="Sua senha">
+          </div>
+          <div id="auth-error-msg-login" style="background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none; font-size: 13px;"></div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="form-btn form-btn-primary" id="auth-main-btn" style="width: 100%; background: var(--success); margin-bottom: 12px;" onclick="handleAuthSubmit()">
+          Criar Conta
+        </button>
+        <button class="form-btn form-btn-secondary" style="width: 100%; margin-bottom: 12px;" id="auth-toggle-btn" onclick="toggleAuthMode()">
+          Já tenho conta, fazer login
+        </button>
+        <div style="text-align: center; font-size: 12px; color: var(--gray-600); padding-top: 12px; border-top: 1px solid var(--gray-200);">
+          Ao continuar, você concorda com nossos <a href="#" style="color: var(--cc-cyan); text-decoration: none;">Termos de Uso</a>
         </div>
       </div>
     </div>
@@ -3181,6 +3249,8 @@
   let formData = {};
   let adminSession = null;
   let supabaseClient = null;
+  let userSession = null; // { id, email, name, phone, token }
+  let authMode = 'signup'; // 'signup' or 'login'
 
   // ==========================================
   // SUPABASE INTEGRATION
@@ -3248,10 +3318,407 @@
     }
   }
 
+  // ==========================================
+  // USER AUTHENTICATION (Supabase Auth)
+  // ==========================================
+
+  async function userSignup(email, password, fullName, phone) {
+    if (!supabaseClient) {
+      // Fallback: localStorage (development only)
+      const userData = {
+        id: 'user_' + Date.now(),
+        email: email,
+        name: fullName,
+        phone: phone,
+        created_at: new Date().toISOString()
+      };
+      const users = JSON.parse(localStorage.getItem('cadeia_users') || '[]');
+
+      // Check if email already exists
+      if (users.find(u => u.email === email)) {
+        return { error: 'Email já cadastrado' };
+      }
+
+      users.push(userData);
+      localStorage.setItem('cadeia_users', JSON.stringify(users));
+      localStorage.setItem('user_password_' + email, password);
+
+      userSession = userData;
+      localStorage.setItem('userSession', JSON.stringify(userData));
+      return { data: userData };
+    }
+
+    try {
+      // Create auth user via Supabase Auth
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone: phone
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        return { error: error.message };
+      }
+
+      // User created successfully
+      userSession = {
+        id: data.user.id,
+        email: data.user.email,
+        name: fullName,
+        phone: phone,
+        created_at: new Date().toISOString()
+      };
+
+      // Save to localStorage for persistence
+      localStorage.setItem('userSession', JSON.stringify(userSession));
+      console.log('✅ User signed up successfully');
+      return { data: userSession };
+    } catch (e) {
+      console.error('❌ Signup error:', e);
+      return { error: e.message };
+    }
+  }
+
+  async function userLogin(email, password) {
+    if (!supabaseClient) {
+      // Fallback: localStorage
+      const storedPassword = localStorage.getItem('user_password_' + email);
+      if (!storedPassword || storedPassword !== password) {
+        return { error: 'E-mail ou senha incorretos' };
+      }
+
+      const users = JSON.parse(localStorage.getItem('cadeia_users') || '[]');
+      const user = users.find(u => u.email === email);
+      if (!user) {
+        return { error: 'E-mail ou senha incorretos' };
+      }
+
+      userSession = user;
+      localStorage.setItem('userSession', JSON.stringify(userSession));
+      return { data: user };
+    }
+
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        return { error: 'E-mail ou senha incorretos' };
+      }
+
+      userSession = {
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.user_metadata?.full_name || email,
+        phone: data.user.user_metadata?.phone || '',
+        token: data.session.access_token
+      };
+
+      localStorage.setItem('userSession', JSON.stringify(userSession));
+      console.log('✅ User logged in successfully');
+      return { data: userSession };
+    } catch (e) {
+      console.error('❌ Login error:', e);
+      return { error: e.message };
+    }
+  }
+
+  function userLogout() {
+    userSession = null;
+    localStorage.removeItem('userSession');
+    if (supabaseClient) {
+      supabaseClient.auth.signOut();
+    }
+    closeUserAuth();
+    showToast('Logout realizado com sucesso', 'success');
+  }
+
+  function openUserAuth(mode = 'signup') {
+    authMode = mode;
+    document.getElementById('form-user-auth').classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    if (mode === 'signup') {
+      document.getElementById('auth-title').innerText = 'Criar Conta';
+      document.getElementById('auth-subtitle').innerText = 'Cadastre-se para agendar seus eventos';
+      document.getElementById('auth-signup-form').style.display = 'block';
+      document.getElementById('auth-login-form').style.display = 'none';
+      document.getElementById('auth-main-btn').innerText = 'Criar Conta';
+      document.getElementById('auth-toggle-btn').innerText = 'Já tenho conta, fazer login';
+    } else {
+      document.getElementById('auth-title').innerText = 'Fazer Login';
+      document.getElementById('auth-subtitle').innerText = 'Entre com sua conta para continuar';
+      document.getElementById('auth-signup-form').style.display = 'none';
+      document.getElementById('auth-login-form').style.display = 'block';
+      document.getElementById('auth-main-btn').innerText = 'Entrar';
+      document.getElementById('auth-toggle-btn').innerText = 'Não tenho conta, criar nova';
+    }
+
+    clearAuthForm();
+  }
+
+  function closeUserAuth() {
+    document.getElementById('form-user-auth').classList.remove('active');
+    document.body.style.overflow = '';
+    clearAuthForm();
+  }
+
+  function toggleAuthMode() {
+    authMode = authMode === 'signup' ? 'login' : 'signup';
+    openUserAuth(authMode);
+  }
+
+  async function handleAuthSubmit() {
+    const btn = document.getElementById('auth-main-btn');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Processando...';
+
+    if (authMode === 'signup') {
+      await handleSignup();
+    } else {
+      await handleLogin();
+    }
+
+    btn.disabled = false;
+    btn.innerText = originalText;
+  }
+
+  async function handleSignup() {
+    const email = document.getElementById('signup-email').value.trim();
+    const senha = document.getElementById('signup-senha').value;
+    const senhaConfirm = document.getElementById('signup-senha-confirm').value;
+    const nome = document.getElementById('signup-nome').value.trim();
+    const phone = document.getElementById('signup-phone').value.trim();
+    const errorMsg = document.getElementById('auth-error-msg');
+    const successMsg = document.getElementById('auth-success-msg');
+
+    errorMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+
+    // Validações
+    if (!nome) {
+      errorMsg.innerText = 'Por favor, insira seu nome completo.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    if (!email) {
+      errorMsg.innerText = 'Por favor, insira seu e-mail.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      errorMsg.innerText = 'E-mail inválido.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    if (phone) {
+      const phoneDigits = phone.replace(/\\D/g, '');
+      if (phoneDigits.length < 10) {
+        errorMsg.innerText = 'Telefone deve ter no mínimo 10 dígitos.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+    }
+
+    if (!senha || senha.length < 8) {
+      errorMsg.innerText = 'Senha deve ter no mínimo 8 caracteres.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    // Password strength validation: must contain uppercase, lowercase, number, special char
+    const hasUpperCase = /[A-Z]/.test(senha);
+    const hasLowerCase = /[a-z]/.test(senha);
+    const hasNumber = /[0-9]/.test(senha);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>?/\\|`~]/.test(senha);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
+      errorMsg.innerText = 'Senha deve conter maiúsculas, minúsculas, números e caracteres especiais (!@#$%^&*).';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    if (senha !== senhaConfirm) {
+      errorMsg.innerText = 'As senhas não conferem.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const result = await userSignup(email, senha, nome, phone);
+    if (result.error) {
+      errorMsg.innerText = result.error;
+      errorMsg.style.display = 'block';
+    } else {
+      successMsg.innerText = '✅ Conta criada com sucesso! Redirecionando...';
+      successMsg.style.display = 'block';
+      setTimeout(() => {
+        closeUserAuth();
+        showToast('Bem-vindo, ' + nome + '!', 'success');
+        updateAuthUI();
+      }, 1500);
+    }
+  }
+
+  async function handleLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+    const errorMsg = document.getElementById('auth-error-msg-login');
+
+    errorMsg.style.display = 'none';
+
+    if (!email || !senha) {
+      errorMsg.innerText = 'Por favor, preencha e-mail e senha.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const result = await userLogin(email, senha);
+    if (result.error) {
+      errorMsg.innerText = result.error;
+      errorMsg.style.display = 'block';
+    } else {
+      closeUserAuth();
+      showToast('Login realizado com sucesso!', 'success');
+      updateAuthUI();
+    }
+  }
+
+  function clearAuthForm() {
+    document.getElementById('signup-nome').value = '';
+    document.getElementById('signup-email').value = '';
+    document.getElementById('signup-phone').value = '';
+    document.getElementById('signup-senha').value = '';
+    document.getElementById('signup-senha-confirm').value = '';
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-senha').value = '';
+    document.getElementById('auth-error-msg').style.display = 'none';
+    document.getElementById('auth-error-msg-login').style.display = 'none';
+    document.getElementById('auth-success-msg').style.display = 'none';
+  }
+
+  function updateAuthUI() {
+    const authBtn = document.getElementById('user-auth-btn');
+    if (!authBtn) {
+      console.warn('⚠️ Auth button element (user-auth-btn) not found in DOM');
+      return;
+    }
+
+    if (userSession) {
+      const firstName = userSession.name ? userSession.name.split(' ')[0] : 'Usuário';
+      authBtn.innerHTML = `👤 ${firstName} ▼`;
+      authBtn.onclick = showUserMenu;
+      authBtn.style.color = 'var(--success)';
+    } else {
+      authBtn.innerHTML = '🔐 Entrar / Cadastro';
+      authBtn.onclick = () => openUserAuth('signup');
+      authBtn.style.color = 'var(--gray-700)';
+    }
+  }
+
+  function showUserMenu() {
+    const menu = document.createElement('div');
+    menu.style.cssText = `
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      min-width: 200px;
+    `;
+    menu.innerHTML = `
+      <div style="padding: 12px 0;">
+        <div style="padding: 12px 16px; font-size: 12px; color: var(--gray-500); border-bottom: 1px solid var(--gray-200);">
+          ${userSession.email}
+        </div>
+        <button onclick="openUserProfile()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--gray-700);">👤 Meu Perfil</button>
+        <button onclick="showUserAppointments()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--gray-700);">📅 Meus Agendamentos</button>
+        <button onclick="userLogout()" style="width: 100%; padding: 12px 16px; text-align: left; border: none; background: none; cursor: pointer; font-size: 14px; color: var(--error); border-top: 1px solid var(--gray-200);">🚪 Sair</button>
+      </div>
+    `;
+    document.body.appendChild(menu);
+
+    // Remove menu on click outside
+    setTimeout(() => {
+      document.addEventListener('click', function removeMenu(e) {
+        if (!menu.contains(e.target) && e.target.id !== 'user-auth-btn') {
+          menu.remove();
+          document.removeEventListener('click', removeMenu);
+        }
+      });
+    }, 0);
+  }
+
+  function openUserProfile() {
+    alert('Seu Perfil:\n\nNome: ' + userSession.name + '\nE-mail: ' + userSession.email + '\nTelefone: ' + userSession.phone);
+  }
+
+  function showUserAppointments() {
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+    const userAppts = appointments.filter(a => a.user_id === userSession.id);
+
+    if (userAppts.length === 0) {
+      alert('Você não possui agendamentos ainda.');
+      return;
+    }
+
+    let msg = 'Meus Agendamentos:\n\n';
+    userAppts.forEach(a => {
+      msg += `${a.deptId.toUpperCase()} - ${a.date} ${a.time}\nStatus: ${a.status}\n\n`;
+    });
+    alert(msg);
+  }
+
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : 'var(--info)';
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${bgColor};
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      font-size: 14px;
+    `;
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
   // Initialize LocalStorage
   function initApp() {
     // Initialize Supabase (if configured)
     initSupabase();
+
+    // Restore user session from localStorage (session persistence)
+    const storedSession = localStorage.getItem('userSession');
+    if (storedSession) {
+      try {
+        userSession = JSON.parse(storedSession);
+      } catch (e) {
+        console.error('Error restoring user session:', e);
+        userSession = null;
+      }
+    }
 
     const storedConfig = localStorage.getItem('cadeia_departments');
     if (storedConfig) {
@@ -3289,6 +3756,9 @@
 
     // Apply Masks dynamically to inputs
     setupMasks();
+
+    // Update header auth button based on session state
+    updateAuthUI();
   }
   
   // Setup Input Masks

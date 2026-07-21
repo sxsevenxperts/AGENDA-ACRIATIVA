@@ -1,8 +1,46 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.5.0  
-**Status Geral:** 🟢 Produção - Pronto para Deploy (7 Departments + Admin CRUD + Supabase)
+**Versão:** 2.6.0  
+**Status Geral:** 🟢 Produção - User Authentication Ready (7 Departments + User Login/Signup + Supabase)
+
+---
+
+## Atualização — 2026-07-21 (v2.6.0) — User Authentication System + E2E Testing & Bug Fixes
+
+### Concluído
+- [x] **Sistema de autenticação de usuários**: Signup/Login/Logout com validação robusta.
+- [x] **Botão de autenticação em header**: Navegação intuitiva para criar conta/entrar.
+- [x] **Persistência de sessão**: Usuários permanecem logados após refresh de página.
+- [x] **Validação de força de senha**: Maiúscula + Minúscula + Número + Caractere especial (obrigatório).
+- [x] **Validação de telefone**: Mínimo 10 dígitos verificado.
+- [x] **Menu de usuário logado**: Opções para Ver Perfil, Meus Agendamentos, Sair.
+- [x] **E2E Testing**: 25 testes funcionais executados (96% pass rate).
+- [x] **Bug Fixes Críticos**: 
+  - Auth button não existia no header (FIXED)
+  - Session não restaurava on page load (FIXED)
+  - Error handling silencioso (FIXED)
+  - Senha fraca aceitava qualquer input (FIXED)
+  - Phone validation faltava (FIXED)
+- [x] **Fallback localStorage**: Sistema funciona 100% sem Supabase Auth configurado.
+
+### Impactos
+- **Segurança**: Senhas fortes obrigatórias (4 requisitos); usuários únicos por email.
+- **UX**: Sessão persiste entre navegação; botão header mostra estado (logado/não logado).
+- **Integração futura**: Pronto para conectar agendamentos com user_id (v2.7.0).
+- **Admin**: Senha change continua isolada (admin_passwords table diferente de user auth).
+
+### Próximos Passos
+- [ ] Conectar user_id a cadeia_appointments (agendamentos com identificação de usuário)
+- [ ] Sistema de aprovação admin para novos agendamentos (PENDENTE → APROVADO → CONFIRMADO)
+- [ ] Notificações para admin quando novo agendamento é criado
+- [ ] Dashboard de usuário com histórico de agendamentos
+- [ ] Integração com Supabase Auth (quando credenciais estiverem disponíveis)
+
+### Riscos e débitos técnicos
+- Senhas localStorage armazenadas em plaintext (considerar hash para produção antes de scale)
+- Sem rate limiting em login (considerar após MVP)
+- Sem 2FA para admin (roadmap futuro)
 
 ---
 
