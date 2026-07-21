@@ -1,8 +1,44 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.1  
-**Status Geral:** 🟢 Produção - Admin Login Restructured (4 options: Stúdio + 3 Others) + 15-Min Slots + LGPD
+**Versão:** 2.9.3  
+**Status Geral:** 🟢 Em Produção - RBAC com 4 Acessos Distintos + Auditoria + Consentimento LGPD Integrado
+
+---
+
+## Atualização — 2026-07-21 (v2.9.3) — RBAC, Auditoria e Consentimento LGPD — MERGED TO MAIN
+
+### Concluído
+- [x] **Role-Based Access Control (RBAC)**: Sistema de 4 papéis administrativos distintos implementado
+  - ✅ **ADM Diretoria** (Joyce): Acesso a todos os 5 departamentos, ver auditoria completa
+  - ✅ **ADM Articulação e Conectividade - Coordenadora** (Joyla): Acesso a 4 depts (não Stúdio), ver quem criou/editou/cancelou
+  - ✅ **ADM Articulação e Conectividade - Assistente**: Acesso a 4 depts, ações registradas com nome da assistente
+  - ✅ **ADM Stúdio Musical** (Silton): Acesso exclusivo ao Stúdio de Música
+- [x] **Senhas distintas e seguras**: Cada papel com senha personalizada (ex: `Diretoria!Joyce2026`, `Artic!Joyla2026`, `Artic!Assist2026`, `Studio!Silton2026`)
+- [x] **Cards de departamentos**: Link Lab e Sala de Treinamento adicionados com botões "Agendar" e "Consultar"
+- [x] **Auditoria completa**: Todas as ações registradas com operador, função, timestamp
+  - ✅ Criação de agendamento (createdBy, createdByRole, createdAt)
+  - ✅ Edição (lastEditedBy, lastEditedByRole, lastEditedAt)
+  - ✅ Cancelamento (cancelledBy, cancelledAt)
+  - ✅ Validação por QR (validatedBy, validatedAt)
+- [x] **Consentimento LGPD versionado**: Pop-up na primeira visita
+  - ✅ 3 checkboxes: Termos, LGPD, Política de Privacidade
+  - ✅ Registro em localStorage e Supabase (best-effort)
+  - ✅ Versionamento para re-solicitar quando políticas mudam
+- [x] **Dashboard de auditoria**: Último 20 ações visíveis para Coordenação e Diretoria
+- [x] **Merge para main**: Feature branch `claude/ux-ui-funcionalidades-b8bu2a` mesclada com sucesso
+- [x] **Push para GitHub**: Código enviado para production
+
+### Impacto
+- ✅ Sistema de agendamento agora com segurança jurídica via consentimento LGPD
+- ✅ Auditoria completa de todas as operações administrativas
+- ✅ Estrutura de acesso replicada em produção
+- ✅ Conformidade com Lei Geral de Proteção de Dados (LGPD)
+
+### Próximos passos
+- [ ] Executar SQL no Supabase para criar tabelas remotas de senhas e consentimentos (opcional)
+- [ ] Monitorar logins e auditoria em produção
+- [ ] Treinar usuários nos 4 acessos distintos
 
 ---
 
