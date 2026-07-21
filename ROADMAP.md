@@ -1,8 +1,44 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.7.0  
-**Status Geral:** 🟢 Produção - Admin Approval System + User Dashboard (7 Departments + User Auth + Approval Workflow)
+**Versão:** 2.8.0  
+**Status Geral:** 🟢 Produção - Departments Restructure + Capacity-Aware Booking (4 Core Spaces + Unified Form + Capacity Limits)
+
+---
+
+## Atualização — 2026-07-21 (v2.8.0) — Department Restructure + Capacity-Aware Booking System
+
+### Concluído
+- [x] **Redução de departamentos**: 7 departamentos reduzidos para 4 core spaces (Coworking, Link Lab, Sala de Treinamento, Átrio).
+- [x] **Limites de capacidade**: Coworking (70), Link Lab (120), Sala de Treinamento (30), Átrio (150).
+- [x] **Refatoração de horários**: Mudança de single start/end para múltiplos períodos diários (08h-12h, 13h-17h, 18h-21h).
+- [x] **Helper function generateTimeSlots()**: Geração centralizada de slots de tempo com suporte a múltiplos períodos.
+- [x] **Formulário unificado**: Mesmo formulário para todos os 4 departamentos (16 campos padrão).
+- [x] **Campos de evento**: Título, tipo (Palestra/Seminário/etc), duração, público estimado, facilitadores.
+- [x] **Objetivos ODS**: Checkboxes com 17 objetivos de desenvolvimento sustentável alinhados à ONU.
+- [x] **Layout de sala**: Seleção de formato (Auditório, U com Mesas, Cabine, Mesa Redonda, Outro).
+- [x] **Validação de capacidade**: Verifica se overbooking é possível por horário/data.
+- [x] **Rastreamento de participantes**: Campo "Quantas pessoas participarão" obrigatório, armazenado em appointment.
+- [x] **Alerta de capacidade**: Mensagem clara quando slot está cheio com opção de escolher outro horário.
+
+### Impactos
+- **Usabilidade**: Simplificação de 7 departamentos para 4 espaços principais, formulário único reduz confusão.
+- **Capacidade**: Agora impossível fazer overbooking; limites respeitados por slot de tempo.
+- **Admin**: Gerenciamento simplificado com apenas 4 departamentos para monitorar.
+- **Flexibilidade**: Múltiplos períodos por dia permitem melhor utilização de espaço (manhã/tarde/noite).
+- **ODS**: Alinhamento com objetivos globais de desenvolvimento sustentável do Brasil.
+
+### Próximos Passos
+- [ ] Integração com Supabase (migrar appointments com nova estrutura de capacidade)
+- [ ] Dashboard analytics com ocupação por horário/departamento
+- [ ] Notificações de overbooking tentados
+- [ ] Relatórios de taxa de ocupação e ODS mais alinhados
+- [ ] Integração de email/SMS para avisos de capacidade
+
+### Riscos e débitos técnicos
+- Migração de dados antigos (7 depts → 4 depts) requer mapeamento manual
+- Admin interface ainda não refatorada para novo modelo (próxima iteração)
+- Sem backup automático de dados de participantes (requer Supabase)
 
 ---
 

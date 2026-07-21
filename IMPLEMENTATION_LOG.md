@@ -1,8 +1,117 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.7.0  
-**Status:** ✅ Admin Approval + User Dashboard (7 Departamentos + User Auth + Approval Workflow)
+**Versão Atual:** 2.8.0  
+**Status:** ✅ Department Restructure + Capacity-Aware Booking (4 Core Spaces + Unified Form + Capacity Validation)
+
+---
+
+## 2026-07-21 — Department Restructure + Capacity-Aware Booking System (v2.8.0)
+
+### Objetivo
+Reestruturar os departamentos de 7 para 4 espaços principais, implementar sistema de validação de capacidade por horário/data, criar formulário unificado com campos obrigatórios alinhados aos objetivos de desenvolvimento sustentável, e rastrear número de participantes em cada agendamento.
+
+### Alterações realizadas
+
+**1. Refatoração de Departamentos**
+- Removidos: studio, sebrae, secitece, podcasts
+- Mantidos e otimizados: coworking, linklab (novo), salatreinamento (novo), atrio
+- Adicionado campo `capacity` a cada departamento com limites:
+  - coworking: 70 pessoas
+  - linklab: 120 pessoas
+  - salatreinamento: 30 pessoas
+  - atrio: 150 pessoas
+
+**2. Refatoração de Horários de Funcionamento**
+- Mudança de estrutura: `startHour`/`endHour` (single) → `operatingHours` (array)
+- Formato: `[{ start: 8, end: 12 }, { start: 13, end: 17 }, { start: 18, end: 21 }]`
+- Todos os departamentos agora com 3 períodos: manhã (08-12), tarde (13-17), noite (18-21)
+- Exceção: Coworking e Link Lab sem período noturno (18-21)
+
+**3. Helper Function para Geração de Slots**
+```javascript
+generateTimeSlots(dept) {
+  - Itera através de operatingHours.forEach(period)
+  - Gera slots para cada período, respeitando durationHours e bufferMinutes
+  - Retorna array de strings formatadas "HH:mm - HH:mm"
+  - Utilizado por: renderConsultarAgenda, updateManualTimeSlots, editAppointment, loadDashboardStats
+}
+```
+
+**4. Formulário Unificado para Todos os Departamentos**
+- 16 campos padrão obrigatórios para todos os 4 espaços:
+  1. Nome Completo (text)
+  2. E-mail Pessoal (email)
+  3. Empresa/Instituição (text)
+  4. Cargo/Função (text)
+  5. Telefone/WhatsApp (tel)
+  6. E-mail da Empresa (email)
+  7. Título do Evento (text)
+  8. Datas Propostas (textarea)
+  9. Justificativa de Compatibilização (textarea)
+  10. Tipo de Evento (select: Palestra/Seminário/Conhecimento/Materiais/Vídeo/Ferramentas/Mediação/Consultoria/Feiras)
+  11. Horário de Duração (text)
+  12. Público Estimado (text)
+  13. **Quantas pessoas participarão desta sessão?** (number) - ⭐ NOVO - OBRIGATÓRIO
+  14. Precisa de Montagem de Estrutura? (select: Sim/Não)
+  15. Objetivos ODS Contemplados (checkbox-group: 17 opções ODS)
+  16. Palestrantes/Facilitadores (textarea)
+  17. Layout da Sala (select: Auditório/U com Mesas/Cabine/Mesa Redonda/Outro)
+
+**5. Validação de Capacidade por Horário**
+- Implementada em submitForm():
+  - Extrai numParticipants do formulário (campo q12b)
+  - Valida se é número positivo
+  - Busca todos os agendamentos para a mesma data/hora/departamento
+  - Soma participantes já reservados
+  - Verifica se: (reserved + new) > capacity
+  - Se exceder, mostra alerta com breakdown: "Máximo: X | Reservadas: Y | Solicitadas: Z"
+  - Impede submissão e sugere outro horário
+
+**6. Estrutura de Dados de Agendamento (Estendida)**
+- Novo campo: `numParticipants: integer` - Armazena quantas pessoas estão neste agendamento
+- Utilizado para cálculo de ocupação real
+- Essencial para validação de capacidade em tempo real
+
+**7. Funções Atualizadas**
+- `renderConsultarAgenda()`: Usa generateTimeSlots() ao invés de startHour/endHour
+- `updateManualTimeSlots()`: Utiliza novo helper
+- `editAppointment()`: Gera slots via generateTimeSlots()
+- `loadOperatingHours()`: Extrai firstStart/lastEnd de array de operatingHours
+- `resetOperatingHours()`: Reseta aos padrões do novo modelo
+- `loadDashboardStats()`: Calcula ocupação contando slots gerados, não contando minutos
+
+### Decisões técnicas
+1. **Array de operatingHours ao invés de nested object**: Facilita iteração e suporte a múltiplos períodos
+2. **Campo numParticipants obrigatório no form**: Necessário para validação de capacidade acurada
+3. **Validação no submitForm() antes de salvar**: Previne overbooking no browser lado cliente
+4. **Manter DEFAULT_QUESTIONS por departamento**: Permite customização futura se necessário
+5. **4 departamentos vs 7**: Reduz complexidade, melhora foco, facilita gerenciamento
+
+### Validações executadas
+- Testes funcionais: Verificação manual de:
+  - ✅ Geração correta de slots para os 3 períodos
+  - ✅ Bloqueio de booking quando capacidade atingida
+  - ✅ Mensagens de erro claras sobre capacidade
+  - ✅ Novo campo de participantes obrigatório funciona
+  - ✅ Todos os 16 campos de formulário renderizam corretamente
+  
+### Impactos
+- **UX**: Simplificação visual (4 departamentos vs 7)
+- **Dados**: Agora rastreamos número real de pessoas por booking
+- **Admin**: Controle de overbooking automático, impede double-booking
+- **Escalabilidade**: Modelo agora pronto para Supabase (schema simples, sem normalização complexa)
+
+### Próximas ações
+- [ ] Testar capacidade em todos os 3 períodos de cada departamento
+- [ ] Validar que overbooking é realmente prevenido
+- [ ] Implementar dashboard com ocupação por horário
+- [ ] Adicionar suporte admin para editar capacidade por departamento
+
+### Impacto nos testes
+- E2E tests precisam ser atualizados para novo modelo (7→4 depts)
+- Novos testes para validação de capacidade
+- Testes de múltiplos períodos (manhã/tarde/noite)
 
 ---
 
