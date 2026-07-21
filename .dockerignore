@@ -1,0 +1,84 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+.windows
+
+# Tests
+tests
+test
+*.test.js
+*.spec.js
+coverage
+__tests__
+
+# Build
+dist
+build
+*.tgz
+
+# Logs
+logs
+*.log
+
+# Temporary
+tmp
+temp
+.cache
+.parcel-cache
+
+# Documentation
+docs
+README.md
+CHANGELOG.md
+LICENSE
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Project specific
+ROADMAP.md
+IMPLEMENTATION_LOG.md
+MELHORIAS-CONCLUIDAS.md
+UX-UI-IMPROVEMENTS.md
+DOCUMENTACAO.md
+FEATURES.md
+*.md
+
+# Optional npm cache
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn
+yarn-debug*
+yarn-error*
+
+# Docker
+Dockerfile
+docker-compose*.yml
+docker-compose*.yaml

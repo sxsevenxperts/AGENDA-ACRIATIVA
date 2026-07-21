@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # ========================================
+  # Cadeia Criativa Web App
+  # ========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agenda-cadeia-criativa
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - APP_VERSION=2.1.1
+      - APP_NAME=Cadeia Criativa
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    volumes:
+      - ./public:/app/public:ro
+      - ./index.html:/app/index.html:ro
+      - ./css:/app/css:ro
+      - ./js:/app/js:ro
+      - ./assets:/app/assets:ro
+    networks:
+      - cadeia-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.example.description=Cadeia Criativa Scheduling System"
+      - "com.example.version=2.1.1"
+
+  # ========================================
+  # Nginx Reverse Proxy
+  # ========================================
+  nginx:
+    image: nginx:alpine
+    container_name: cadeia-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - cadeia-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # Supabase (Optional - if self-hosted)
+  # ========================================
+  # supabase:
+  #   image: supabase/supabase:latest
+  #   container_name: cadeia-supabase
+  #   restart: always
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #     - POSTGRES_DB=${DB_NAME}
+  #   volumes:
+  #     - supabase-data:/var/lib/postgresql/data
+  #   networks:
+  #     - cadeia-network
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  cadeia-network:
+    driver: bridge
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  supabase-data:
+    driver: local

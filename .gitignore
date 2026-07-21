@@ -21,3 +21,4 @@ temp/
 # Local infrastructure clones / CLI state
 supabase-easypanel/
 supabase/.temp/
+.env
