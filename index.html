@@ -2627,6 +2627,7 @@
             <option value="auditorio">Auditório</option>
             <option value="secitece">SECITECE</option>
             <option value="atrio">Átrio</option>
+            <option value="podcasts">Podcasts</option>
             <option value="super">🏛️ Diretoria / Administração Geral</option>
           </select>
         </div>
@@ -2696,6 +2697,7 @@
               <option value="auditorio">Auditório</option>
               <option value="secitece">SECITECE</option>
               <option value="atrio">Átrio</option>
+              <option value="podcasts">Podcasts</option>
             </select>
           </div>
 
@@ -2817,6 +2819,7 @@
               <option value="auditorio">Auditório</option>
               <option value="secitece">SECITECE</option>
               <option value="atrio">Átrio</option>
+              <option value="podcasts">Podcasts</option>
             </select>
           </div>
 
@@ -3117,6 +3120,19 @@
       endHour: 20,
       prefix: 'ATR',
       defaultOrientacoes: 'Sujeito a lotação.\\nEventos com música precisam de alvará especial.'
+    },
+    'podcasts': {
+      id: 'podcasts',
+      name: 'Podcasts',
+      subtitle: 'Estúdio de podcasts — gravação profissional de áudio — sessões de 1,5 horas',
+      color: '#D946EF',
+      icon: '<i class="ph ph-microphone" style="font-size: 1.2em; vertical-align: middle;"></i>',
+      durationHours: 1.5,
+      bufferMinutes: 15,
+      startHour: 8,
+      endHour: 18,
+      prefix: 'POD',
+      defaultOrientacoes: 'Chegar 10 minutos antes.\\nEste é um espaço silencioso.\\nTodos devem desligar celulares.'
     }
   };
 
@@ -3144,6 +3160,16 @@
        { id: 'q3', label: 'Telefone', type: 'tel', required: true, width: '50%', mask: 'phone' },
        { id: 'q4', label: 'Finalidade', type: 'select', required: true, width: '100%', options: ['Trabalho Remoto', 'Estudo', 'Reunião', 'Desenvolvimento', 'Outro'] },
        { id: 'q5', label: 'Observações', type: 'textarea', required: false, width: '100%' }
+    ],
+    'podcasts': [
+      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%' },
+      { id: 'q2', label: 'CPF', type: 'text', required: true, width: '50%', placeholder: '000.000.000-00', mask: 'cpf' },
+      { id: 'q3', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '50%', placeholder: '(00) 00000-0000', mask: 'phone' },
+      { id: 'q4', label: 'E-mail', type: 'email', required: false, width: '100%' },
+      { id: 'q5', label: 'Nome do Podcast', type: 'text', required: true, width: '100%' },
+      { id: 'q6', label: 'Assunto/Tema do Episódio', type: 'textarea', required: true, width: '100%' },
+      { id: 'q7', label: 'Número de Participantes', type: 'select', required: true, width: '50%', options: ['1 (Solo)', '2 (Dupla)', '3 (Trio)', '4+'] },
+      { id: 'q8', label: 'Possui Roteiro?', type: 'select', required: true, width: '50%', options: ['Sim', 'Não', 'Parcial'] }
     ]
   };
 
