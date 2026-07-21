@@ -1,8 +1,48 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.6  
-**Status:** ✅ Responsividade Completa (Mobile, Tablet, Desktop)
+**Versão Atual:** 2.9.7  
+**Status:** ✅ Layout Desktop Corrigido (Flexbox) + Responsividade Completa
+
+---
+
+## 2026-07-21 — Correção Definitiva do Layout Desktop (v2.9.7)
+
+### Problema Identificado
+O layout no desktop continuava errado mesmo após o deploy (produção 100% sincronizada com o código). A causa raiz **não era cache nem deploy**, mas um **bug de contagem no seletor CSS `:nth-child`**.
+
+- O `.dept-grid` tem o `.section-title` como **primeiro filho**.
+- As regras `.dept-grid .dept-card:nth-child(4)` e `:nth-child(5)` miravam, portanto, em **Sala de Treinamento (4º filho)** e **Átrio (5º filho)** — e não em Átrio/Stúdio como pretendido.
+- Combinado com `grid-column` explícito + auto-placement, o resultado era um layout quebrado.
+
+### Solução (Flexbox)
+Substituída toda a lógica frágil de `grid` + `nth-child` + `grid-column` por **Flexbox com `justify-content: center`**, que centraliza os 2 últimos cards de forma natural e robusta — sem depender de índices:
+
+```css
+.dept-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+.dept-grid .section-title { flex: 0 0 100%; }
+.dept-grid .dept-card { flex: 0 0 340px; width: 340px; max-width: 100%; }
+```
+
+### Resultado (validado com Chromium headless)
+- **Desktop (>1024px):** 3 cards na 1ª linha (Coworking · Link Lab · Sala de Treinamento) + 2 centralizados na 2ª (Átrio · Stúdio de Música), alinhados ao centro como as logos ✅
+- **Tablet (≤1024px):** 2 cards por linha, centralizados ✅
+- **Mobile (≤768px):** 1 card por linha, largura total, **sem overflow horizontal** (medido: `scrollWidth == clientWidth`) ✅
+
+### Arquivos Alterados
+- `index.html` — bloco `.dept-grid` reescrito (grid → flexbox), remoção das regras `nth-child`/`grid-column`
+
+### Validações Executadas
+- ✅ Screenshot desktop 1440px — 3+2 centralizado confirmado
+- ✅ Screenshot tablet 820px — 2 por linha confirmado
+- ✅ Screenshot mobile 390px — 1 coluna confirmado
+- ✅ Medição de overflow: `cardScroll == cardClient`, `actScroll == actClient` (sem corte real)
+- ✅ Produção comparada byte a byte com código local (idênticas antes do fix)
+
+### Impacto
+- ✅ Layout desktop finalmente correto após a causa raiz ser identificada
+- ✅ Solução robusta e independente da ordem/quantidade de filhos
+- ✅ Responsividade preservada em todos os breakpoints
 
 ---
 

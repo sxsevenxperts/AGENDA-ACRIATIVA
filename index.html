@@ -737,79 +737,75 @@
       font-size: 16px;
     }
 
+    /* Flexbox: 3 cards na 1ª linha, 2 últimos centralizados na 2ª (igual às logos) */
     .dept-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(340px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
       gap: 24px;
       padding: 60px 0;
+    }
+
+    /* Título ocupa a linha inteira */
+    .dept-grid .section-title {
+      flex: 0 0 100%;
+      width: 100%;
+    }
+
+    /* Cada card com largura fixa — flexbox distribui e centraliza */
+    .dept-grid .dept-card {
+      flex: 0 0 340px;
+      width: 340px;
       max-width: 100%;
-      margin: 0 auto;
     }
 
-    /* Desktop (3 primeiros cards + 2 últimos centralizados) */
-    .dept-grid .dept-card:nth-child(4) {
-      grid-column: 2 / 3;
-      justify-self: center;
-    }
-
-    .dept-grid .dept-card:nth-child(5) {
-      grid-column: 3 / 4;
-      justify-self: center;
-    }
-
-    /* Tablet Large (1280px - 1024px): ainda 3 colunas) */
+    /* Tablet Large (1024px - 1280px) */
     @media (max-width: 1280px) {
       .dept-grid {
-        grid-template-columns: repeat(3, minmax(300px, 1fr));
         gap: 20px;
         padding: 50px 20px;
       }
+      .dept-grid .dept-card {
+        flex-basis: 300px;
+        width: 300px;
+      }
     }
 
-    /* Tablet (2 colunas lado a lado, centralizadas) */
+    /* Tablet (2 cards por linha, centralizados) */
     @media (max-width: 1024px) {
       .dept-grid {
-        grid-template-columns: repeat(2, minmax(280px, 1fr));
         gap: 20px;
       }
-
-      .dept-grid .dept-card:nth-child(4) {
-        grid-column: 1 / 2;
-        justify-self: center;
-      }
-
-      .dept-grid .dept-card:nth-child(5) {
-        grid-column: 2 / 3;
-        justify-self: center;
+      .dept-grid .dept-card {
+        flex-basis: 300px;
+        width: 300px;
       }
     }
 
-    /* Tablet Portrait (1 coluna) */
+    /* Tablet Portrait / Mobile (1 coluna, largura total) */
     @media (max-width: 768px) {
       .dept-grid {
-        grid-template-columns: 1fr;
         padding: 40px 0;
+        gap: 20px;
       }
-
       .dept-grid .dept-card {
-        max-width: none;
-        grid-column: auto !important;
-        justify-self: auto;
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 480px;
       }
     }
 
-    /* Mobile (1 coluna otimizado) */
+    /* Mobile pequeno (1 coluna otimizado) */
     @media (max-width: 480px) {
       .dept-grid {
-        grid-template-columns: 1fr;
         gap: 16px;
         padding: 32px 0;
       }
-
       .dept-grid .dept-card {
-        max-width: none;
-        grid-column: auto !important;
-        justify-self: auto;
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 100%;
       }
     }
 

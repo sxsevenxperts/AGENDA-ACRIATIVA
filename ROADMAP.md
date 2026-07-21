@@ -1,8 +1,29 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.6  
-**Status Geral:** 🟢 Em Produção - Responsividade Completa + 4 Logins + SVG
+**Versão:** 2.9.7  
+**Status Geral:** 🟢 Em Produção - Layout Desktop Corrigido (Flexbox) + Responsividade Completa
+
+---
+
+## Atualização — 2026-07-21 (v2.9.7) — Correção Definitiva do Layout Desktop
+
+### Causa Raiz
+- [x] Identificado que o layout errado **não** era cache/deploy (produção estava sincronizada)
+- [x] Bug real: seletor `:nth-child(4/5)` contava o `.section-title` como 1º filho → mirava nos cards errados
+
+### Concluído
+- [x] **Substituição de `grid` + `nth-child` por Flexbox** (`justify-content: center`)
+  - ✅ Desktop: 3 cards na 1ª linha + Átrio/Stúdio centralizados na 2ª (como as logos)
+  - ✅ Tablet: 2 por linha centralizados
+  - ✅ Mobile: 1 coluna, largura total, sem overflow
+- [x] **Validação visual** com Chromium headless (desktop, tablet, mobile)
+- [x] **Solução robusta** — independe da ordem/quantidade de filhos do grid
+
+### Impacto
+- ✅ Layout desktop finalmente correto
+- ✅ Sem dependência de índices frágeis
+- ✅ Responsividade preservada
 
 ---
 
