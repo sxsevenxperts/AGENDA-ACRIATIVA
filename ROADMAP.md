@@ -1,14 +1,22 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
-**Última atualização:** 2026-07-20  
-**Versão:** 2.1.1  
-**Status Geral:** 🟢 Produção
+**Última atualização:** 2026-07-21  
+**Versão:** 2.1.2  
+**Status Geral:** 🟢 Produção - Pronto para Deploy
 
 ---
 
 ## 📍 Status Atual
 
-### ✅ Concluído (Versão 2.1.1)
+### ✅ Concluído (Versão 2.1.2)
+- [x] **Deployment Infrastructure** - Docker, Easypanel, Nginx completo
+  - Dockerfile multi-stage (node:18-alpine)
+  - docker-compose.yml com app, nginx, supabase
+  - nginx.conf com reverse proxy, rate limiting, security headers
+  - scripts/deploy.sh para automação Easypanel
+  - DEPLOYMENT.md com 344 linhas de documentação
+  - .env.example para variáveis de ambiente
+
 - [x] **Hero Section Redesign** - Modernização visual com Cadeia Criativa branding
   - Logo destacada com animação flutuante
   - Barra de busca central
