@@ -5371,27 +5371,10 @@
     // Generate Codes
     const dept = DEPARTMENTS[currentDeptId];
 
-    // Validate capacity
+    // Validate number of participants (capacidade será validada server-side via Supabase RPC)
     const numParticipants = parseInt(formData['Quantas pessoas participarão desta sessão?'] || formData['q12b'] || 0);
     if (isNaN(numParticipants) || numParticipants < 1) {
       alert("Por favor, indique um número válido de participantes.");
-      return;
-    }
-
-    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
-    const slotBookings = appointments.filter(a =>
-      a.deptId === currentDeptId &&
-      a.date === formData.date &&
-      a.time === formData.time
-    );
-
-    const currentCapacity = slotBookings.reduce((sum, appt) => {
-      const participants = parseInt(appt.numParticipants || 0);
-      return sum + participants;
-    }, 0);
-
-    if (currentCapacity + numParticipants > dept.capacity) {
-      alert(`⚠️ Capacidade insuficiente!\n\nCapacidade máxima: ${dept.capacity} pessoas\nJá reservadas: ${currentCapacity} pessoas\nVocê quer: ${numParticipants} pessoas\n\nEscolha outro horário.`);
       return;
     }
 
