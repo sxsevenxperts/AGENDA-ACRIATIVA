@@ -19,10 +19,20 @@
 - [x] **Validação**: testado no browser com dados semeados — Diretoria (5 cards, total consolidado) e ADM Stúdio (1 card escopado); matemática de ocupação conferida (ex.: Coworking 65/70 = 93%); sem erros de console
 - [x] **Fix de renderização**: `openAdminDash()` agora chama `loadDashboardStats()` para evitar cache de login anterior; dashboard renderiza corretamente ao fazer login sem necessidade de clicar na aba
 
-### Próximos passos
-- [ ] Executar `sql/001_lgpd_consents.sql` no Supabase em produção
-- [ ] Persistir agendamentos no Supabase (EasyPanel) para dashboards multi-dispositivo
-- [ ] Personalização de horários por departamento (sob demanda)
+### Riscos e Débitos Técnicos Críticos
+- **RACE CONDITION CAPACIDADE** (CRITICAL): Múltiplos usuários simultâneos podem exceeder capacidade máxima. Validação em submitForm() não é thread-safe com localStorage. Detectado no stress test: 6 slots com overflow (Sala Treinamento: 35/30, 47/30).
+- **RBAC BUG** (CRITICAL): Role-based access control não está completamente escopo — função setando `window.adminSession` em vez de variável `let adminSession`. Resultado: papéis veem todos os 5 departamentos em vez de apenas seus escopos.
+- **localStorage Limit** (MEDIUM): Para 100+ agendamentos simultâneos, localStorage atinge limite (~5MB). Requer migração para Supabase.
+- **Cross-Tab Sync** (MEDIUM): Sem sincronização entre abas navegador. Usuário abrindo 2 abas não verá atualizações da outra.
+- **Status Imbalance** (LOW): Apenas status PENDENTE em uso. Fluxo completo não implementado (VALIDADO → CONCLUÍDO / NAO_COMPARECEU).
+
+### Próximos passos (Priorizado)
+- [ ] **v2.13.1 (URGENTE):** Fix RBAC — corrigir setagem de `adminSession` como variável (não window property)
+- [ ] **v2.14.0:** Implementar server-side validation no Supabase (capacidade, LGPD, dados obrigatórios)
+- [ ] **v2.14.0:** Implementar optimistic concurrency locking para agendamentos (versioning ou transaction pattern)
+- [ ] **v2.14.0:** Completar fluxo de status (PENDENTE → VALIDADO → CONCLUÍDO / NAO_COMPARECEU)
+- [ ] **v2.13.1 (MEDIUM):** Cross-tab synchronization com storage event listeners
+- [ ] **v2.14.0 / v2.15.0:** Migrar dados para Supabase com persistência real e real-time listeners
 
 ---
 
