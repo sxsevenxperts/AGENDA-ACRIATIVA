@@ -826,84 +826,87 @@
 
     .lgpd-modal {
       position: fixed;
-      top: 0;
+      bottom: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
       display: none;
-      align-items: center;
-      justify-content: center;
       z-index: 10000;
-      backdrop-filter: blur(4px);
-      animation: fadeIn 0.3s ease-out;
+      animation: slideUp 0.35s var(--ease-out);
+      border-top: 2px solid var(--cc-cyan);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
     }
 
     .lgpd-modal.active {
-      display: flex;
+      display: block;
     }
 
     .lgpd-content {
-      background: var(--white);
-      border-radius: var(--radius-xl);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      max-width: 520px;
-      width: 90%;
-      max-height: 85vh;
+      width: 100%;
+      max-width: 100%;
+      max-height: 70vh;
       overflow-y: auto;
-      padding: 32px;
-      animation: slideUp 0.35s var(--ease-out);
+      padding: 28px 32px;
+      animation: none;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
     }
 
     .lgpd-header {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .lgpd-header h2 {
       font-family: 'Montserrat', sans-serif;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--cc-navy);
-      margin-bottom: 8px;
+      margin: 0;
     }
 
     .lgpd-header p {
-      font-size: 14px;
-      color: var(--gray-500);
-      line-height: 1.6;
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.5;
+      margin: 0;
     }
 
     .lgpd-items {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin: 24px 0;
-      max-height: 300px;
+      gap: 10px;
+      margin: 12px 0 16px 0;
+      max-height: 200px;
       overflow-y: auto;
-      padding-right: 8px;
+      padding-right: 0;
     }
 
     .lgpd-item {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px;
-      background: var(--gray-50);
-      border: 1px solid var(--gray-200);
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(81, 183, 222, 0.25);
       border-radius: var(--radius-md);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .lgpd-item:hover {
-      background: var(--gray-100);
+      background: rgba(255, 255, 255, 0.95);
       border-color: var(--cc-cyan);
+      box-shadow: 0 2px 8px rgba(81, 183, 222, 0.1);
     }
 
     .lgpd-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      margin-top: 2px;
+      width: 16px;
+      height: 16px;
+      margin-top: 3px;
       cursor: pointer;
       accent-color: var(--cc-cyan);
       flex-shrink: 0;
@@ -916,14 +919,14 @@
     .lgpd-item-title {
       font-weight: 600;
       color: var(--gray-900);
-      font-size: 14px;
-      margin-bottom: 2px;
+      font-size: 13px;
+      margin-bottom: 1px;
     }
 
     .lgpd-item-desc {
-      font-size: 12px;
-      color: var(--gray-500);
-      line-height: 1.5;
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.4;
     }
 
     .lgpd-item-desc a {
@@ -940,43 +943,46 @@
 
     .lgpd-actions {
       display: flex;
-      gap: 12px;
-      margin-top: 28px;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
     }
 
     .lgpd-btn-accept {
-      flex: 1;
-      padding: 12px 24px;
+      min-width: 180px;
+      padding: 11px 28px;
       background: var(--cc-cyan);
       color: var(--white);
       border: none;
       border-radius: var(--radius-full);
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       transition: all 0.25s ease;
+      white-space: nowrap;
     }
 
     .lgpd-btn-accept:hover:not(:disabled) {
       background: var(--cc-cyan-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(81, 183, 222, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(81, 183, 222, 0.25);
     }
 
     .lgpd-btn-accept:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
     }
 
     .lgpd-info {
-      background: linear-gradient(135deg, rgba(81,183,222,0.08) 0%, rgba(81,183,222,0.03) 100%);
+      background: rgba(81, 183, 222, 0.06);
       border-left: 3px solid var(--cc-cyan);
-      padding: 12px 14px;
+      padding: 8px 12px;
       border-radius: var(--radius-sm);
-      font-size: 12px;
+      font-size: 11px;
       color: var(--cc-navy);
-      line-height: 1.6;
-      margin-top: 20px;
+      line-height: 1.5;
+      margin-top: 8px;
+      flex: 1;
     }
 
     /* ============================================
@@ -2944,12 +2950,14 @@
     </div>
   </div>
 
-  <!-- ==================== LGPD / CONSENTIMENTO MODAL ==================== -->
+  <!-- ==================== LGPD / CONSENTIMENTO MODAL (BANNER FULL-WIDTH) ==================== -->
   <div class="lgpd-modal" id="lgpd-modal">
     <div class="lgpd-content">
       <div class="lgpd-header">
-        <h2>🔐 Consentimento e Privacidade</h2>
-        <p>Para usar o sistema de agendamento, por favor, aceite os termos de privacidade e consentimento de dados.</p>
+        <div>
+          <h2>🔐 Política de Privacidade e Consentimento LGPD</h2>
+          <p>Seus dados são protegidos conforme a Lei Geral de Proteção de Dados. Aceite os termos para continuar.</p>
+        </div>
       </div>
 
       <div class="lgpd-items">
@@ -2957,10 +2965,8 @@
         <label class="lgpd-item">
           <input type="checkbox" id="consent-lgpd" required>
           <div class="lgpd-item-text">
-            <div class="lgpd-item-title">✓ Conformidade LGPD</div>
-            <div class="lgpd-item-desc">
-              Confirmo que autorizo o processamento de meus dados pessoais conforme a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018) para fins de agendamento e gerenciamento de eventos na Cadeia Criativa.
-            </div>
+            <div class="lgpd-item-title">✓ Conformidade LGPD (Lei nº 13.709/2018)</div>
+            <div class="lgpd-item-desc">Autorizo o processamento de meus dados pessoais conforme a LGPD para agendamento e gerenciamento de eventos.</div>
           </div>
         </label>
 
@@ -2968,10 +2974,8 @@
         <label class="lgpd-item">
           <input type="checkbox" id="consent-privacy" required>
           <div class="lgpd-item-text">
-            <div class="lgpd-item-title">✓ Política de Privacidade</div>
-            <div class="lgpd-item-desc">
-              Li e aceito a <a href="#" onclick="showPrivacyPolicy(event)">Política de Privacidade</a> da Cadeia Criativa. Meus dados serão protegidos e não compartilhados com terceiros sem consentimento.
-            </div>
+            <div class="lgpd-item-title">✓ Li e aceito a <a href="#" onclick="showPrivacyPolicy(event)" style="color:var(--cc-cyan-dark);text-decoration:underline;">Política de Privacidade</a></div>
+            <div class="lgpd-item-desc">Meus dados serão protegidos e não compartilhados com terceiros sem consentimento.</div>
           </div>
         </label>
 
@@ -2980,18 +2984,15 @@
           <input type="checkbox" id="consent-cookies">
           <div class="lgpd-item-text">
             <div class="lgpd-item-title">Cookies e Rastreamento (Opcional)</div>
-            <div class="lgpd-item-desc">
-              Autorizo o uso de cookies para análise de uso, melhorias de interface e preferências pessoais.
-            </div>
+            <div class="lgpd-item-desc">Autorizo análise de uso e melhorias da experiência de navegação.</div>
           </div>
         </label>
       </div>
 
-      <div class="lgpd-info">
-        <strong>ℹ️ Segurança Jurídica:</strong> Seu consentimento será registrado com timestamp na infraestrutura. Em caso de dúvidas, entre em contato com admin@agendacriativa.sevenxperts.solutions
-      </div>
-
       <div class="lgpd-actions">
+        <div class="lgpd-info">
+          <strong>ℹ️</strong> Seu consentimento será registrado com timestamp para auditoria.
+        </div>
         <button class="lgpd-btn-accept" id="lgpd-accept-btn" onclick="acceptLGPD()" disabled>
           Aceitar e Continuar
         </button>
