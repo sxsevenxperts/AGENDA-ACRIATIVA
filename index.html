@@ -3118,11 +3118,11 @@
           <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito os Termos de Uso e Orientações</strong><br><small style="color: var(--gray-600);">Li e concordo com as regras de uso dos espaços e agendamentos.</small></span>
         </label>
         <label style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; cursor: pointer;">
-          <input type="checkbox" id="consent-lgpd" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+          <input type="checkbox" id="gate-consent-lgpd" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
           <span style="font-size: 14px; color: var(--gray-800);"><strong>Consinto o tratamento dos meus dados (LGPD)</strong><br><small style="color: var(--gray-600);">Autorizo o tratamento de meus dados pessoais conforme a Lei nº 13.709/2018.</small></span>
         </label>
         <label style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 4px; cursor: pointer;">
-          <input type="checkbox" id="consent-privacy" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
+          <input type="checkbox" id="gate-consent-privacy" style="margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
           <span style="font-size: 14px; color: var(--gray-800);"><strong>Aceito a Política de Privacidade</strong><br><small style="color: var(--gray-600);">Li e compreendi a <a href="javascript:void(0);" onclick="openPrivacyPolicy()" style="color: var(--cc-cyan); text-decoration: underline; font-weight: 500;">Política de Privacidade completa</a>.</small></span>
         </label>
         <div id="consent-gate-error" style="color: var(--error); font-size: 13px; margin-top: 10px; display: none;">Você precisa aceitar os três itens para continuar.</div>
@@ -5212,8 +5212,8 @@
 
   function acceptConsentGate() {
     const terms = document.getElementById('consent-terms').checked;
-    const lgpd = document.getElementById('consent-lgpd').checked;
-    const privacy = document.getElementById('consent-privacy').checked;
+    const lgpd = document.getElementById('gate-consent-lgpd').checked;
+    const privacy = document.getElementById('gate-consent-privacy').checked;
     const err = document.getElementById('consent-gate-error');
 
     if (!terms || !lgpd || !privacy) {
@@ -5246,7 +5246,7 @@
     try { accepted = JSON.parse(localStorage.getItem('cadeia_consent_accepted') || 'null'); } catch (e) {}
     if (accepted && accepted.version === CONSENT_VERSION) return; // já consentiu nesta versão
 
-    ['consent-terms', 'consent-lgpd', 'consent-privacy'].forEach(id => {
+    ['consent-terms', 'gate-consent-lgpd', 'gate-consent-privacy'].forEach(id => {
       const el = document.getElementById(id); if (el) el.checked = false;
     });
     modal.style.display = 'flex';
