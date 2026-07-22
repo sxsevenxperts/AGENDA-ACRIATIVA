@@ -1,8 +1,27 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-22  
-**Versão:** 2.12.1  
-**Status Geral:** 🟢 Em Produção - LGPD Auditoria + UTF-3 Fortaleza + Migração SQL + Responsividade + SVG Icons
+**Versão:** 2.13.0  
+**Status Geral:** 🟢 Em Produção - Dashboard por Departamento + LGPD Auditoria + UTF-3 Fortaleza + Migração SQL + Responsividade + SVG Icons
+
+---
+
+## Atualização — 2026-07-22 (v2.13.0) — Dashboard por Departamento com Ocupação vs Capacidade
+
+### Concluído
+- [x] **Uma dashboard para CADA departamento**, escopada por papel de acesso (`getSessionDepts` / `canAccessDept`):
+  - ✓ **ADM Stúdio Musical (Silton)** → dashboard exclusiva do Stúdio (1 card, título "Dashboard do Departamento")
+  - ✓ **ADM/Assistente Articulação (Joyla)** → dashboards dos 4 espaços (Coworking, Link Lab, Sala Treinamento, Átrio)
+  - ✓ **ADM Diretoria (Joyce)** → dashboards de TODOS os 5 departamentos (título "Dashboard por Departamento — Diretoria (todos os dados)")
+- [x] **Métricas por departamento** em cada card: Total, Hoje, Pendentes, Validados, Faltas, Pessoas atendidas
+- [x] **Ocupação vs Capacidade máxima**: pico de pessoas no horário mais cheio vs limite do espaço (70/120/30/150/10), com barra de progresso e cor por faixa (verde <60%, amarelo 60–89%, vermelho ≥90%)
+- [x] **Tipo de evento mais frequente** por departamento (derivado das respostas do formulário)
+- [x] **Validação**: testado no browser com dados semeados — Diretoria (5 cards, total consolidado) e ADM Stúdio (1 card escopado); matemática de ocupação conferida (ex.: Coworking 65/70 = 93%); sem erros de console
+
+### Próximos passos
+- [ ] Executar `sql/001_lgpd_consents.sql` no Supabase em produção
+- [ ] Persistir agendamentos no Supabase (EasyPanel) para dashboards multi-dispositivo
+- [ ] Personalização de horários por departamento (sob demanda)
 
 ---
 

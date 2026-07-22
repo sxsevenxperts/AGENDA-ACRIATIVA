@@ -1,8 +1,39 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 22/07/2026  
-**Versão Atual:** 2.12.1  
-**Status:** ✅ Emojis removidos, SVG icons implementados + LGPD Simplificado + Stress Tests
+**Versão Atual:** 2.13.0  
+**Status:** ✅ Dashboard por Departamento + Emojis removidos, SVG icons + LGPD Simplificado + Stress Tests
+
+---
+
+## 2026-07-22 — Dashboard por Departamento com Ocupação vs Capacidade (v2.13.0)
+
+### Objetivo
+Cada departamento gera informações para uma dashboard própria, exibida conforme o papel de acesso: ADM e Assistente da Articulação veem seus 4 espaços, ADM Stúdio Musical vê o Stúdio, e ADM Diretoria vê todos os dados consolidados.
+
+### Alterações realizadas
+
+**1. `loadDashboardStats()` — bloco "Compilado por Departamento" reescrito (`index.html`)**
+- Passou a usar `getSessionDepts()` como escopo (antes só aparecia para papéis multi-departamento via `isMultiDept()`); agora **todo papel vê a dashboard do(s) seu(s) departamento(s)**, inclusive o ADM Stúdio (papel de 1 departamento).
+- Título dinâmico do bloco conforme o papel:
+  - Diretoria → "Dashboard por Departamento — Diretoria (todos os dados)"
+  - Multi-dept (Articulação) → "Dashboard por Departamento"
+  - Single-dept (Stúdio) → "Dashboard do Departamento"
+- Cada card de departamento agora exibe 6 métricas: **Total, Hoje, Pendentes, Validados, Faltas, Pessoas** (soma de `numParticipants`).
+- **Ocupação vs capacidade máxima**: agrupa agendamentos por horário (`date + time`), calcula o pico de pessoas em um único horário e compara com `dept.capacity` (70/120/30/150/10). Exibe `pico/capacidade (util%)` + barra de progresso com cor por faixa (verde <60%, amarelo 60–89%, vermelho ≥90%).
+- **Tipo de evento mais frequente**: contabiliza a resposta cujo rótulo contém "tipo" e mostra o mais recorrente.
+
+### Fonte dos dados
+- `localStorage['cadeia_appointments']` — cada agendamento tem `deptId`, `date`, `time`, `status`, `numParticipants` e `data` (respostas do formulário).
+- Escopo de acesso via `ADMIN_ROLES[adminSession].depts` (helpers `getSessionDepts`, `canAccessDept`, `isDiretoria`).
+
+### Validação
+- Teste no browser com 4 agendamentos semeados em 3 departamentos:
+  - **Diretoria**: 5 cards, `stat-total` = 4 (consolidado), título correto.
+  - **ADM Stúdio (musica)**: 1 card, `stat-total` = 1 (escopado), título "Dashboard do Departamento".
+  - Ocupação conferida: Coworking com 40+25 pessoas no mesmo horário → **65/70 (93%)**, barra vermelha; tipo + frequente "Palestra".
+- Sem erros de console no carregamento.
+- Dados de teste removidos do `localStorage` após a validação.
 
 ---
 

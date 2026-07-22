@@ -6622,38 +6622,77 @@
     document.getElementById('stat-noshow').innerText = noShows;
     document.getElementById('stat-occupancy').innerText = occupancy + '%';
 
-    // Compilado por departamento — para papéis multi-departamento (Coordenação e Diretoria)
+    // Dashboard por departamento — uma dashboard para CADA departamento do escopo do papel.
+    // ADM Stúdio vê o seu; Articulação (ADM/Assistente) vê os 4; Diretoria vê todos os dados.
     const breakdownBox = document.getElementById('dashboard-dept-breakdown');
     const breakdownGrid = document.getElementById('dept-breakdown-grid');
-    if(isMultiDept()) {
+    const scopeDepts = getSessionDepts();
+    if(breakdownBox && scopeDepts.length > 0) {
       breakdownBox.style.display = 'block';
+      const bdTitle = breakdownBox.querySelector('h4');
+      if(bdTitle) bdTitle.innerText = isDiretoria()
+        ? 'Dashboard por Departamento — Diretoria (todos os dados)'
+        : (scopeDepts.length > 1 ? 'Dashboard por Departamento' : 'Dashboard do Departamento');
       breakdownGrid.innerHTML = '';
 
-      getSessionDepts().forEach(deptId => {
+      scopeDepts.forEach(deptId => {
         const dept = DEPARTMENTS[deptId];
+        if(!dept) return;
         const deptAppts = allAppts.filter(a => a.deptId === deptId);
         const deptTotal = deptAppts.length;
         const deptToday = deptAppts.filter(a => a.date === today).length;
+        const deptPending = deptAppts.filter(a => a.status === 'PENDENTE').length;
         const deptValidated = deptAppts.filter(a => a.status === 'VALIDADO').length;
         const deptNoShow = deptAppts.filter(a => a.status === 'NAO_COMPARECEU').length;
+
+        // Pessoas atendidas e ocupação vs capacidade máxima do departamento
+        const totalPeople = deptAppts.reduce((s, a) => s + (parseInt(a.numParticipants) || 0), 0);
+        const slotSums = {};
+        deptAppts.forEach(a => {
+          const k = a.date + ' ' + a.time;
+          slotSums[k] = (slotSums[k] || 0) + (parseInt(a.numParticipants) || 0);
+        });
+        const peak = Object.values(slotSums).reduce((m, v) => Math.max(m, v), 0);
+        const cap = dept.capacity || 0;
+        const util = cap > 0 ? Math.round((peak / cap) * 100) : 0;
+        const utilColor = util >= 90 ? '#FF6B6B' : (util >= 60 ? 'var(--cc-yellow)' : 'var(--success)');
+
+        // Tipo de evento mais frequente (a partir das respostas do formulário)
+        const tipoCounts = {};
+        deptAppts.forEach(a => {
+          const tk = Object.keys(a.data || {}).find(k => k.toLowerCase().includes('tipo'));
+          const tv = tk ? a.data[tk] : null;
+          if(tv) tipoCounts[tv] = (tipoCounts[tv] || 0) + 1;
+        });
+        const topTipo = Object.keys(tipoCounts).sort((x, y) => tipoCounts[y] - tipoCounts[x])[0] || '—';
 
         const card = document.createElement('div');
         card.style.cssText = 'background: white; border-radius: 12px; padding: 20px; border-top: 4px solid ' + dept.color + '; box-shadow: var(--shadow-sm);';
         card.innerHTML = `
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <span style="font-size:20px; color:${dept.color};">${dept.icon}</span>
             <strong style="font-size:16px; color:var(--gray-900);">${dept.name}</strong>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div><div style="font-size:24px; font-weight:700; color:var(--cc-navy);">${deptTotal}</div><div style="font-size:11px; color:var(--gray-500);">Total</div></div>
-            <div><div style="font-size:24px; font-weight:700; color:var(--cc-cyan);">${deptToday}</div><div style="font-size:11px; color:var(--gray-500);">Hoje</div></div>
-            <div><div style="font-size:24px; font-weight:700; color:var(--success);">${deptValidated}</div><div style="font-size:11px; color:var(--gray-500);">Validados</div></div>
-            <div><div style="font-size:24px; font-weight:700; color:#FF6B6B;">${deptNoShow}</div><div style="font-size:11px; color:var(--gray-500);">Faltas</div></div>
+          <div style="font-size:11px; color:var(--gray-500); margin-bottom:16px;">Capacidade máxima: ${cap} pessoas</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+            <div><div style="font-size:22px; font-weight:700; color:var(--cc-navy);">${deptTotal}</div><div style="font-size:11px; color:var(--gray-500);">Total</div></div>
+            <div><div style="font-size:22px; font-weight:700; color:var(--cc-cyan);">${deptToday}</div><div style="font-size:11px; color:var(--gray-500);">Hoje</div></div>
+            <div><div style="font-size:22px; font-weight:700; color:var(--cc-yellow);">${deptPending}</div><div style="font-size:11px; color:var(--gray-500);">Pendentes</div></div>
+            <div><div style="font-size:22px; font-weight:700; color:var(--success);">${deptValidated}</div><div style="font-size:11px; color:var(--gray-500);">Validados</div></div>
+            <div><div style="font-size:22px; font-weight:700; color:#FF6B6B;">${deptNoShow}</div><div style="font-size:11px; color:var(--gray-500);">Faltas</div></div>
+            <div><div style="font-size:22px; font-weight:700; color:var(--gray-800);">${totalPeople}</div><div style="font-size:11px; color:var(--gray-500);">Pessoas</div></div>
           </div>
+          <div style="margin-bottom:6px; display:flex; justify-content:space-between; font-size:12px; color:var(--gray-600);">
+            <span>Pico de ocupação</span><span style="font-weight:700; color:${utilColor};">${peak}/${cap} (${util}%)</span>
+          </div>
+          <div style="height:8px; background:var(--gray-100); border-radius:6px; overflow:hidden; margin-bottom:14px;">
+            <div style="height:100%; width:${Math.min(util, 100)}%; background:${utilColor};"></div>
+          </div>
+          <div style="font-size:12px; color:var(--gray-600);">Tipo de evento + frequente: <strong style="color:var(--gray-800);">${topTipo}</strong></div>
         `;
         breakdownGrid.appendChild(card);
       });
-    } else {
+    } else if(breakdownBox) {
       breakdownBox.style.display = 'none';
     }
 
