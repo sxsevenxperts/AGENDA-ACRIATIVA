@@ -1,8 +1,26 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-22  
-**Versão:** 2.12.0  
-**Status Geral:** 🟢 Em Produção - LGPD Auditoria + UTC-3 Fortaleza + Migração SQL + Responsividade
+**Versão:** 2.12.1  
+**Status Geral:** 🟢 Em Produção - LGPD Auditoria + UTF-3 Fortaleza + Migração SQL + Responsividade + SVG Icons
+
+---
+
+## Atualização — 2026-07-22 (v2.12.1) — Remoção de Emojis, Substituição por SVG Icons
+
+### Concluído
+- [x] **Substituição de emojis por ícones SVG**:
+  - ✓ Lock (🔐) → `<svg>` padlock icon, usado em 6 locais (botão Login, modal LGPD, aba Alterar Senha, etc)
+  - ✓ Shield (🔏) → `<svg>` shield icon, usado em 2 locais (aba Consentimentos LGPD)
+  - ✓ Document (📝) → `<svg>` notepad icon, usado em 2 locais (trilha de auditoria, marca de auditoria)
+  - ✓ Calendar (📅) → `<svg>` calendar icon, usado em 2 locais (menu Meus Agendamentos, timestamps)
+  - ✓ Check/X (✅/❌) → trocados por caracteres ASCII simples (✓/✗) em 13 locais (status de aprovação, alertas, etc)
+- [x] **Validação visual**: SVG icons respeitam `currentColor` para herança de cores, tamanho 1em com `vertical-align` correto
+- [x] **Compatibilidade**: Todos os SVGs usam `viewBox="0 0 24 24"` padrão, sem dependências externas
+
+### Próximos passos
+- [ ] Executar `sql/001_lgpd_consents.sql` no Supabase em produção
+- [ ] Personalização de horários por departamento (sob demanda)
 
 ---
 

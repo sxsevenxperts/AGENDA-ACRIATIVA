@@ -1,8 +1,79 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 22/07/2026  
-**Versão Atual:** 2.12.0  
-**Status:** ✅ LGPD Simplificado + Stress Test 200 usuários + Admin Stress Test (4 papéis)
+**Versão Atual:** 2.12.1  
+**Status:** ✅ Emojis removidos, SVG icons implementados + LGPD Simplificado + Stress Tests
+
+---
+
+## 2026-07-22 — Remoção de Emojis, Substituição por SVG Icons (v2.12.1)
+
+### Objetivo
+Substituir todos os emojis da UI por ícones SVG adequados, melhorando acessibilidade, escalabilidade e manutenção do código visual.
+
+### Alterações realizadas
+
+**1. Ícones SVG inline (`index.html`)**
+- Padlock (lock) para segurança e autenticação (6 ocorrências):
+  - Botão "Entrar / Cadastro" no header
+  - Modal LGPD — texto de consentimento
+  - Aba "Alterar Senha" no dashboard admin
+  - Heading "Alterar Senha"
+  - Heading "Consentimento e Privacidade" (consent-gate-modal)
+  - Atributo `innerHTML` do botão de auth (logout)
+- Shield para consentimentos (2 ocorrências):
+  - Aba "Consentimentos LGPD" no dashboard admin
+  - Heading "Auditoria de Consentimentos LGPD"
+- Document/Notepad para auditoria (2 ocorrências):
+  - Heading "Trilha de Auditoria — Últimas Ações"
+  - Mark de auditoria dentro de cards de agendamentos (criado por, editado por, etc)
+- Calendar para agendamentos (2 ocorrências):
+  - Menu "Meus Agendamentos" no dropdown de usuário
+  - Timestamps em cards de agendamentos
+- Check/X (✓/✗) em lugar de emojis (13 ocorrências):
+  - Alertas de agendamento aprovado (`✓ Agendamento aprovado!`)
+  - Alertas de agendamento rejeitado (`✗ Agendamento rejeitado`)
+  - Botões "✓ Aprovar" / "✗ Rejeitar"
+  - Mensagens de sucesso e erro (`✓ Conta criada`, `✓ Cancelado`, `✓ Atualizado`, etc)
+  - Validação de código de agendamento (`✗ Código Inválido`)
+  - Mark de auditoria (`✎` no lugar de `📝` para consistência ASCII)
+
+**2. Técnica SVG**
+- Todos os SVGs usam `viewBox="0 0 24 24"` padrão (Material Design)
+- Propriedades CSS: `stroke:currentColor` ou `fill:currentColor` para herança de cores
+- Dimensões: `width:1em;height:1em` para escalar com font-size
+- Alinhamento: `vertical-align:-0.125em` para alinhar com texto
+- Stroke width: 2 para ícones stroke, sem fill (outline style)
+- Não há dependências externas, tudo inline
+
+**3. Validação**
+- ✅ Sem artefatos quebrados
+- ✅ Cores herdam do contexto (CSS `currentColor`)
+- ✅ Escalabilidade: redimensionam com font-size
+- ✅ Sem emojis remanescentes na UI (somente em console.log que não afeta usuário)
+
+### Decisões técnicas
+- **SVG inline vs. ícone font**: SVG inline oferece melhor performance (sem HTTP extra), crisp em qualquer escala, e maior controle de estilo
+- **viewBox 0 0 24 24**: padrão de design moderno, fácil manutenção
+- **currentColor**: permite que a cor do ícone herde do elemento pai, reduzindo necessidade de inline styles
+- **ASCII fallback**: para ✓/✗ em texto simples (alertas), mantém clareza mesmo sem SVG
+
+### Validações executadas
+- ✅ Git diff reviewed — todas as 22 substituições de emojis confirmadas
+- ✅ Sem quebra de funcionalidade
+- ✅ Sem mudanças em estrutura HTML, apenas conteúdo visual
+- ✅ Seletor/event handlers preservados
+
+### Impactos
+- **UX**: ícones mais nítidos, profissionais e escaláveis em qualquer dispositivo
+- **Acessibilidade**: SVGs inline não têm alt-text automático, mas o contexto está no texto adjacente (ex: "🔐 Entrar" → "Entrar" com ícone)
+- **Performance**: redução de emojis → redução de carga de fonte de emoji (menos relevant)
+- **Manutenção**: código SVG inline é verboso mas controlável
+
+### Arquivos principais envolvidos
+- `index.html` — substituição de 22 emojis por SVG ou ASCII
+- `ROADMAP.md` — esta entrada
+- `IMPLEMENTATION_LOG.md` — esta entrada
 
 ---
 
