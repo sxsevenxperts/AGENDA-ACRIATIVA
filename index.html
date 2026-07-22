@@ -985,6 +985,32 @@
       flex: 1;
     }
 
+    /* LGPD Mobile */
+    @media (max-width: 768px) {
+      .lgpd-content {
+        padding: 20px 16px 16px;
+        max-height: 80vh;
+      }
+      .lgpd-header h2 { font-size: 15px; }
+      .lgpd-header p { font-size: 12px; }
+      .lgpd-items { max-height: 160px; }
+      .lgpd-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .lgpd-btn-accept { min-width: unset; width: 100%; padding: 12px; }
+      .lgpd-info { margin-top: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .lgpd-content { padding: 16px 12px 12px; }
+      .lgpd-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .lgpd-item { padding: 8px; }
+      .lgpd-item-title { font-size: 12px; }
+      .lgpd-item-desc { font-size: 10px; }
+    }
+
     /* ============================================
        DEPARTMENT GRID
        ============================================ */
@@ -3333,6 +3359,7 @@
         <div class="dash-tab" onclick="switchDashTab('scanner')" id="tab-scanner" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Scanner QR</div>
         <div class="dash-tab" onclick="switchDashTab('alterar-senha')" id="tab-alterar-senha" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">🔐 Alterar Senha</div>
         <div class="dash-tab" onclick="switchDashTab('editar-formulario')" id="tab-editar-formulario" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Editar Formulário</div>
+        <div class="dash-tab" onclick="switchDashTab('consentimentos')" id="tab-consentimentos" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap; display: none;">🔏 Consentimentos LGPD</div>
       </div>
       
       <div class="form-body" style="flex: 1; overflow-y: auto; padding: 32px; background: var(--gray-50);">
@@ -3697,6 +3724,43 @@
               <button class="form-btn form-btn-secondary" style="flex: 1;" onclick="cancelAddQuestion()">
                 Cancelar
               </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Consentimentos LGPD (visível apenas para super e coordenadora) -->
+        <div id="dash-view-consentimentos" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3 style="margin: 0;">🔏 Auditoria de Consentimentos LGPD</h3>
+              <p class="subtitle" style="margin: 4px 0 0;">Registro jurídico de aceites de privacidade e LGPD dos cidadãos.</p>
+            </div>
+            <button class="form-btn form-btn-secondary" onclick="exportConsentimentos()" style="white-space: nowrap;">
+              ⬇ Exportar CSV
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end;">
+            <div class="form-group" style="margin: 0; flex: 1; min-width: 160px;">
+              <label class="form-label" style="font-size: 12px;">Data inicial</label>
+              <input type="date" id="consent-filter-from" class="form-input" style="padding: 8px 12px;">
+            </div>
+            <div class="form-group" style="margin: 0; flex: 1; min-width: 160px;">
+              <label class="form-label" style="font-size: 12px;">Data final</label>
+              <input type="date" id="consent-filter-to" class="form-input" style="padding: 8px 12px;">
+            </div>
+            <button class="form-btn form-btn-primary" onclick="loadConsentimentos()" style="padding: 9px 20px; white-space: nowrap;">
+              🔍 Filtrar
+            </button>
+          </div>
+
+          <div id="consent-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px;">
+            <!-- preenchido via JS -->
+          </div>
+
+          <div id="consent-list" style="display: grid; gap: 12px;">
+            <div style="text-align: center; padding: 40px; color: var(--gray-400);">
+              Clique em <strong>🔍 Filtrar</strong> para carregar os registros.
             </div>
           </div>
         </div>
@@ -5603,6 +5667,13 @@
     document.getElementById('form-admin-dash').classList.add('active');
     document.getElementById('dash-dept-name').innerText = getSessionLabel();
 
+    // Exibe aba de consentimentos somente para super e coordenadora
+    const consentTab = document.getElementById('tab-consentimentos');
+    if (consentTab) {
+      const role = ADMIN_ROLES[adminSession];
+      consentTab.style.display = (role && role.canAudit) ? '' : 'none';
+    }
+
     // Default to today
     document.getElementById('dash-date-filter').value = new Date().toISOString().split('T')[0];
     loadAppointments();
@@ -6844,6 +6915,139 @@
   })();
 </script>
 
+<!-- Consentimentos LGPD — Auditoria Admin -->
+<script>
+  async function loadConsentimentos() {
+    const listEl = document.getElementById('consent-list');
+    const statsEl = document.getElementById('consent-stats');
+    if (!listEl) return;
+
+    listEl.innerHTML = '<div style="text-align:center;padding:32px;color:var(--gray-400);">Carregando registros...</div>';
+
+    const fromDate = document.getElementById('consent-filter-from')?.value || '';
+    const toDate = document.getElementById('consent-filter-to')?.value || '';
+
+    // Tenta buscar do Supabase; cai para localStorage se não configurado
+    const anonKey = window.AGENDA_SOBRAL_SUPABASE_ANON_KEY;
+    const supabaseUrl = window.AGENDA_SOBRAL_SUPABASE_URL || 'https://kihnjrlwzuwfunzocswa.supabase.co';
+
+    if (anonKey) {
+      try {
+        let url = supabaseUrl + '/rest/v1/lgpd_consents?order=consent_timestamp.desc&limit=200';
+        if (fromDate) url += '&consent_timestamp=gte.' + fromDate + 'T00:00:00-03:00';
+        if (toDate) url += '&consent_timestamp=lte.' + toDate + 'T23:59:59-03:00';
+
+        const res = await fetch(url, {
+          headers: {
+            'apikey': anonKey,
+            'Authorization': 'Bearer ' + anonKey,
+            'Accept-Profile': 'agenda_sobral'
+          }
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderConsentList(data, statsEl, listEl);
+          return;
+        }
+      } catch (e) {
+        console.warn('Supabase indisponível, usando localStorage:', e.message);
+      }
+    }
+
+    // Fallback: mostra apenas o registro local (um por dispositivo)
+    const localConsent = localStorage.getItem('lgpd_consent_v1');
+    if (localConsent) {
+      const c = JSON.parse(localConsent);
+      renderConsentList([{
+        id: 'local-1',
+        consent_timestamp: c.timestamp,
+        lgpd_accepted: c.lgpd,
+        privacy_accepted: c.privacy,
+        cookies_accepted: c.cookies,
+        user_agent: c.userAgent,
+        source: 'localStorage (dispositivo atual)'
+      }], statsEl, listEl);
+    } else {
+      listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-400);">Nenhum registro encontrado.</div>';
+    }
+  }
+
+  function renderConsentList(records, statsEl, listEl) {
+    const total = records.length;
+    const lgpdOk = records.filter(r => r.lgpd_accepted).length;
+    const privOk = records.filter(r => r.privacy_accepted).length;
+    const cookOk = records.filter(r => r.cookies_accepted).length;
+
+    if (statsEl) {
+      statsEl.innerHTML = [
+        ['Total de Registros', total, 'var(--cc-navy)'],
+        ['LGPD Aceita', lgpdOk, 'var(--success)'],
+        ['Privacidade Aceita', privOk, '#0891b2'],
+        ['Cookies Aceitos', cookOk, 'var(--gray-500)']
+      ].map(([label, val, color]) => `
+        <div style="background:var(--white);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow-sm);border-left:4px solid ${color};">
+          <div style="font-size:22px;font-weight:700;color:${color};">${val}</div>
+          <div style="font-size:12px;color:var(--gray-500);margin-top:2px;">${label}</div>
+        </div>`).join('');
+    }
+
+    if (total === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-400);">Nenhum registro no período selecionado.</div>';
+      return;
+    }
+
+    listEl.innerHTML = records.map(r => {
+      const ts = r.consent_timestamp ? new Date(r.consent_timestamp).toLocaleString('pt-BR', { timeZone: 'America/Fortaleza' }) : '—';
+      const badge = ok => ok
+        ? '<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;">✓ Sim</span>'
+        : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;">✗ Não</span>';
+      const ua = (r.user_agent || '').substring(0, 80) + ((r.user_agent || '').length > 80 ? '…' : '');
+      return `<div style="background:var(--white);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow-sm);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--cc-navy);margin-bottom:6px;">📅 ${ts}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--gray-500);">LGPD: ${badge(r.lgpd_accepted)}</span>
+            <span style="font-size:12px;color:var(--gray-500);">Privacidade: ${badge(r.privacy_accepted)}</span>
+            <span style="font-size:12px;color:var(--gray-500);">Cookies: ${badge(r.cookies_accepted)}</span>
+          </div>
+          <div style="font-size:11px;color:var(--gray-400);">Dispositivo: ${ua || '—'}</div>
+          ${r.ip_address ? `<div style="font-size:11px;color:var(--gray-400);">IP: ${r.ip_address}</div>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--gray-300);font-family:monospace;">#${String(r.id || '').substring(0, 8)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function exportConsentimentos() {
+    const rows = document.querySelectorAll('#consent-list > div');
+    if (!rows.length || rows[0].textContent.includes('Clique')) {
+      alert('Carregue os registros antes de exportar.');
+      return;
+    }
+
+    const anonKey = window.AGENDA_SOBRAL_SUPABASE_ANON_KEY;
+    const supabaseUrl = window.AGENDA_SOBRAL_SUPABASE_URL || 'https://kihnjrlwzuwfunzocswa.supabase.co';
+    if (!anonKey) { alert('Supabase não configurado.'); return; }
+
+    const fromDate = document.getElementById('consent-filter-from')?.value || '';
+    const toDate = document.getElementById('consent-filter-to')?.value || '';
+    let url = supabaseUrl + '/rest/v1/lgpd_consents?order=consent_timestamp.desc';
+    if (fromDate) url += '&consent_timestamp=gte.' + fromDate + 'T00:00:00-03:00';
+    if (toDate) url += '&consent_timestamp=lte.' + toDate + 'T23:59:59-03:00';
+
+    fetch(url, {
+      headers: { 'apikey': anonKey, 'Authorization': 'Bearer ' + anonKey, 'Accept': 'text/csv', 'Accept-Profile': 'agenda_sobral' }
+    }).then(r => r.text()).then(csv => {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'lgpd_consentimentos_' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+    }).catch(() => alert('Erro ao exportar. Tente novamente.'));
+  }
+</script>
+
 <!-- LGPD / Consent Management -->
 <script>
   const LGPD_KEY = 'lgpd_consent_v1';
@@ -6906,8 +7110,11 @@
       return;
     }
 
+    // Timestamp em UTC-3 (Fortaleza/Ceará)
+    const nowFortaleza = new Date().toLocaleString('sv-SE', { timeZone: 'America/Fortaleza' }).replace(' ', 'T') + '-03:00';
+
     const consentData = {
-      timestamp: new Date().toISOString(),
+      timestamp: nowFortaleza,
       lgpd: lgpd,
       privacy: privacy,
       cookies: cookies || false,
@@ -6924,24 +7131,29 @@
   }
 
   function registerConsentToSupabase(consentData) {
-    // Se SUPABASE está disponível, registrar na tabela de consentimentos
-    if (typeof window.SUPABASE_ANON_KEY !== 'undefined' && window.SUPABASE_ANON_KEY) {
-      fetch('https://kihnjrlwzuwfunzocswa.supabase.co/rest/v1/rpc/log_consent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': window.SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({
-          consent_timestamp: consentData.timestamp,
-          lgpd_accepted: consentData.lgpd,
-          privacy_accepted: consentData.privacy,
-          cookies_accepted: consentData.cookies,
-          user_agent: consentData.userAgent
-        })
-      }).catch(err => console.log('Consent logged locally. Supabase registration skipped.'));
+    // Usa o mesmo cliente Supabase configurado no app (agenda_sobral)
+    const anonKey = window.AGENDA_SOBRAL_SUPABASE_ANON_KEY;
+    const supabaseUrl = window.AGENDA_SOBRAL_SUPABASE_URL || 'https://kihnjrlwzuwfunzocswa.supabase.co';
+    if (!anonKey) {
+      console.log('Consentimento salvo localmente. Supabase não configurado.');
+      return;
     }
+    fetch(supabaseUrl + '/rest/v1/rpc/log_consent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': anonKey,
+        'Authorization': 'Bearer ' + anonKey,
+        'X-Client-Info': 'agenda-acriativa/2.11.0'
+      },
+      body: JSON.stringify({
+        p_consent_timestamp: consentData.timestamp,
+        p_lgpd_accepted: consentData.lgpd,
+        p_privacy_accepted: consentData.privacy,
+        p_cookies_accepted: consentData.cookies,
+        p_user_agent: consentData.userAgent
+      })
+    }).catch(() => console.log('Consentimento salvo localmente. Registro Supabase ignorado.'));
   }
 
   function showPrivacyPolicy(event) {

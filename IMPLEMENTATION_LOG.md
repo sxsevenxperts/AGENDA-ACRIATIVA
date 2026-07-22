@@ -1,8 +1,85 @@
 # Agenda Sobral - Log de Implementação Completo
 
-**Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.10.0  
-**Status:** ✅ Capacidades + LGPD Consentimento + Ícones + Horários + Responsividade Completa
+**Data Última Atualização:** 22/07/2026  
+**Versão Atual:** 2.11.0  
+**Status:** ✅ LGPD Auditoria Admin + SQL Migration + UTC-3 Fortaleza + Mobile LGPD Fix
+
+---
+
+## 2026-07-22 — Auditoria LGPD + Migração SQL + Timezone Fortaleza (v2.11.0)
+
+### Objetivo
+Resolver pendências críticas de segurança jurídica LGPD: corrigir bug na variável Supabase, implementar timezone UTC-3 Fortaleza, criar migração SQL para tabela `lgpd_consents`, adicionar aba de auditoria no dashboard admin (acesso restrito), e corrigir responsividade mobile do modal LGPD.
+
+### Alterações realizadas
+
+**1. Correção de bug crítico — variável Supabase incorreta (`index.html`)**
+- `registerConsentToSupabase()`: substituída `window.SUPABASE_ANON_KEY` por `window.AGENDA_SOBRAL_SUPABASE_ANON_KEY`
+- Também usa `window.AGENDA_SOBRAL_SUPABASE_URL` (com fallback para URL hardcoded)
+- Parâmetros do RPC renomeados para `p_*` conforme assinatura da função SQL
+- Log de console em português ("Consentimento salvo localmente. Supabase não configurado.")
+
+**2. Timezone UTC-3 Fortaleza/Ceará (`index.html`)**
+- Timestamp de consentimento gerado com `new Date().toLocaleString('sv-SE', { timeZone: 'America/Fortaleza' })`
+- Resultado: `2026-07-22T10:30:00-03:00` (ISO 8601 com offset explícito)
+- Datas exibidas no painel admin também em Fortaleza (`toLocaleString('pt-BR', { timeZone: 'America/Fortaleza' })`)
+
+**3. Aba "Consentimentos LGPD" no dashboard admin (`index.html`)**
+- Botão da aba adicionado com `display: none` (oculto por padrão)
+- `openAdminDash()`: exibe a aba apenas para roles com `canAudit: true` (`super`, `coordenadora`)
+- Painel com:
+  - Filtros de período (data inicial / final)
+  - Cards de estatísticas: Total, LGPD Aceita, Privacidade Aceita, Cookies Aceitos
+  - Lista de registros com badge colorido por tipo de aceite
+  - Botão "⬇ Exportar CSV" via Supabase (Accept: text/csv)
+- Funções JS: `loadConsentimentos()`, `renderConsentList()`, `exportConsentimentos()`
+- Fallback para localStorage se Supabase não estiver configurado
+
+**4. Migração SQL (`sql/001_lgpd_consents.sql`)**
+- Novo diretório `sql/` criado
+- Tabela `agenda_sobral.lgpd_consents`:
+  - `id uuid PRIMARY KEY`
+  - `consent_timestamp timestamptz NOT NULL DEFAULT now()`
+  - `lgpd_accepted / privacy_accepted / cookies_accepted boolean`
+  - `ip_address inet`, `user_agent text`
+  - `citizen_user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL`
+- RLS habilitado:
+  - Policy `lgpd_insert_public`: INSERT para anon e authenticated
+  - Policy `lgpd_select_own`: SELECT apenas para próprios registros
+- Função RPC `agenda_sobral.log_consent(...)` com `SECURITY DEFINER`
+- GRANT EXECUTE para `anon` e `authenticated`
+
+**5. Responsividade mobile do modal LGPD (`index.html`)**
+- `@media (max-width: 768px)`: ações em coluna, botão aceitar full-width, padding reduzido
+- `@media (max-width: 480px)`: header empilhado, fontes menores, padding mínimo
+
+### Decisões técnicas
+- **`sv-SE` locale**: Produz formato `YYYY-MM-DD HH:MM:SS` que pode ser transformado em ISO 8601 com replace simples — mais confiável que `toISOString()` para timezone
+- **`canAudit` flag em ADMIN_ROLES**: Já existia em `super` e `coordenadora` — reaproveitado para controle de visibilidade da aba, sem nova lógica
+- **Migração SQL separada**: Facilita execução manual no Supabase Dashboard ou via CLI; não é executada automaticamente
+
+### Validações executadas
+- Tags `<script>` balanceadas: 10 abertura / 10 fechamento ✅
+- Funções JS verificadas: `loadConsentimentos`, `renderConsentList`, `exportConsentimentos`, `openAdminDash` ✅
+- Variável correta `AGENDA_SOBRAL_SUPABASE_ANON_KEY` em todos os pontos LGPD ✅
+- ROADMAP.md atualizado ✅
+
+### Impactos
+- **Jurídico**: Consentimentos agora são registrados corretamente na infraestrutura Supabase
+- **Admin**: Diretoria (Joyce) e Coordenadora (Joyla) conseguem auditar e exportar consentimentos
+- **Mobile**: Modal LGPD funcional em telas pequenas
+- **Arquitetura**: SQL separado facilita deploy no Supabase sem reprocessar o HTML
+
+### Pendências
+- Executar `sql/001_lgpd_consents.sql` no Supabase em produção manualmente
+- Até lá, consentimentos são salvos apenas no localStorage do usuário
+- Testar exportação CSV após migração SQL
+
+### Arquivos principais envolvidos
+- `index.html` — Correção bug Supabase, UTC-3, aba auditoria, mobile CSS LGPD
+- `sql/001_lgpd_consents.sql` — Migração SQL (nova)
+- `ROADMAP.md` — Atualizado v2.11.0
+- `IMPLEMENTATION_LOG.md` — Esta entrada
 
 ---
 

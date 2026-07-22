@@ -1,8 +1,42 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
-**Última atualização:** 2026-07-21  
-**Versão:** 2.10.0  
-**Status Geral:** 🟢 Em Produção - Capacidades + LGPD Consentimento + Ícones Decorativos
+**Última atualização:** 2026-07-22  
+**Versão:** 2.11.0  
+**Status Geral:** 🟢 Em Produção - LGPD Auditoria + UTC-3 Fortaleza + Migração SQL + Responsividade
+
+---
+
+## Atualização — 2026-07-22 (v2.11.0) — Auditoria LGPD + SQL Migration + Timezone Fortaleza
+
+### Concluído
+- [x] **Aba "Consentimentos LGPD"** no dashboard admin (visível apenas para `super` e `coordenadora`):
+  - ✅ Filtros por período (data inicial / final)
+  - ✅ Painel de estatísticas (total, LGPD aceita, privacidade, cookies)
+  - ✅ Lista de registros com timestamps em UTC-3 Fortaleza
+  - ✅ Exportação CSV via Supabase (Content-Type: text/csv)
+  - ✅ Fallback para localStorage se Supabase não configurado
+- [x] **Correção de bug crítico** — `registerConsentToSupabase()` usava variável global errada:
+  - ❌ Antes: `window.SUPABASE_ANON_KEY` (inexistente no app)
+  - ✅ Após: `window.AGENDA_SOBRAL_SUPABASE_ANON_KEY` (correto)
+- [x] **Timezone UTC-3 Fortaleza/Ceará** nos timestamps de consentimento:
+  - ✅ `new Date().toLocaleString('sv-SE', { timeZone: 'America/Fortaleza' })`
+  - ✅ Formato: `2026-07-22T10:30:00-03:00`
+- [x] **Migração SQL** `sql/001_lgpd_consents.sql`:
+  - ✅ Tabela `agenda_sobral.lgpd_consents` com RLS
+  - ✅ Função RPC `agenda_sobral.log_consent(...)` com `SECURITY DEFINER`
+  - ✅ Políticas: anon pode inserir, authenticated vê os próprios
+- [x] **Responsividade mobile** do modal LGPD:
+  - ✅ `@media (max-width: 768px)`: ações em coluna, botão full-width
+  - ✅ `@media (max-width: 480px)`: header empilhado, fontes menores
+
+### Próximos passos
+- [ ] Executar migração SQL `001_lgpd_consents.sql` no Supabase em produção
+- [ ] Validar registro de consentimentos via painel admin (aba "Consentimentos LGPD")
+- [ ] Personalização de horários por departamento (sob demanda)
+
+### Riscos e débitos técnicos
+- Migração SQL ainda não foi executada no Supabase; LGPD salva só no localStorage até lá
+- Exportação CSV depende da tabela existir no Supabase
 
 ---
 
