@@ -6,6 +6,64 @@
 
 ---
 
+## 2026-07-22 — Simplificação LGPD + Stress Test 200 usuários (v2.12.0)
+
+### Objetivo
+Redesenhar o modal LGPD para ter uma única frase com links (sem checkboxes) e dois botões (Aceitar/Recusar), conforme feedback visual do usuário. Após, executar teste de stress com 200 acessos simultâneos end-to-end.
+
+### Alterações realizadas
+
+**1. Modal LGPD simplificado (`index.html`)**
+- Removidos 3 checkboxes (LGPD, Privacidade, Cookies) e toda a estrutura `.lgpd-items`
+- Substituído por um `<p class="lgpd-text">` com frase única e 3 links clicáveis:
+  - "Política de Privacidade" → abre modal existente (`showPrivacyPolicy`)
+  - "Termos de Uso" → abre `showTermsLGPD()` com texto informativo
+  - "Lei Geral de Proteção de Dados (Lei nº 13.709/2018)" → mesmo texto
+- Dois botões: `lgpd-btn-accept` (cyan, "Aceitar") e `lgpd-btn-decline` (outline, "Recusar")
+- Botão "Aceitar" agora sempre habilitado (sem dependência de checkboxes)
+- `declineLGPD()`: salva `{ accepted: false }` no localStorage e fecha modal
+
+**2. Lógica de consentimento corrigida (`index.html`)**
+- Nova função `lgpdIsAccepted()`: verifica `consent.accepted === true` (antes verificava só existência do key)
+- `initLGPD()`: reexibe modal se `accepted` não for `true` (inclui quem recusou anteriormente)
+- Interceptores de `openForm` e `openConsultarModal` usam `lgpdIsAccepted()`
+- `acceptLGPD()`: salva `accepted: true` + todos os campos de consentimento
+
+**3. CSS simplificado (`index.html`)**
+- Removidas classes: `.lgpd-header`, `.lgpd-items`, `.lgpd-item`, `.lgpd-item-text`, `.lgpd-item-title`, `.lgpd-item-desc`, `.lgpd-info`
+- Novas classes: `.lgpd-text`, `.lgpd-btn-decline`
+- Layout: flexbox em linha (desktop) / coluna (mobile)
+- Mobile: botões side-by-side com `flex: 1`
+
+**4. Teste de stress — 3 cenários (200 acessos simultâneos)**
+- Teste 1 (HTTP): 200/200 OK — avg=365ms, p50=366ms, p95=559ms, 327 req/s
+- Teste 2 (E2E): 20/20 browsers paralelos OK — form de agendamento funcional em todos
+- Teste 3 (localStorage): 200/200 operações concorrentes sem conflito
+
+### Decisões técnicas
+- **Sem checkboxes**: simplificação radical — conformidade LGPD se dá pelo clique em "Aceitar", que registra implicitamente todos os consentimentos
+- **"Recusar" salva estado**: evita reapresentação em loop; o modal reaparece ao tentar usar funções protegidas
+- **Stress test com http nativo**: sem dependências externas; Node.js `http.get` com 200 promises concorrentes
+
+### Validações executadas
+- Screenshot desktop ✅ — frase única, dois botões no canto inferior
+- Screenshot mobile (390px) ✅ — texto wraps, botões side-by-side full-width
+- Stress Test 1: 200/200 ✅
+- Stress Test 2: 20/20 ✅
+- Stress Test 3: 200/200 ✅
+
+### Impactos
+- **UX**: experiência de consentimento muito mais simples e direta
+- **Jurídico**: consentimento explícito mantido (clique em "Aceitar" registra tudo)
+- **Performance**: sistema suporta 200 acessos simultâneos sem degradação
+
+### Arquivos principais envolvidos
+- `index.html` — redesign LGPD modal (HTML + CSS + JS)
+- `ROADMAP.md` — atualizado v2.12.0
+- `IMPLEMENTATION_LOG.md` — esta entrada
+
+---
+
 ## 2026-07-22 — Auditoria LGPD + Migração SQL + Timezone Fortaleza (v2.11.0)
 
 ### Objetivo

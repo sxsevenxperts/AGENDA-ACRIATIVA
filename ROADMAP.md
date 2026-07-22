@@ -6,6 +6,30 @@
 
 ---
 
+## Atualização — 2026-07-22 (v2.12.0) — Simplificação LGPD + Stress Test 200 usuários
+
+### Concluído
+- [x] **Modal LGPD redesenhado**: uma frase com links + Aceitar / Recusar (sem checkboxes)
+  - ✅ Texto único: "Ao continuar, você concorda com nossa Política de Privacidade, Termos de Uso e LGPD"
+  - ✅ Links abrem texto explicativo (Política de Privacidade e LGPD Lei nº 13.709/2018)
+  - ✅ Botão "Aceitar" (cyan) e "Recusar" (outline) — sem necessidade de marcar caixas
+  - ✅ "Recusar" salva o estado e reapresenta o modal ao tentar agendar/consultar
+- [x] **Lógica de consentimento corrigida**: `lgpdIsAccepted()` verifica `accepted: true` (não só presença do key)
+- [x] **IDs duplicados corrigidos**: `gate-consent-lgpd` / `gate-consent-privacy` no consent-gate-modal
+- [x] **Stress Test 200 acessos simultâneos** — 3 cenários, todos aprovados:
+  - ✅ 200 requisições HTTP simultâneas: 200/200 OK, avg=365ms, p95=559ms, 327 req/s
+  - ✅ 20 browsers E2E paralelos (~200 virtual users): 20/20 OK, form abre em todos
+  - ✅ 200 operações localStorage concorrentes: 200/200 OK, sem conflitos
+
+### Próximos passos
+- [ ] Executar `sql/001_lgpd_consents.sql` no Supabase em produção
+- [ ] Personalização de horários por departamento (sob demanda)
+
+### Riscos e débitos técnicos
+- Nenhum novo risco identificado. Stress test confirma estabilidade sob carga.
+
+---
+
 ## Atualização — 2026-07-22 (v2.11.0) — Auditoria LGPD + SQL Migration + Timezone Fortaleza
 
 ### Concluído
