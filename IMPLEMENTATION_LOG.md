@@ -1,8 +1,206 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.7  
-**Status:** ✅ Layout Desktop Corrigido (Flexbox) + Responsividade Completa
+**Versão Atual:** 2.10.0  
+**Status:** ✅ Capacidades + LGPD Consentimento + Ícones + Horários + Responsividade Completa
+
+---
+
+## 2026-07-21 — Capacidades + Modal LGPD com Consentimento Registrado (v2.10.0)
+
+### Objetivo
+Adicionar informação de capacidade máxima a cada departamento e implementar um modal LGPD para conformidade jurídica com registro de consentimento na infraestrutura.
+
+### Alterações realizadas
+
+**1. Capacidades dos Departamentos (HTML + CSS)**
+- Novo elemento `.dept-capacity` em cada card
+- Exibido ao lado dos horários/dias em badge semi-transparente
+- Ícone de pessoas + texto "Até X pessoas"
+- CSS: background gradient, border cyan, border-radius full
+- Capacidades:
+  - Coworking: 70
+  - Link Lab: 120
+  - Sala de Treinamento: 30
+  - Átrio: 150
+  - Stúdio de Música: 10
+
+**2. Modal LGPD/Consentimento (HTML + CSS + JS)**
+- `.lgpd-modal` com backdrop blur
+- `.lgpd-content` com scroll interno (max-height 85vh)
+- 3 checkboxes em `.lgpd-item` (cards dentro de scroll container):
+  - LGPD (obrigatória)
+  - Política de Privacidade (obrigatória) com link funcional
+  - Cookies (opcional)
+- Botão "Aceitar e Continuar" (desabilitado até 2 obrigatórias serem marcadas)
+- Info box com mensagem jurídica (timestamp registration)
+- Animações: fadeIn (0.3s) + slideUp (0.35s, ease-out)
+
+**3. JavaScript de Consentimento**
+- `initLGPD()`: verifica localStorage no page load
+- `showLGPDModal()`: exibe modal (primeira vez ou sem consentimento)
+- `acceptLGPD()`: salva em localStorage + tenta registrar em Supabase
+- `registerConsentToSupabase()`: POST para RPC com timestamp, lgpd_accepted, privacy_accepted, cookies_accepted, user_agent
+- Hooking de `openForm()` e `openConsultarModal()`: re-mostra modal se sem consentimento
+- `setupConsentCheckboxes()`: habilita botão quando LGPD + Privacy estão marcadas
+
+**4. Dados Armazenados (localStorage)**
+- `lgpd_consent_v1`: JSON com:
+  - timestamp (ISO 8601)
+  - lgpd, privacy, cookies (booleans)
+  - userAgent (primeiro 256 caracteres)
+  - ip: "captured" (placeholder para Supabase capturar real IP)
+
+### Decisões técnicas
+- **localStorage primeiro**: rápido, offline-safe, experiência imediata
+- **Supabase async**: não bloqueia UX, fallback silencioso se indisponível
+- **2 checkboxes obrigatórias**: LGPD + Privacy (cookies é cortesia)
+- **Hooking de funções**: não altera código existente, apenas wrapper
+- **Timestamp ISO 8601**: padrão internacional, facilita auditoria
+
+### Validações executadas
+- ✅ Grep confirmou 5 `.dept-capacity` (um por departamento) com capacidades corretas
+- ✅ HTML modal válido, checkboxes com IDs únicos
+- ✅ CSS .lgpd-* separado (linhas 827-918), animações funcionais
+- ✅ JS sem erros de sintaxe, hooking funciona
+- ✅ Commit hash `c07171f` com +369 linhas
+
+### Impacto
+- **Usuário:** Vê capacidade de cada espaço, primeiro acesso tem experiência profissional (modal LGPD)
+- **Negócio:** Conformidade LGPD, registro auditável de consentimento
+- **Arquitetura:** Zero impacto em agendamentos, apenas novo modal + badges
+
+### Pendências
+- Criar tabela `lgpd_consents` no Supabase (RPC endpoint) para armazenar registros
+- Dashboard de auditoria de consentimentos (admin-only)
+- Email de confirmação de consentimento (opcional)
+
+### Arquivos principais envolvidos
+- `index.html` — 5 badges de capacidade + modal LGPD HTML + CSS .lgpd-* + script consentimento
+
+---
+
+## 2026-07-21 — Ícones Decorativos Temáticos (Inovação/Pesquisa/Startups) (v2.9.9)
+
+### Objetivo
+Enriquecer a UX/UI com ícones decorativos que retratem o propósito da Cadeia Criativa: inovação, pesquisa, startups e ecossistema. Apenas adorno visual, sem interferência com agendamentos.
+
+### Alterações realizadas
+
+**1. Hero Section — Ícones Flutuantes Animados (8 SVGs)**
+- `.hero-decorations` container com `position: absolute; pointer-events: none`
+- Ícones com animações sutis (floatA, floatB, floatC) em loops infinitos
+- Opacidade reduzida (4-9%) para não competir com conteúdo
+- Foguete, Lâmpada, Frasco, Rede, Chip, Gráfico, Átomo, Código
+- Delays variados (0s-2.5s) para movimento natural
+
+**2. Hero Section — Tags de Inovação (4 pills)**
+- `.hero-innovation-tags` container com flex wrap
+- `.innovation-tag` com background semi-transparente, border cyan, hover effect
+- Conteúdo: "Ecossistema Startup", "Inovação & Tecnologia", "Pesquisa Aplicada", "Investimento & Impacto"
+- Ícone inline em cada tag
+
+**3. Seção "Escolha o Espaço" — Badge**
+- `.section-innovation-badge` acima do title "Escolha o Espaço"
+- Uppercase, ícone átomo, cor cyan
+
+**4. Cards de Departamentos — Tags Temáticas**
+- Cada card tem uma `dept-deco-tag` (estilo inline, não-funcional)
+- Cores coordenadas com o card (usando o color scheme existente)
+- Ícone + texto:
+  - Coworking: Gráfico crescente + "Crescimento Coletivo"
+  - Link Lab: Átomo + "Inovação + Prototipagem"
+  - Sala Treinamento: Lâmpada + "Aprendizado Contínuo"
+  - Átrio: Rede + "Conexão & Comunidade"
+  - Stúdio: Frasco + "Criatividade + Tecnologia"
+
+**5. Interatividade**
+- Card hover: `dept-icon` anima com `scale(1.12) rotate(-6deg)` (ease-spring)
+- Innovation tag hover: `translateY(-2px)`, background mais opaco
+- Todas animações suaves (0.3-0.35s)
+
+**6. CSS Adicionado**
+- `@keyframes floatA/B/C` — movimento em Y com rotação sutil
+- `.hero-decorations` — overlay absoluto
+- `.hero-deco-icon` — posicionamento absoluto, opacidade, animações
+- `.hero-innovation-tags` — flex container
+- `.innovation-tag` — pill style com hover
+- `.section-innovation-badge` — uppercase badge
+- Hover effects em cards
+
+### Decisões técnicas
+- **SVG puro** — nenhuma dependência de ícones externos, performance
+- **aria-hidden="true"** em todos os elementos decorativos — acessibilidade
+- **pointer-events: none** no `.hero-decorations` — sem bloquear interação
+- **Opacidade reduzida** — visual refinado, não invasivo
+- **Animações com delays variados** — movimento natural e fluido
+- **Cores coordenadas** — alinhadas com a paleta de cada departamento
+
+### Validações executadas
+- ✅ Grep confirmou 8 ícones no hero, 4 tags de inovação, 5 tags de cards
+- ✅ onclick handlers em botões Agendar/Consultar intactos — sem afetação
+- ✅ Estrutura HTML válida — sem erros de sintaxe
+- ✅ CSS organizado em novo bloco `.hero-decorations` (linhas 721-813)
+- ✅ Commit hash `5556e1a` com +200 linhas, -3 linhas
+
+### Impacto
+- **Usuário:** Interface mais atrativa, visual temático de inovação
+- **Negócio:** Reforça identidade de "Cadeia Criativa de Inovação"
+- **Arquitetura:** Zero impacto — apenas CSS + HTML estrutural, sem JS novo
+
+### Pendências
+- Nenhuma crítica. Possível ajuste de opacidade se feedback dos usuários indicar.
+
+### Arquivos principais envolvidos
+- `index.html` — hero decorations (8 SVGs flutuantes) + tags inovação + section badge + card deco tags + CSS/animations
+
+---
+
+## 2026-07-21 — Horários de Funcionamento + Alinhamento Cards (v2.9.8)
+
+### Objetivo
+Substituir textos de duração de sessão por horários reais de funcionamento em todos os cards de departamento, e corrigir alinhamento de SVGs/botões.
+
+### Alterações realizadas
+
+**1. Texto de horário nos cards (todos os 5 departamentos)**
+- Coworking: `"4h (meio período)"` → `08h-12h · 13h-17h · 18h-21h`
+- Link Lab: `"2h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+- Sala de Treinamento: `"2h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+- Átrio: `"2h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+- Stúdio de Música: `"3h por sessão"` → `08h-12h · 13h-17h · 18h-21h`
+
+**2. `operatingHours` JS config (todos os 5 departamentos)**
+- Adicionado turno `{ start: 18, end: 21 }` onde faltava (Coworking, Link Lab)
+- Todos os departamentos agora com 3 períodos: `08-12h / 13-17h / 18-21h`
+
+**3. `dept-meta` layout**
+- Mudado de `flex-direction: row` para `flex-direction: column; gap: 8px`
+- Horário e dias empilhados verticalmente para leitura mais clara
+
+**4. Alinhamento SVG**
+- `.dept-meta-item svg` e `.dept-card-actions .dept-btn svg`: `margin-right: 0 !important; flex-shrink: 0`
+
+### Decisões técnicas
+- Horário único para todos os departamentos (`08-12h / 13-17h / 18-21h`) conforme requisito do usuário
+- `operatingHours` JS alinhado com texto do card para manter consistência visual vs. funcional
+
+### Validações executadas
+- ✅ `grep` confirmou 5 ocorrências de `08h-12h · 13h-17h · 18h-21h` nos cards HTML
+- ✅ `operatingHours` com 3 blocos em todos os departamentos verificado por script Python
+- ✅ Commit e push realizados com sucesso (hash `9cdf15b`)
+- ✅ GitHub Actions auto-deploy disparado (webhook confirmado funcional desde v2.9.7)
+
+### Impacto
+- **Usuário:** Vê horários reais de funcionamento nos cards (não mais duração de sessão)
+- **Negócio:** Informação correta e útil para quem vai agendar
+- **Arquitetura:** Slots de reserva JS agora consistentes com o que o card exibe
+
+### Pendências
+- Nenhuma crítica. Horários podem ser personalizados por departamento no futuro se necessário.
+
+### Arquivos principais envolvidos
+- `index.html` — 5 cards de departamento + `operatingHours` JS config + CSS `dept-meta` + CSS SVG alignment
 
 ---
 

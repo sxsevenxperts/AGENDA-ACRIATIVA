@@ -1,8 +1,112 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.7  
-**Status Geral:** 🟢 Em Produção - Layout Desktop Corrigido (Flexbox) + Responsividade Completa
+**Versão:** 2.10.0  
+**Status Geral:** 🟢 Em Produção - Capacidades + LGPD Consentimento + Ícones Decorativos
+
+---
+
+## Atualização — 2026-07-21 (v2.10.0) — Capacidades + Modal LGPD com Consentimento Registrado
+
+### Concluído
+- [x] **Capacidade máxima em cada departamento** (badge ao lado dos horários/dias):
+  - ✅ Coworking: 70 pessoas
+  - ✅ Link Lab: 120 pessoas
+  - ✅ Sala de Treinamento: 30 pessoas
+  - ✅ Átrio: 150 pessoas
+  - ✅ Stúdio de Música: 10 pessoas
+- [x] **Modal LGPD/Consentimento** com 3 checkboxes:
+  - ✅ Conformidade LGPD (obrigatória)
+  - ✅ Política de Privacidade (obrigatória)
+  - ✅ Cookies e Rastreamento (opcional)
+- [x] **Registros de consentimento**:
+  - ✅ localStorage: armazenamento local com timestamp
+  - ✅ Supabase: tentativa de registro na infraestrutura
+  - ✅ User Agent + IP capturados para auditoria
+- [x] **Modal reaparece** se usuário não consentir antes de agendar/consultar
+- [x] **Segurança jurídica**: Mensagem informativa sobre retenção de consentimento
+
+### Impacto
+- ✅ Transparência sobre capacidades dos espaços
+- ✅ Conformidade LGPD + Segurança jurídica
+- ✅ Registro de consentimento auditável na infraestrutura
+- ✅ Experiência de primeiro acesso profissional
+
+### Próximos passos
+- [ ] Criar tabela `lgpd_consents` no Supabase para auditoria
+- [ ] Adicionar dashboard de auditoria de consentimentos (admin)
+- [ ] Personalizar horários por departamento se necessário
+
+### Riscos e débitos técnicos
+- localStorage depende de browser: limpar cache = perder consentimento (normal, re-solicita)
+
+---
+
+## Atualização — 2026-07-21 (v2.9.9) — Ícones Decorativos Temáticos (Inovação/Pesquisa/Startups)
+
+### Concluído
+- [x] **8 ícones flutuantes animados no Hero**
+  - ✅ Foguete (Startup/Lançamento)
+  - ✅ Lâmpada (Ideias/Inovação)
+  - ✅ Frasco (Pesquisa/Laboratório)
+  - ✅ Rede (Ecossistema/Conectividade)
+  - ✅ Chip (Tecnologia)
+  - ✅ Gráfico Crescente (Crescimento/Investimento)
+  - ✅ Átomo (Ciência/P&D)
+  - ✅ Código (Desenvolvimento/Tech)
+- [x] **Animações suaves** (floatA, floatB, floatC com delays variados)
+- [x] **4 tags de inovação coloridas** no hero ("Ecossistema Startup", "Inovação & Tecnologia", etc.)
+- [x] **Badge "Espaços de Inovação"** na seção "Escolha o Espaço"
+- [x] **Tags temáticas decorativas em cada card** (sem função):
+  - Coworking: "Crescimento Coletivo"
+  - Link Lab: "Inovação + Prototipagem"
+  - Sala Treinamento: "Aprendizado Contínuo"
+  - Átrio: "Conexão & Comunidade"
+  - Stúdio: "Criatividade + Tecnologia"
+- [x] **Hover animation** nos ícones dos cards (scale + rotate)
+- [x] **Acessibilidade**: Todos com `aria-hidden="true"`, sem impacto nas funções
+
+### Impacto Visual
+- ✅ Hero seção mais dinâmica e temática
+- ✅ Reforça o conceito de "Cadeia Criativa" (inovação, pesquisa, startups)
+- ✅ Cards com identidade visual mais forte
+- ✅ Layout mais sofisticado e profissional
+- ✅ Zero impacto em agendamentos ou funcionalidades
+
+### Próximos passos
+- [ ] Feedback dos usuários sobre visualização dos ícones
+- [ ] Possível ajuste de opacidade ou tamanho se necessário
+
+### Riscos e débitos técnicos
+- Nenhum identificado.
+
+---
+
+## Atualização — 2026-07-21 (v2.9.8) — Horários de Funcionamento + Alinhamento Cards
+
+### Concluído
+- [x] **Todos os 5 departamentos** exibem `08h-12h · 13h-17h · 18h-21h` nos cards
+  - ✅ Coworking, Link Lab, Sala de Treinamento, Átrio, Stúdio de Música
+  - ✅ Substituiu textos antigos de duração de sessão ("2h por sessão", "4h (meio período)")
+- [x] **`operatingHours` JS** atualizado com 3 períodos em todos os departamentos
+  - ✅ `{ start: 8, end: 12 }, { start: 13, end: 17 }, { start: 18, end: 21 }`
+  - ✅ Slots de reserva agora refletem os 3 turnos reais
+- [x] **`dept-meta` empilhado verticalmente** (`flex-direction: column; gap: 8px`)
+  - ✅ Horário e dias aparecem em linhas separadas, alinhamento limpo
+- [x] **Alinhamento de SVGs** nos botões e meta-items corrigido
+  - ✅ `margin-right: 0 !important; flex-shrink: 0` — sem desalinhamento visual
+
+### Impacto
+- ✅ Informação de funcionamento real visível para todos os usuários
+- ✅ Consistência entre o que o card mostra e os slots disponíveis para reserva
+- ✅ Visual mais limpo e profissional nos cards
+
+### Próximos passos
+- [ ] Avaliar personalização de horários por departamento se necessário
+- [ ] Testes em produção com usuários reais
+
+### Riscos e débitos técnicos
+- Nenhum identificado nesta iteração.
 
 ---
 

@@ -715,6 +715,277 @@
     }
 
     /* ============================================
+       DECORATIVE ICONS — Inovação / Pesquisa / Startups
+       ============================================ */
+
+    .hero-decorations {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .hero-deco-icon {
+      position: absolute;
+      color: var(--cc-cyan-light);
+      opacity: 0.07;
+    }
+
+    .hero-deco-icon.deco-rocket    { top: 6%;  right: 5%;  opacity: 0.09; animation: floatA 7s ease-in-out infinite; }
+    .hero-deco-icon.deco-bulb      { top: 12%; left: 4%;   opacity: 0.08; animation: floatB 8.5s ease-in-out infinite; }
+    .hero-deco-icon.deco-flask     { bottom: 18%; left: 3%; opacity: 0.07; animation: floatC 6.5s ease-in-out infinite; }
+    .hero-deco-icon.deco-network   { top: 42%; right: 2%;  opacity: 0.07; animation: floatA 9s ease-in-out infinite 1s; }
+    .hero-deco-icon.deco-chip      { bottom: 8%; right: 7%; opacity: 0.08; animation: floatB 7.5s ease-in-out infinite 0.5s; }
+    .hero-deco-icon.deco-chartup   { top: 55%; left: 5%;   opacity: 0.06; animation: floatC 8s ease-in-out infinite 1.5s; }
+    .hero-deco-icon.deco-atom      { top: 3%;  left: 38%;  opacity: 0.04; animation: floatA 11s ease-in-out infinite 2s; }
+    .hero-deco-icon.deco-code      { bottom: 30%; right: 4%; opacity: 0.05; animation: floatB 9.5s ease-in-out infinite 0.8s; }
+
+    @keyframes floatA {
+      0%, 100% { transform: translateY(0)   rotate(0deg); }
+      33%       { transform: translateY(-14px) rotate(4deg); }
+      66%       { transform: translateY(7px)  rotate(-3deg); }
+    }
+    @keyframes floatB {
+      0%, 100% { transform: translateY(0)   rotate(0deg); }
+      40%       { transform: translateY(-9px)  rotate(-5deg); }
+      70%       { transform: translateY(11px) rotate(3deg); }
+    }
+    @keyframes floatC {
+      0%, 100% { transform: translateY(0)   rotate(0deg); }
+      25%       { transform: translateY(12px) rotate(4deg); }
+      75%       { transform: translateY(-16px) rotate(-4deg); }
+    }
+
+    /* Innovation tag pills (hero) */
+    .hero-innovation-tags {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0 auto 28px;
+      animation: slideInUp 0.8s ease-out 0.15s both;
+    }
+
+    .innovation-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(81,183,222,0.1);
+      border: 1px solid rgba(81,183,222,0.22);
+      color: var(--cc-cyan-light);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .innovation-tag:hover {
+      background: rgba(81,183,222,0.18);
+      border-color: rgba(81,183,222,0.4);
+      transform: translateY(-2px);
+    }
+
+    .innovation-tag svg { flex-shrink: 0; }
+
+    /* Section innovation badge */
+    .section-innovation-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(81,183,222,0.1) 0%, rgba(81,183,222,0.04) 100%);
+      border: 1px solid rgba(81,183,222,0.22);
+      color: var(--cc-cyan-dark);
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .section-innovation-badge svg { flex-shrink: 0; }
+
+    /* Card icon hover animation */
+    .dept-card:hover .dept-icon {
+      transform: scale(1.12) rotate(-6deg);
+      transition: transform 0.35s var(--ease-spring);
+    }
+
+    .dept-icon {
+      transition: transform 0.35s var(--ease-spring);
+    }
+
+    /* ============================================
+       LGPD / CONSENTIMENTO MODAL
+       ============================================ */
+
+    .lgpd-modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+      display: none;
+      z-index: 10000;
+      animation: slideUp 0.35s var(--ease-out);
+      border-top: 2px solid var(--cc-cyan);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .lgpd-modal.active {
+      display: block;
+    }
+
+    .lgpd-content {
+      width: 100%;
+      max-width: 100%;
+      max-height: 70vh;
+      overflow-y: auto;
+      padding: 28px 32px;
+      animation: none;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .lgpd-header {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lgpd-header h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cc-navy);
+      margin: 0;
+    }
+
+    .lgpd-header p {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .lgpd-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0 16px 0;
+      max-height: 200px;
+      overflow-y: auto;
+      padding-right: 0;
+    }
+
+    .lgpd-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(81, 183, 222, 0.25);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lgpd-item:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: var(--cc-cyan);
+      box-shadow: 0 2px 8px rgba(81, 183, 222, 0.1);
+    }
+
+    .lgpd-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-top: 3px;
+      cursor: pointer;
+      accent-color: var(--cc-cyan);
+      flex-shrink: 0;
+    }
+
+    .lgpd-item-text {
+      flex: 1;
+    }
+
+    .lgpd-item-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 13px;
+      margin-bottom: 1px;
+    }
+
+    .lgpd-item-desc {
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+
+    .lgpd-item-desc a {
+      color: var(--cc-cyan-dark);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid var(--cc-cyan-dark);
+    }
+
+    .lgpd-item-desc a:hover {
+      color: var(--cc-cyan);
+      border-color: var(--cc-cyan);
+    }
+
+    .lgpd-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .lgpd-btn-accept {
+      min-width: 180px;
+      padding: 11px 28px;
+      background: var(--cc-cyan);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .lgpd-btn-accept:hover:not(:disabled) {
+      background: var(--cc-cyan-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(81, 183, 222, 0.25);
+    }
+
+    .lgpd-btn-accept:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .lgpd-info {
+      background: rgba(81, 183, 222, 0.06);
+      border-left: 3px solid var(--cc-cyan);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--cc-navy);
+      line-height: 1.5;
+      margin-top: 8px;
+      flex: 1;
+    }
+
+    /* ============================================
        DEPARTMENT GRID
        ============================================ */
     
@@ -819,7 +1090,6 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      height: 100%;
     }
 
     .dept-card:hover {
@@ -914,9 +1184,17 @@
 
     .dept-meta {
       display: flex;
-      gap: 16px;
+      flex-direction: column;
+      gap: 8px;
       font-size: 12px;
       color: var(--gray-500);
+    }
+
+    /* Alinhamento limpo dos ícones SVG do meta e dos botões */
+    .dept-meta-item svg,
+    .dept-card-actions .dept-btn svg {
+      margin-right: 0 !important;
+      flex-shrink: 0;
     }
 
     .dept-meta-item {
@@ -924,6 +1202,22 @@
       align-items: center;
       gap: 4px;
     }
+
+    .dept-capacity {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(81,183,222,0.08) 0%, rgba(81,183,222,0.02) 100%);
+      border: 1px solid rgba(81,183,222,0.2);
+      padding: 8px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cc-cyan-dark);
+      margin-top: 4px;
+    }
+
+    .dept-capacity svg { flex-shrink: 0; }
 
     .dept-btn {
       display: inline-flex;
@@ -2243,7 +2537,75 @@
   <!-- ==================== HERO ==================== -->
   <section class="hero">
     <div class="hero-gradient"></div>
+
+    <!-- DECORAÇÕES VISUAIS — Inovação / Pesquisa / Startups (sem função) -->
+    <div class="hero-decorations" aria-hidden="true">
+      <!-- Foguete — Startup / Lançamento -->
+      <svg class="hero-deco-icon deco-rocket" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4.5 16.5c-1.5 1.5-4.5 1.5-4.5 1.5s0-3 1.5-4.5c1-1 2.2-1.3 3.5-1L16 2l6 6-10.5 10.5c.3 1.3 0 2.5-1 3.5z"/>
+        <path d="M12 8 6 14"/>
+      </svg>
+      <!-- Lâmpada — Ideias / Inovação -->
+      <svg class="hero-deco-icon deco-bulb" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+        <path d="M9 18h6"/><path d="M10 22h4"/>
+      </svg>
+      <!-- Frasco — Pesquisa / Laboratório -->
+      <svg class="hero-deco-icon deco-flask" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 2v7.31"/><path d="M14 9.3V2"/><path d="M8.5 2h7"/>
+        <path d="M14 9.3a6.5 6.5 0 1 1-4 0"/>
+      </svg>
+      <!-- Nós de rede — Ecossistema / Conectividade -->
+      <svg class="hero-deco-icon deco-network" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/>
+        <path d="M12 7v4M12 11l-5.5 6.5M12 11l5.5 6.5"/>
+      </svg>
+      <!-- Chip/CPU — Tecnologia -->
+      <svg class="hero-deco-icon deco-chip" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="7" y="7" width="10" height="10" rx="1"/>
+        <path d="M10 7V5M14 7V5M10 19v-2M14 19v-2M5 10H7M5 14H7M17 10h2M17 14h2"/>
+      </svg>
+      <!-- Gráfico crescente — Crescimento / Investimento -->
+      <svg class="hero-deco-icon deco-chartup" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+        <polyline points="16 7 22 7 22 13"/>
+      </svg>
+      <!-- Átomo — Ciência / P&D -->
+      <svg class="hero-deco-icon deco-atom" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+        <ellipse cx="12" cy="12" rx="10" ry="4"/>
+        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/>
+        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>
+      </svg>
+      <!-- Colchetes de código — Desenvolvimento / Tech -->
+      <svg class="hero-deco-icon deco-code" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"/>
+        <polyline points="8 6 2 12 8 18"/>
+      </svg>
+    </div>
+    <!-- FIM DECORAÇÕES -->
+
     <div class="container hero-content">
+
+      <!-- Tags de Inovação -->
+      <div class="hero-innovation-tags" aria-hidden="true">
+        <span class="innovation-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.5-4.5 1.5-4.5 1.5s0-3 1.5-4.5c1-1 2.2-1.3 3.5-1L16 2l6 6-10.5 10.5c.3 1.3 0 2.5-1 3.5z"/></svg>
+          Ecossistema Startup
+        </span>
+        <span class="innovation-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/></svg>
+          Inovação &amp; Tecnologia
+        </span>
+        <span class="innovation-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V2"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/></svg>
+          Pesquisa Aplicada
+        </span>
+        <span class="innovation-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          Investimento &amp; Impacto
+        </span>
+      </div>
 
       <!-- Título Principal -->
       <h1 class="hero-title">
@@ -2256,16 +2618,20 @@
       <!-- Barra de Busca -->
       <div class="hero-search">
         <input type="text" class="search-input" placeholder="Buscar serviço, unidade ou departamento" id="hero-search">
-        <button class="search-btn">🔍 Buscar</button>
+        <button class="search-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Buscar
+        </button>
       </div>
 
       <!-- CTAs Principais -->
       <div class="hero-ctas">
         <button class="cta-primary" onclick="document.querySelector('.dept-grid').scrollIntoView({behavior:'smooth'})">
-          <i class="ph ph-calendar-plus"></i> Fazer Agendamento
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg>
+          Fazer Agendamento
         </button>
         <button class="cta-secondary" onclick="openConsultarModal()">
-          <i class="ph ph-magnifying-glass"></i> Consultar Agendamento
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Consultar Agendamento
         </button>
       </div>
     </div>
@@ -2275,6 +2641,10 @@
   <main class="container">
     <div class="dept-grid">
       <div class="section-title" style="grid-column: 1 / -1;">
+        <span class="section-innovation-badge" aria-hidden="true">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="1.5" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>
+          Espaços de Inovação
+        </span>
         <h2>Escolha o Espaço</h2>
         <p>Selecione o departamento para ver o formulário de agendamento</p>
       </div>
@@ -2284,12 +2654,16 @@
         <div class="dept-card-header">
           <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4CAF50;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="17" x2="22" y2="17"/><line x1="6" y1="21" x2="6" y2="17"/><line x1="10" y1="21" x2="10" y2="17"/><line x1="14" y1="21" x2="14" y2="17"/><line x1="18" y1="21" x2="18" y2="17"/></svg></div>
           <div class="dept-name">Coworking</div>
+          <div class="dept-deco-tag" aria-hidden="true" style="display:inline-block;margin-top:8px;padding:4px 8px;background:rgba(76,175,80,0.15);border:1px solid rgba(76,175,80,0.3);border-radius:12px;font-size:10px;color:#4CAF50;font-weight:600;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline;margin-right:3px;vertical-align:middle;"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Crescimento Coletivo
+          </div>
           <div class="dept-desc">Espaço de trabalho compartilhado com internet de alta velocidade e salas de reunião.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 4h (meio período)</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sex</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 70 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('coworking')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2303,12 +2677,16 @@
         <div class="dept-card-header">
           <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2196F3;"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div>
           <div class="dept-name">Link Lab</div>
+          <div class="dept-deco-tag" aria-hidden="true" style="display:inline-block;margin-top:8px;padding:4px 8px;background:rgba(33,150,243,0.15);border:1px solid rgba(33,150,243,0.3);border-radius:12px;font-size:10px;color:#2196F3;font-weight:600;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline;margin-right:3px;vertical-align:middle;"><circle cx="12" cy="12" r="1.5" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>Inovação + Prototipagem
+          </div>
           <div class="dept-desc">Laboratório de inovação e prototipagem para empreendedores e projetos criativos.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 2h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sex</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 120 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('linklab')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2322,12 +2700,16 @@
         <div class="dept-card-header">
           <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #FF9800;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2"/></svg></div>
           <div class="dept-name">Sala de Treinamento</div>
+          <div class="dept-deco-tag" aria-hidden="true" style="display:inline-block;margin-top:8px;padding:4px 8px;background:rgba(255,152,0,0.15);border:1px solid rgba(255,152,0,0.3);border-radius:12px;font-size:10px;color:#FF9800;font-weight:600;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline;margin-right:3px;vertical-align:middle;"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>Aprendizado Contínuo
+          </div>
           <div class="dept-desc">Espaço para treinamentos, workshops e capacitações com estrutura completa.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 2h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 30 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('salatreinamento')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2341,12 +2723,16 @@
         <div class="dept-card-header">
           <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #51B7DE;"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/><polyline points="12 12 9 9 12 6 15 9 12 12"/></svg></div>
           <div class="dept-name">Átrio</div>
+          <div class="dept-deco-tag" aria-hidden="true" style="display:inline-block;margin-top:8px;padding:4px 8px;background:rgba(81,183,222,0.15);border:1px solid rgba(81,183,222,0.3);border-radius:12px;font-size:10px;color:#51B7DE;font-weight:600;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline;margin-right:3px;vertical-align:middle;"><circle cx="12" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><path d="M12 7v4M12 11l-5.5 6.5M12 11l5.5 6.5"/></svg>Conexão &amp; Comunidade
+          </div>
           <div class="dept-desc">Espaço de convivência e eventos no hall central da Cadeia Criativa — exposições e feiras.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 2h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 150 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('atrio')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2360,12 +2746,16 @@
         <div class="dept-card-header">
           <div class="dept-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9C27B0;"><path d="M12 1v22M4.5 4.5C2.5 6.5 2 9 2 12c0 5 4 9 10 9s10-4 10-9c0-3-0.5-5.5-2.5-7.5"/><path d="M12 6v8M9 9h6"/></svg></div>
           <div class="dept-name">Stúdio de Música</div>
+          <div class="dept-deco-tag" aria-hidden="true" style="display:inline-block;margin-top:8px;padding:4px 8px;background:rgba(156,39,176,0.15);border:1px solid rgba(156,39,176,0.3);border-radius:12px;font-size:10px;color:#9C27B0;font-weight:600;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline;margin-right:3px;vertical-align:middle;"><path d="M10 2v7.31"/><path d="M14 9.3V2"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/></svg>Criatividade + Tecnologia
+          </div>
           <div class="dept-desc">Espaço profissional para gravação, ensaios e produção musical com equipamento de alta qualidade.</div>
         </div>
         <div class="dept-card-footer">
           <div class="dept-meta">
-            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 3h por sessão</div>
+            <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 10 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('musica')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2556,6 +2946,56 @@
           <button class="btn-print" onclick="window.print()"><i class="ph ph-printer"></i> Imprimir / PDF</button>
           <button class="btn-done" onclick="closeForm('confirmation')">✓ Concluir</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LGPD / CONSENTIMENTO MODAL (BANNER FULL-WIDTH) ==================== -->
+  <div class="lgpd-modal" id="lgpd-modal">
+    <div class="lgpd-content">
+      <div class="lgpd-header">
+        <div>
+          <h2>🔐 Política de Privacidade e Consentimento LGPD</h2>
+          <p>Seus dados são protegidos conforme a Lei Geral de Proteção de Dados. Aceite os termos para continuar.</p>
+        </div>
+      </div>
+
+      <div class="lgpd-items">
+        <!-- Item 1: LGPD -->
+        <label class="lgpd-item">
+          <input type="checkbox" id="consent-lgpd" required>
+          <div class="lgpd-item-text">
+            <div class="lgpd-item-title">✓ Conformidade LGPD (Lei nº 13.709/2018)</div>
+            <div class="lgpd-item-desc">Autorizo o processamento de meus dados pessoais conforme a LGPD para agendamento e gerenciamento de eventos.</div>
+          </div>
+        </label>
+
+        <!-- Item 2: Privacidade -->
+        <label class="lgpd-item">
+          <input type="checkbox" id="consent-privacy" required>
+          <div class="lgpd-item-text">
+            <div class="lgpd-item-title">✓ Li e aceito a <a href="#" onclick="showPrivacyPolicy(event)" style="color:var(--cc-cyan-dark);text-decoration:underline;">Política de Privacidade</a></div>
+            <div class="lgpd-item-desc">Meus dados serão protegidos e não compartilhados com terceiros sem consentimento.</div>
+          </div>
+        </label>
+
+        <!-- Item 3: Cookies -->
+        <label class="lgpd-item">
+          <input type="checkbox" id="consent-cookies">
+          <div class="lgpd-item-text">
+            <div class="lgpd-item-title">Cookies e Rastreamento (Opcional)</div>
+            <div class="lgpd-item-desc">Autorizo análise de uso e melhorias da experiência de navegação.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="lgpd-actions">
+        <div class="lgpd-info">
+          <strong>ℹ️</strong> Seu consentimento será registrado com timestamp para auditoria.
+        </div>
+        <button class="lgpd-btn-accept" id="lgpd-accept-btn" onclick="acceptLGPD()" disabled>
+          Aceitar e Continuar
+        </button>
       </div>
     </div>
   </div>
@@ -3285,7 +3725,8 @@
       bufferMinutes: 0,
       operatingHours: [
         { start: 8, end: 12 },
-        { start: 13, end: 17 }
+        { start: 13, end: 17 },
+        { start: 18, end: 21 }
       ],
       prefix: 'COW',
       defaultOrientacoes: 'Silêncio na área compartilhada.\\nLimpe sua mesa após o uso.'
@@ -3301,7 +3742,8 @@
       bufferMinutes: 15,
       operatingHours: [
         { start: 8, end: 12 },
-        { start: 13, end: 17 }
+        { start: 13, end: 17 },
+        { start: 18, end: 21 }
       ],
       prefix: 'LAB',
       defaultOrientacoes: 'Uso das máquinas requer aprovação prévia.\\nTrazer EPI se necessário.'
@@ -6401,5 +6843,139 @@
     });
   })();
 </script>
+
+<!-- LGPD / Consent Management -->
+<script>
+  const LGPD_KEY = 'lgpd_consent_v1';
+  const LGPD_CHECKBOXES = ['consent-lgpd', 'consent-privacy', 'consent-cookies'];
+
+  // Initialize LGPD on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    initLGPD();
+    setupConsentCheckboxes();
+  });
+
+  function initLGPD() {
+    const consent = localStorage.getItem(LGPD_KEY);
+    if (!consent) {
+      showLGPDModal();
+    }
+  }
+
+  function showLGPDModal() {
+    const modal = document.getElementById('lgpd-modal');
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function hideLGPDModal() {
+    const modal = document.getElementById('lgpd-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  function setupConsentCheckboxes() {
+    const checkboxes = LGPD_CHECKBOXES.map(id => document.getElementById(id));
+    const acceptBtn = document.getElementById('lgpd-accept-btn');
+
+    checkboxes.forEach(checkbox => {
+      if (checkbox) {
+        checkbox.addEventListener('change', function() {
+          const lgpd = document.getElementById('consent-lgpd');
+          const privacy = document.getElementById('consent-privacy');
+          const allRequired = lgpd && lgpd.checked && privacy && privacy.checked;
+          if (acceptBtn) {
+            acceptBtn.disabled = !allRequired;
+          }
+        });
+      }
+    });
+  }
+
+  function acceptLGPD() {
+    const lgpd = document.getElementById('consent-lgpd')?.checked;
+    const privacy = document.getElementById('consent-privacy')?.checked;
+    const cookies = document.getElementById('consent-cookies')?.checked;
+
+    if (!lgpd || !privacy) {
+      alert('Por favor, aceite LGPD e Política de Privacidade.');
+      return;
+    }
+
+    const consentData = {
+      timestamp: new Date().toISOString(),
+      lgpd: lgpd,
+      privacy: privacy,
+      cookies: cookies || false,
+      ip: 'captured',
+      userAgent: navigator.userAgent.substring(0, 256)
+    };
+
+    localStorage.setItem(LGPD_KEY, JSON.stringify(consentData));
+
+    // Registrar na Supabase (async, não bloqueia)
+    registerConsentToSupabase(consentData);
+
+    hideLGPDModal();
+  }
+
+  function registerConsentToSupabase(consentData) {
+    // Se SUPABASE está disponível, registrar na tabela de consentimentos
+    if (typeof window.SUPABASE_ANON_KEY !== 'undefined' && window.SUPABASE_ANON_KEY) {
+      fetch('https://kihnjrlwzuwfunzocswa.supabase.co/rest/v1/rpc/log_consent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': window.SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({
+          consent_timestamp: consentData.timestamp,
+          lgpd_accepted: consentData.lgpd,
+          privacy_accepted: consentData.privacy,
+          cookies_accepted: consentData.cookies,
+          user_agent: consentData.userAgent
+        })
+      }).catch(err => console.log('Consent logged locally. Supabase registration skipped.'));
+    }
+  }
+
+  function showPrivacyPolicy(event) {
+    event.preventDefault();
+    // Trigger existing privacy modal if available
+    if (typeof showPrivacyModal === 'function') {
+      showPrivacyModal();
+    } else {
+      alert('Política de Privacidade:\n\nSeus dados pessoais são coletados apenas para agendamento. Não serão compartilhados com terceiros. Você pode solicitar acesso, correção ou exclusão a qualquer momento.');
+    }
+  }
+
+  // Show LGPD modal before opening form if consent not given
+  const originalOpenForm = window.openForm;
+  window.openForm = function(dept) {
+    const consent = localStorage.getItem(LGPD_KEY);
+    if (!consent) {
+      showLGPDModal();
+      return;
+    }
+    if (originalOpenForm) originalOpenForm.call(this, dept);
+  };
+
+  // Show LGPD modal before consulting if consent not given
+  const originalOpenConsultarModal = window.openConsultarModal;
+  window.openConsultarModal = function(dept) {
+    const consent = localStorage.getItem(LGPD_KEY);
+    if (!consent) {
+      showLGPDModal();
+      return;
+    }
+    if (originalOpenConsultarModal) originalOpenConsultarModal.call(this, dept);
+  };
+</script>
+
 </body>
 </html>

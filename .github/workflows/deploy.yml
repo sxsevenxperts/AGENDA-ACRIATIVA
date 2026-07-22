@@ -9,6 +9,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Easypanel Webhook
+      - name: Trigger Easypanel Deploy (agenda frontend app webhook)
         run: |
-          curl -X GET "http://164.68.116.21:3000/api/compose/deploy/a0daf3a1e90fb6f2f35ec24bd080a324c2c689f304984654"
+          echo "Triggering Easypanel deploy for the agenda frontend app..."
+          RESPONSE=$(curl -sS -m 60 -w $'\nHTTP_STATUS:%{http_code}' -X POST \
+            "http://164.68.116.21:3000/api/deploy/19e3a2d294ed2a25f8e8d8b784c8cd0b321d3a3502b60e05")
+          echo "Easypanel response: $RESPONSE"
+          BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS:/d')
+          STATUS=$(echo "$RESPONSE" | grep -o 'HTTP_STATUS:[0-9]*' | cut -d: -f2)
+          # Fail the job if Easypanel rejected the deploy, so we never get a false green again.
+          if [ "$STATUS" != "200" ] || echo "$BODY" | grep -qiE "invalid|unauthorized|forbidden|not found"; then
+            echo "::error::Easypanel rejected the deploy (HTTP $STATUS): $BODY"
+            exit 1
+          fi
+          echo "Deploy triggered successfully (HTTP $STATUS)."
