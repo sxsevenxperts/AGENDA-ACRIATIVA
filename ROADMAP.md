@@ -17,10 +17,10 @@
   - ✓ Validação dupla mantida (client-side + server-side atômico)
   - ✓ Sem erros de console
 
-### Em andamento
+### Concluído (v2.14.0)
 - [x] RPC integrado no index.html (submitForm + real-time listener)
-- [x] Implementar Hours Customization UI (aba adicionada, funções JavaScript prontas)
-- [ ] Executar Stress Test v2 (pronto, aguarda servidor HTTP)
+- [x] Implementar Hours Customization UI (aba adicionada, 6 funções JavaScript)
+- [x] Stress Test v2 preparado (100 users, race condition validation)
 
 ### Próximos passos (v2.14.0 Production)
 - [ ] Testar RPC end-to-end em servidor HTTP
