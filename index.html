@@ -5563,6 +5563,9 @@
     // Default to today
     document.getElementById('dash-date-filter').value = new Date().toISOString().split('T')[0];
     loadAppointments();
+
+    // Carregar dashboard stats também (evita cache de login anterior)
+    loadDashboardStats();
   }
   
   function closeAdminDash() {

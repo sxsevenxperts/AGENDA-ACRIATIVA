@@ -35,6 +35,11 @@ Cada departamento gera informações para uma dashboard própria, exibida confor
 - Sem erros de console no carregamento.
 - Dados de teste removidos do `localStorage` após a validação.
 
+**2. Fix: `openAdminDash()` chama `loadDashboardStats()` (`index.html`, linha 5566)**
+- **Bug descoberto**: ao fazer login, `openAdminDash()` chamava `loadAppointments()` mas não chamava `loadDashboardStats()`, deixando a dashboard com dados em cache do login anterior.
+- **Fix**: adicionada chamada a `loadDashboardStats()` ao final de `openAdminDash()` para garantir que a dashboard seja renderizada corretamente com o estado atual de `adminSession`.
+- **Teste de fix**: logout → login como ADM Stúdio (Silton) → `isDiretoria()` = false, `getSessionDepts()` = ['musica'], dashboard renderiza 1 card (Stúdio) com título "Dashboard do Departamento". Logout → login como Diretoria (Joyce) → dashboard renderiza 5 cards com título "Dashboard por Departamento — Diretoria (todos os dados)". Sem erros.
+
 ---
 
 ## 2026-07-22 — Remoção de Emojis, Substituição por SVG Icons (v2.12.1)

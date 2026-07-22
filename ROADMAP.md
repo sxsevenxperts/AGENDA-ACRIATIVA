@@ -17,6 +17,7 @@
 - [x] **Ocupação vs Capacidade máxima**: pico de pessoas no horário mais cheio vs limite do espaço (70/120/30/150/10), com barra de progresso e cor por faixa (verde <60%, amarelo 60–89%, vermelho ≥90%)
 - [x] **Tipo de evento mais frequente** por departamento (derivado das respostas do formulário)
 - [x] **Validação**: testado no browser com dados semeados — Diretoria (5 cards, total consolidado) e ADM Stúdio (1 card escopado); matemática de ocupação conferida (ex.: Coworking 65/70 = 93%); sem erros de console
+- [x] **Fix de renderização**: `openAdminDash()` agora chama `loadDashboardStats()` para evitar cache de login anterior; dashboard renderiza corretamente ao fazer login sem necessidade de clicar na aba
 
 ### Próximos passos
 - [ ] Executar `sql/001_lgpd_consents.sql` no Supabase em produção
