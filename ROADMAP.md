@@ -18,13 +18,15 @@
   - ✓ Sem erros de console
 
 ### Em andamento
-- [ ] Testar RPC end-to-end (aguarda SQL no Supabase)
-- [ ] Implementar Hours Customization UI
-- [ ] Executar Stress Test v2
+- [x] RPC integrado no index.html (submitForm + real-time listener)
+- [ ] Implementar Hours Customization UI (planificado)
+- [ ] Executar Stress Test v2 (pronto, aguarda servidor HTTP)
 
-### Próximos passos
-- [ ] Validar race condition eliminado (stress test)
-- [ ] Deploy v2.14.0
+### Próximos passos (v2.14.0 Production)
+- [ ] Testar RPC end-to-end em servidor HTTP
+- [ ] Implementar + testar Hours Customization
+- [ ] Validar race condition eliminado (stress test v2)
+- [ ] Deploy v2.14.0 com RPC atômico
 
 ---
 
