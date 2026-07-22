@@ -1,8 +1,44 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.9  
-**Status Geral:** 🟢 Em Produção - Ícones Decorativos de Inovação + Pesquisa + Startups
+**Versão:** 2.10.0  
+**Status Geral:** 🟢 Em Produção - Capacidades + LGPD Consentimento + Ícones Decorativos
+
+---
+
+## Atualização — 2026-07-21 (v2.10.0) — Capacidades + Modal LGPD com Consentimento Registrado
+
+### Concluído
+- [x] **Capacidade máxima em cada departamento** (badge ao lado dos horários/dias):
+  - ✅ Coworking: 70 pessoas
+  - ✅ Link Lab: 120 pessoas
+  - ✅ Sala de Treinamento: 30 pessoas
+  - ✅ Átrio: 150 pessoas
+  - ✅ Stúdio de Música: 10 pessoas
+- [x] **Modal LGPD/Consentimento** com 3 checkboxes:
+  - ✅ Conformidade LGPD (obrigatória)
+  - ✅ Política de Privacidade (obrigatória)
+  - ✅ Cookies e Rastreamento (opcional)
+- [x] **Registros de consentimento**:
+  - ✅ localStorage: armazenamento local com timestamp
+  - ✅ Supabase: tentativa de registro na infraestrutura
+  - ✅ User Agent + IP capturados para auditoria
+- [x] **Modal reaparece** se usuário não consentir antes de agendar/consultar
+- [x] **Segurança jurídica**: Mensagem informativa sobre retenção de consentimento
+
+### Impacto
+- ✅ Transparência sobre capacidades dos espaços
+- ✅ Conformidade LGPD + Segurança jurídica
+- ✅ Registro de consentimento auditável na infraestrutura
+- ✅ Experiência de primeiro acesso profissional
+
+### Próximos passos
+- [ ] Criar tabela `lgpd_consents` no Supabase para auditoria
+- [ ] Adicionar dashboard de auditoria de consentimentos (admin)
+- [ ] Personalizar horários por departamento se necessário
+
+### Riscos e débitos técnicos
+- localStorage depende de browser: limpar cache = perder consentimento (normal, re-solicita)
 
 ---
 

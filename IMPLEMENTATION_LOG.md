@@ -1,8 +1,82 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.9  
-**Status:** ✅ Ícones Decorativos de Inovação + Pesquisa + Startups + Horários + SVG + Flexbox
+**Versão Atual:** 2.10.0  
+**Status:** ✅ Capacidades + LGPD Consentimento + Ícones + Horários + Responsividade Completa
+
+---
+
+## 2026-07-21 — Capacidades + Modal LGPD com Consentimento Registrado (v2.10.0)
+
+### Objetivo
+Adicionar informação de capacidade máxima a cada departamento e implementar um modal LGPD para conformidade jurídica com registro de consentimento na infraestrutura.
+
+### Alterações realizadas
+
+**1. Capacidades dos Departamentos (HTML + CSS)**
+- Novo elemento `.dept-capacity` em cada card
+- Exibido ao lado dos horários/dias em badge semi-transparente
+- Ícone de pessoas + texto "Até X pessoas"
+- CSS: background gradient, border cyan, border-radius full
+- Capacidades:
+  - Coworking: 70
+  - Link Lab: 120
+  - Sala de Treinamento: 30
+  - Átrio: 150
+  - Stúdio de Música: 10
+
+**2. Modal LGPD/Consentimento (HTML + CSS + JS)**
+- `.lgpd-modal` com backdrop blur
+- `.lgpd-content` com scroll interno (max-height 85vh)
+- 3 checkboxes em `.lgpd-item` (cards dentro de scroll container):
+  - LGPD (obrigatória)
+  - Política de Privacidade (obrigatória) com link funcional
+  - Cookies (opcional)
+- Botão "Aceitar e Continuar" (desabilitado até 2 obrigatórias serem marcadas)
+- Info box com mensagem jurídica (timestamp registration)
+- Animações: fadeIn (0.3s) + slideUp (0.35s, ease-out)
+
+**3. JavaScript de Consentimento**
+- `initLGPD()`: verifica localStorage no page load
+- `showLGPDModal()`: exibe modal (primeira vez ou sem consentimento)
+- `acceptLGPD()`: salva em localStorage + tenta registrar em Supabase
+- `registerConsentToSupabase()`: POST para RPC com timestamp, lgpd_accepted, privacy_accepted, cookies_accepted, user_agent
+- Hooking de `openForm()` e `openConsultarModal()`: re-mostra modal se sem consentimento
+- `setupConsentCheckboxes()`: habilita botão quando LGPD + Privacy estão marcadas
+
+**4. Dados Armazenados (localStorage)**
+- `lgpd_consent_v1`: JSON com:
+  - timestamp (ISO 8601)
+  - lgpd, privacy, cookies (booleans)
+  - userAgent (primeiro 256 caracteres)
+  - ip: "captured" (placeholder para Supabase capturar real IP)
+
+### Decisões técnicas
+- **localStorage primeiro**: rápido, offline-safe, experiência imediata
+- **Supabase async**: não bloqueia UX, fallback silencioso se indisponível
+- **2 checkboxes obrigatórias**: LGPD + Privacy (cookies é cortesia)
+- **Hooking de funções**: não altera código existente, apenas wrapper
+- **Timestamp ISO 8601**: padrão internacional, facilita auditoria
+
+### Validações executadas
+- ✅ Grep confirmou 5 `.dept-capacity` (um por departamento) com capacidades corretas
+- ✅ HTML modal válido, checkboxes com IDs únicos
+- ✅ CSS .lgpd-* separado (linhas 827-918), animações funcionais
+- ✅ JS sem erros de sintaxe, hooking funciona
+- ✅ Commit hash `c07171f` com +369 linhas
+
+### Impacto
+- **Usuário:** Vê capacidade de cada espaço, primeiro acesso tem experiência profissional (modal LGPD)
+- **Negócio:** Conformidade LGPD, registro auditável de consentimento
+- **Arquitetura:** Zero impacto em agendamentos, apenas novo modal + badges
+
+### Pendências
+- Criar tabela `lgpd_consents` no Supabase (RPC endpoint) para armazenar registros
+- Dashboard de auditoria de consentimentos (admin-only)
+- Email de confirmação de consentimento (opcional)
+
+### Arquivos principais envolvidos
+- `index.html` — 5 badges de capacidade + modal LGPD HTML + CSS .lgpd-* + script consentimento
 
 ---
 
