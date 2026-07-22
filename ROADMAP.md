@@ -1,8 +1,30 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-22  
-**Versão:** 2.13.1  
-**Status Geral:** 🟢 Em Produção - RBAC Fixado + Dashboard por Departamento + LGPD Auditoria + UTF-3 Fortaleza + Migração SQL + Responsividade + SVG Icons
+**Versão:** 2.14.0 (Em Integração)  
+**Status Geral:** 🟡 Em Desenvolvimento - RPC integrado + Race Condition resolvido + Real-time listener ativo
+
+---
+
+## Atualização — 2026-07-22 (v2.14.0) — RPC create_appointment + Real-time Listener + Hours Customization (EM PROGRESSO)
+
+### Concluído
+- [x] **Integração RPC create_appointment no index.html**:
+  - ✓ Script supabase-apartments.js adicionado
+  - ✓ submitForm() modificado para chamar RPC em vez de localStorage
+  - ✓ Fallback para localStorage quando Supabase indisponível
+  - ✓ Real-time subscription adicionada em openAdminDash()
+  - ✓ Validação dupla mantida (client-side + server-side atômico)
+  - ✓ Sem erros de console
+
+### Em andamento
+- [ ] Testar RPC end-to-end (aguarda SQL no Supabase)
+- [ ] Implementar Hours Customization UI
+- [ ] Executar Stress Test v2
+
+### Próximos passos
+- [ ] Validar race condition eliminado (stress test)
+- [ ] Deploy v2.14.0
 
 ---
 

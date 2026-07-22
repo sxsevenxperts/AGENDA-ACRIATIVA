@@ -5401,20 +5401,75 @@
     console.log(`✅ Validação OK: ${currentOccupancy} + ${numParticipants} ≤ ${dept.capacity}`);
     // Nota: Servidor fará validação final atômica (pode rejeitar se houve mudanças simultâneas)
 
-    // Counter logic
-    let counters = JSON.parse(localStorage.getItem('cadeia_counters') || '{}');
-    counters[currentDeptId] = (counters[currentDeptId] || 0) + 1;
-    localStorage.setItem('cadeia_counters', JSON.stringify(counters));
-    
-    const senhaPrefix = `${dept.prefix}-${counters[currentDeptId].toString().padStart(3, '0')}`;
-    const validationCode = Math.random().toString(36).substring(2,5).toUpperCase() + '-' + Math.random().toString(36).substring(2,5).toUpperCase();
-    
     const btnSubmit = document.getElementById('btn-submit');
     const originalText = btnSubmit.innerText;
     btnSubmit.innerText = 'Processando...';
     btnSubmit.disabled = true;
     btnSubmit.style.opacity = '0.7';
-    
+
+    // ===== TENTAR RPC SUPABASE (v2.14.0) =====
+    if (typeof createAppointmentViaSupabase === 'function') {
+      console.log('📡 Tentando criar agendamento via Supabase RPC...');
+
+      createAppointmentViaSupabase({
+        departmentId: currentDeptId,
+        date: formData.date,
+        time: formData.time,
+        numParticipants: numParticipants,
+        citizenName: userSession?.name || formData['Nome Completo'] || 'Anônimo',
+        citizenEmail: userSession?.email || formData['E-mail Pessoal'] || 'nao-fornecido@example.com',
+        citizenPhone: userSession?.phone || formData['Telefone/WhatsApp'] || null,
+        citizenCpfCnpj: formData['CPF/CNPJ'] || null,
+        formData: formData,
+        lgpdAccepted: termsChecked && lgpdChecked,
+        privacyAccepted: privacyChecked,
+        cookiesAccepted: true
+      }).then(result => {
+        if (result.success) {
+          // ✅ RPC SUCESSO
+          console.log('✅ Agendamento criado via Supabase:', result.appointmentCode);
+          appointmentId = result.appointmentId;
+          appointmentCode = result.appointmentCode;
+          showConfirmationModal(appointmentCode, result.capacity, result.occupancy);
+          btnSubmit.innerText = originalText;
+          btnSubmit.disabled = false;
+          btnSubmit.style.opacity = '1';
+        } else if (result.code === 'SLOT_FULL') {
+          // ⚠️ CAPACIDADE CHEIA NO SERVIDOR
+          alert(`❌ Capacidade cheia: ${result.occupancy}/${result.capacity} pessoas.\n\nO slot foi preenchido. Tente outro horário.`);
+          btnSubmit.innerText = originalText;
+          btnSubmit.disabled = false;
+          btnSubmit.style.opacity = '1';
+        } else {
+          // ❌ ERRO RPC
+          console.warn('Erro RPC:', result.error);
+          if (result.fallbackToLocalStorage) {
+            console.log('⚠️ Fallback para localStorage...');
+            createAppointmentLocally(formData, btnSubmit, originalText);
+          } else {
+            alert(`❌ Erro: ${result.error}`);
+            btnSubmit.innerText = originalText;
+            btnSubmit.disabled = false;
+            btnSubmit.style.opacity = '1';
+          }
+        }
+      }).catch(err => {
+        console.error('Exceção ao chamar RPC:', err);
+        alert('❌ Erro de conexão. Tente novamente.');
+        btnSubmit.innerText = originalText;
+        btnSubmit.disabled = false;
+        btnSubmit.style.opacity = '1';
+      });
+      return;
+    }
+
+    // ===== FALLBACK: localStorage (Supabase não disponível) =====
+    console.log('⚠️ Supabase não disponível; usando localStorage');
+    createAppointmentLocally(formData, btnSubmit, originalText);
+  }
+
+  // ===== HELPER: Criar agendamento localmente (fallback) =====
+  function createAppointmentLocally(formData, btnSubmit, originalText) {
     setTimeout(() => {
       // Save Appointment
       const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
@@ -5594,6 +5649,19 @@
 
     // Carregar dashboard stats também (evita cache de login anterior)
     loadDashboardStats();
+
+    // ===== REAL-TIME SUBSCRIPTION (v2.14.0) =====
+    if (typeof subscribeToAppointmentChanges === 'function') {
+      console.log('📡 Iniciando real-time listener para agendamentos...');
+      subscribeToAppointmentChanges((payload) => {
+        console.log('🔔 Mudança em tempo real detectada:', payload.eventType);
+        // Recarregar agendamentos automaticamente
+        if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE' || payload.eventType === 'DELETE') {
+          loadAppointments();
+          loadDashboardStats();
+        }
+      });
+    }
   }
   
   function closeAdminDash() {
@@ -7119,6 +7187,9 @@
     if (originalOpenConsultarModal) originalOpenConsultarModal.call(this, dept);
   };
 </script>
+
+<!-- ===== SUPABASE INTEGRATION (v2.14.0) ===== -->
+<script src="js/supabase-appointments.js"></script>
 
 </body>
 </html>
