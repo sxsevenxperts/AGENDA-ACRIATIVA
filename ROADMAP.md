@@ -1,8 +1,48 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-21  
-**Versão:** 2.9.8  
-**Status Geral:** 🟢 Em Produção - Horários de Funcionamento + Alinhamento SVG + Flexbox
+**Versão:** 2.9.9  
+**Status Geral:** 🟢 Em Produção - Ícones Decorativos de Inovação + Pesquisa + Startups
+
+---
+
+## Atualização — 2026-07-21 (v2.9.9) — Ícones Decorativos Temáticos (Inovação/Pesquisa/Startups)
+
+### Concluído
+- [x] **8 ícones flutuantes animados no Hero**
+  - ✅ Foguete (Startup/Lançamento)
+  - ✅ Lâmpada (Ideias/Inovação)
+  - ✅ Frasco (Pesquisa/Laboratório)
+  - ✅ Rede (Ecossistema/Conectividade)
+  - ✅ Chip (Tecnologia)
+  - ✅ Gráfico Crescente (Crescimento/Investimento)
+  - ✅ Átomo (Ciência/P&D)
+  - ✅ Código (Desenvolvimento/Tech)
+- [x] **Animações suaves** (floatA, floatB, floatC com delays variados)
+- [x] **4 tags de inovação coloridas** no hero ("Ecossistema Startup", "Inovação & Tecnologia", etc.)
+- [x] **Badge "Espaços de Inovação"** na seção "Escolha o Espaço"
+- [x] **Tags temáticas decorativas em cada card** (sem função):
+  - Coworking: "Crescimento Coletivo"
+  - Link Lab: "Inovação + Prototipagem"
+  - Sala Treinamento: "Aprendizado Contínuo"
+  - Átrio: "Conexão & Comunidade"
+  - Stúdio: "Criatividade + Tecnologia"
+- [x] **Hover animation** nos ícones dos cards (scale + rotate)
+- [x] **Acessibilidade**: Todos com `aria-hidden="true"`, sem impacto nas funções
+
+### Impacto Visual
+- ✅ Hero seção mais dinâmica e temática
+- ✅ Reforça o conceito de "Cadeia Criativa" (inovação, pesquisa, startups)
+- ✅ Cards com identidade visual mais forte
+- ✅ Layout mais sofisticado e profissional
+- ✅ Zero impacto em agendamentos ou funcionalidades
+
+### Próximos passos
+- [ ] Feedback dos usuários sobre visualização dos ícones
+- [ ] Possível ajuste de opacidade ou tamanho se necessário
+
+### Riscos e débitos técnicos
+- Nenhum identificado.
 
 ---
 

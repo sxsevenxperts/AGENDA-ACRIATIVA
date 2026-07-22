@@ -1,8 +1,84 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 21/07/2026  
-**Versão Atual:** 2.9.8  
-**Status:** ✅ Horários de Funcionamento + Alinhamento SVG + Flexbox + Responsividade Completa
+**Versão Atual:** 2.9.9  
+**Status:** ✅ Ícones Decorativos de Inovação + Pesquisa + Startups + Horários + SVG + Flexbox
+
+---
+
+## 2026-07-21 — Ícones Decorativos Temáticos (Inovação/Pesquisa/Startups) (v2.9.9)
+
+### Objetivo
+Enriquecer a UX/UI com ícones decorativos que retratem o propósito da Cadeia Criativa: inovação, pesquisa, startups e ecossistema. Apenas adorno visual, sem interferência com agendamentos.
+
+### Alterações realizadas
+
+**1. Hero Section — Ícones Flutuantes Animados (8 SVGs)**
+- `.hero-decorations` container com `position: absolute; pointer-events: none`
+- Ícones com animações sutis (floatA, floatB, floatC) em loops infinitos
+- Opacidade reduzida (4-9%) para não competir com conteúdo
+- Foguete, Lâmpada, Frasco, Rede, Chip, Gráfico, Átomo, Código
+- Delays variados (0s-2.5s) para movimento natural
+
+**2. Hero Section — Tags de Inovação (4 pills)**
+- `.hero-innovation-tags` container com flex wrap
+- `.innovation-tag` com background semi-transparente, border cyan, hover effect
+- Conteúdo: "Ecossistema Startup", "Inovação & Tecnologia", "Pesquisa Aplicada", "Investimento & Impacto"
+- Ícone inline em cada tag
+
+**3. Seção "Escolha o Espaço" — Badge**
+- `.section-innovation-badge` acima do title "Escolha o Espaço"
+- Uppercase, ícone átomo, cor cyan
+
+**4. Cards de Departamentos — Tags Temáticas**
+- Cada card tem uma `dept-deco-tag` (estilo inline, não-funcional)
+- Cores coordenadas com o card (usando o color scheme existente)
+- Ícone + texto:
+  - Coworking: Gráfico crescente + "Crescimento Coletivo"
+  - Link Lab: Átomo + "Inovação + Prototipagem"
+  - Sala Treinamento: Lâmpada + "Aprendizado Contínuo"
+  - Átrio: Rede + "Conexão & Comunidade"
+  - Stúdio: Frasco + "Criatividade + Tecnologia"
+
+**5. Interatividade**
+- Card hover: `dept-icon` anima com `scale(1.12) rotate(-6deg)` (ease-spring)
+- Innovation tag hover: `translateY(-2px)`, background mais opaco
+- Todas animações suaves (0.3-0.35s)
+
+**6. CSS Adicionado**
+- `@keyframes floatA/B/C` — movimento em Y com rotação sutil
+- `.hero-decorations` — overlay absoluto
+- `.hero-deco-icon` — posicionamento absoluto, opacidade, animações
+- `.hero-innovation-tags` — flex container
+- `.innovation-tag` — pill style com hover
+- `.section-innovation-badge` — uppercase badge
+- Hover effects em cards
+
+### Decisões técnicas
+- **SVG puro** — nenhuma dependência de ícones externos, performance
+- **aria-hidden="true"** em todos os elementos decorativos — acessibilidade
+- **pointer-events: none** no `.hero-decorations` — sem bloquear interação
+- **Opacidade reduzida** — visual refinado, não invasivo
+- **Animações com delays variados** — movimento natural e fluido
+- **Cores coordenadas** — alinhadas com a paleta de cada departamento
+
+### Validações executadas
+- ✅ Grep confirmou 8 ícones no hero, 4 tags de inovação, 5 tags de cards
+- ✅ onclick handlers em botões Agendar/Consultar intactos — sem afetação
+- ✅ Estrutura HTML válida — sem erros de sintaxe
+- ✅ CSS organizado em novo bloco `.hero-decorations` (linhas 721-813)
+- ✅ Commit hash `5556e1a` com +200 linhas, -3 linhas
+
+### Impacto
+- **Usuário:** Interface mais atrativa, visual temático de inovação
+- **Negócio:** Reforça identidade de "Cadeia Criativa de Inovação"
+- **Arquitetura:** Zero impacto — apenas CSS + HTML estrutural, sem JS novo
+
+### Pendências
+- Nenhuma crítica. Possível ajuste de opacidade se feedback dos usuários indicar.
+
+### Arquivos principais envolvidos
+- `index.html` — hero decorations (8 SVGs flutuantes) + tags inovação + section badge + card deco tags + CSS/animations
 
 ---
 
