@@ -3246,6 +3246,7 @@
         <div class="dash-tab" onclick="switchDashTab('alterar-senha')" id="tab-alterar-senha" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;"><svg style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;margin-right:4px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Alterar Senha</div>
         <div class="dash-tab" onclick="switchDashTab('editar-formulario')" id="tab-editar-formulario" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap;">Editar Formulário</div>
         <div class="dash-tab" onclick="switchDashTab('consentimentos')" id="tab-consentimentos" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap; display: none;"><svg style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;margin-right:4px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Consentimentos LGPD</div>
+        <div class="dash-tab" onclick="switchDashTab('personalizar-horarios')" id="tab-personalizar-horarios" style="padding: 16px 24px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; color: var(--gray-500); white-space: nowrap; display: none;">⏰ Personalizar Horários</div>
       </div>
       
       <div class="form-body" style="flex: 1; overflow-y: auto; padding: 32px; background: var(--gray-50);">
@@ -3648,6 +3649,42 @@
             <div style="text-align: center; padding: 40px; color: var(--gray-400);">
               Clique em <strong>🔍 Filtrar</strong> para carregar os registros.
             </div>
+          </div>
+        </div>
+
+        <!-- TAB: Personalizar Horários -->
+        <div id="dash-view-personalizar-horarios" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <h3 style="margin: 0;">⏰ Personalizar Horários por Departamento</h3>
+              <p class="subtitle" style="margin: 4px 0 0;">Configure os horários de funcionamento específicos para cada dia da semana.</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label class="form-label">Selecione o Departamento</label>
+            <select id="hora-dept-select" class="form-input" onchange="loadHourCustomization(this.value)">
+              <option value="">-- Escolher departamento --</option>
+              <option value="coworking">Coworking</option>
+              <option value="linklab">Link Lab</option>
+              <option value="salatreinamento">Sala Treinamento</option>
+              <option value="atrio">Átrio</option>
+              <option value="musica">Stúdio de Música</option>
+            </select>
+          </div>
+
+          <div id="hours-editor" style="display: none;">
+            <div id="hours-cards-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+              <!-- Preenchido dinamicamente via JS -->
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="form-btn form-btn-secondary" onclick="addNewHourBlock()" style="padding: 10px 16px;">+ Adicionar outro horário</button>
+              <button class="form-btn form-btn-primary" onclick="saveHourCustomization()" style="padding: 10px 16px;">✓ Salvar Horários</button>
+            </div>
+          </div>
+
+          <div id="hours-loading-message" style="text-align: center; padding: 40px; color: var(--gray-400);">
+            Selecione um departamento para começar.
           </div>
         </div>
       </div>
@@ -6135,8 +6172,185 @@
       // Carregar perguntas do departamento
       setTimeout(() => loadQuestionsEditor(), 100);
     }
+
+    if(tabId === 'personalizar-horarios') {
+      // Reset to initial state
+      document.getElementById('hours-editor').style.display = 'none';
+      document.getElementById('hours-loading-message').style.display = 'block';
+      document.getElementById('hora-dept-select').value = '';
+    }
   }
-  
+
+  // ===== HOURS CUSTOMIZATION FUNCTIONS =====
+  let currentEditingHours = {};
+
+  async function loadHourCustomization(deptId) {
+    if (!deptId) {
+      document.getElementById('hours-editor').style.display = 'none';
+      document.getElementById('hours-loading-message').style.display = 'block';
+      return;
+    }
+
+    const DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    const container = document.getElementById('hours-cards-container');
+    container.innerHTML = '';
+
+    // Load from localStorage or Supabase
+    let deptHours = [];
+    if (supabaseClient) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('department_hours')
+          .select('*')
+          .eq('department_id', deptId)
+          .order('day_of_week', { ascending: true });
+        if (!error && data) deptHours = data;
+      } catch (e) {
+        console.log('Supabase unavailable, using localStorage:', e);
+      }
+    }
+
+    // Fallback to localStorage
+    if (deptHours.length === 0) {
+      const stored = JSON.parse(localStorage.getItem(`hours_${deptId}`) || '{}');
+      for (let day = 0; day < 7; day++) {
+        if (stored[day]) {
+          stored[day].forEach(timeBlock => {
+            deptHours.push({
+              id: Math.random().toString(36),
+              department_id: deptId,
+              day_of_week: day,
+              start_time: timeBlock.start,
+              end_time: timeBlock.end
+            });
+          });
+        }
+      }
+    }
+
+    currentEditingHours = { deptId, hours: deptHours || [] };
+
+    // Render day cards
+    for (let day = 0; day < 7; day++) {
+      const card = document.createElement('div');
+      card.style.cssText = `
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: var(--shadow-xs);
+      `;
+
+      const dayHours = deptHours.filter(h => h.day_of_week === day);
+      let timeBlocksHtml = '';
+
+      if (dayHours.length === 0) {
+        timeBlocksHtml = '<p style="color: #999; margin: 0; font-size: 12px;">Fechado</p>';
+      } else {
+        timeBlocksHtml = dayHours.map((h, idx) => `
+          <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+            <input type="time" value="${h.start_time}" class="form-input" style="padding: 6px; font-size: 12px;" onchange="updateHourBlock('${deptId}', ${day}, ${idx}, 'start', this.value)">
+            <input type="time" value="${h.end_time}" class="form-input" style="padding: 6px; font-size: 12px;" onchange="updateHourBlock('${deptId}', ${day}, ${idx}, 'end', this.value)">
+            <button class="form-btn form-btn-secondary" onclick="deleteHourBlock('${deptId}', ${day}, ${idx})" style="padding: 6px 8px; font-size: 12px; width: 36px;">✕</button>
+          </div>
+        `).join('');
+      }
+
+      card.innerHTML = `
+        <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: var(--cc-navy);">${DAYS[day]}</h4>
+        <div id="hours-block-${day}" style="display: flex; flex-direction: column; gap: 8px;">
+          ${timeBlocksHtml}
+        </div>
+        <button class="form-btn form-btn-secondary" onclick="addHourBlockForDay('${deptId}', ${day})" style="padding: 6px 8px; font-size: 11px; width: 100%; margin-top: 8px;">+ Horário</button>
+      `;
+      container.appendChild(card);
+    }
+
+    document.getElementById('hours-editor').style.display = 'block';
+    document.getElementById('hours-loading-message').style.display = 'none';
+  }
+
+  function updateHourBlock(deptId, day, idx, field, value) {
+    const hours = currentEditingHours.hours || [];
+    const dayHours = hours.filter(h => h.day_of_week === day);
+    if (idx < dayHours.length) {
+      dayHours[idx][field === 'start' ? 'start_time' : 'end_time'] = value;
+    }
+  }
+
+  function deleteHourBlock(deptId, day, idx) {
+    if (!confirm('Remover este horário?')) return;
+    const hours = currentEditingHours.hours || [];
+    const dayHours = hours.filter((h, i) => {
+      if (h.day_of_week === day && idx === hours.filter(x => x.day_of_week === day).indexOf(h)) return false;
+      return true;
+    });
+    currentEditingHours.hours = dayHours;
+    loadHourCustomization(deptId);
+  }
+
+  function addHourBlockForDay(deptId, day) {
+    const newBlock = {
+      id: Math.random().toString(36),
+      department_id: deptId,
+      day_of_week: day,
+      start_time: '08:00',
+      end_time: '12:00'
+    };
+    currentEditingHours.hours.push(newBlock);
+    loadHourCustomization(deptId);
+  }
+
+  function addNewHourBlock() {
+    addHourBlockForDay(currentEditingHours.deptId, 0);
+  }
+
+  async function saveHourCustomization() {
+    const deptId = currentEditingHours.deptId;
+    const hours = currentEditingHours.hours || [];
+
+    if (!confirm(`Salvar horários customizados para ${DEPARTMENTS[deptId].name}?`)) return;
+
+    // Save to localStorage
+    const byDay = {};
+    for (let day = 0; day < 7; day++) {
+      byDay[day] = hours
+        .filter(h => h.day_of_week === day)
+        .map(h => ({ start: h.start_time, end: h.end_time }));
+    }
+    localStorage.setItem(`hours_${deptId}`, JSON.stringify(byDay));
+
+    // Try to sync with Supabase
+    if (supabaseClient) {
+      try {
+        // Delete old records
+        await supabaseClient
+          .from('department_hours')
+          .delete()
+          .eq('department_id', deptId);
+
+        // Insert new records
+        if (hours.length > 0) {
+          const toInsert = hours.map(h => ({
+            department_id: h.department_id,
+            day_of_week: h.day_of_week,
+            start_time: h.start_time,
+            end_time: h.end_time
+          }));
+          await supabaseClient
+            .from('department_hours')
+            .insert(toInsert);
+        }
+      } catch (e) {
+        console.log('Supabase sync skipped, data saved locally:', e);
+      }
+    }
+
+    alert(`✓ Horários salvos para ${DEPARTMENTS[deptId].name}`);
+    loadHourCustomization(deptId);
+  }
+
+
   function loadAppointments() {
     const list = document.getElementById('appointments-list');
     list.innerHTML = '';

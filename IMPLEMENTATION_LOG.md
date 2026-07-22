@@ -2,7 +2,65 @@
 
 **Data Última Atualização:** 22/07/2026  
 **Versão Atual:** 2.14.0 (Em Integração)  
-**Status:** ✅ RBAC Fixado / 🟡 v2.14.0 RPC Integrado: Aguarda SQL + Stress Test
+**Status:** ✅ RBAC Fixado / 🟡 v2.14.0 RPC Integrado + Hours Customization UI: Aguarda Stress Test
+
+---
+
+## 2026-07-22 — IMPLEMENTAÇÃO HOURS CUSTOMIZATION UI (v2.14.0)
+
+### Objetivo
+Adicionar painel administrativo para personalizar horários de funcionamento por departamento e dia da semana.
+
+### Alterações Realizadas
+
+**1. index.html (2 mudanças principais)**
+- ✅ Linha ~3249: Adicionada aba "Personalizar Horários" (display: none por padrão, ativada com Supabase)
+- ✅ Linha ~3652: Adicionado div "dash-view-personalizar-horarios" com:
+  - Seletor de departamento (dropdown com 5 opções)
+  - Container para cards de dias da semana (Seg-Dom)
+  - Inputs de time (start/end) para cada horário
+  - Botões para adicionar/remover horários
+  - Botões para salvar (localStorage + Supabase)
+
+**2. Funções JavaScript (6 novas funções)**
+- ✅ `loadHourCustomization(deptId)`: Carrega horários de Supabase/localStorage, renderiza cards por dia
+- ✅ `updateHourBlock(deptId, day, idx, field, value)`: Atualiza hora de início/fim
+- ✅ `deleteHourBlock(deptId, day, idx)`: Remove um bloco de horário
+- ✅ `addHourBlockForDay(deptId, day)`: Adiciona novo horário a um dia específico
+- ✅ `addNewHourBlock()`: Wrapper para adicionar horário (UI button)
+- ✅ `saveHourCustomization()`: Persiste em localStorage + sincroniza com Supabase
+
+**3. Integração com switchDashTab()**
+- ✅ Linha ~6177: Adicionado handler para tab 'personalizar-horarios'
+- ✓ Reset de estado quando aba é selecionada
+- ✓ Mensagem de carregamento inicial
+
+### Fluxo de Dados
+1. Admin seleciona departamento
+2. `loadHourCustomization()` busca dados em Supabase/localStorage
+3. Renderiza 7 cards (um por dia da semana)
+4. Admin edita horários via inputs de time
+5. Admin clica "Salvar"
+6. `saveHourCustomization()` persiste localmente + tenta sincronizar com Supabase
+7. Real-time listener atualiza dashboard automaticamente
+
+### Validações Executadas
+- ✅ Arquivo HTML válido (sem erros de sintaxe)
+- ✅ Funções JavaScript compilam sem erros
+- ✅ Login no painel admin funciona (testado com 'super')
+- ✅ Abas do dashboard carregam normalmente
+- ✅ Nova aba adicionada com display: none (ativada quando Supabase conectado)
+
+### Impactos
+- ✅ **Flexibilidade**: Admins podem customizar horários sem alterar código
+- ✅ **Persistência**: Dados salvos em localStorage + Supabase
+- ✅ **UX**: Interface intuitiva com cards por dia, inputs de time
+- ✅ **Compatibilidade**: Fallback para localStorage quando Supabase indisponível
+
+### Pendências
+- ⏳ Testar end-to-end com Supabase ativo (aguarda HTTP server)
+- ⏳ Validar sync com real-time listener
+- ⏳ Executar Stress Test v2 (100 users, race condition elimination check)
 
 ---
 

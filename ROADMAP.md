@@ -19,7 +19,7 @@
 
 ### Em andamento
 - [x] RPC integrado no index.html (submitForm + real-time listener)
-- [ ] Implementar Hours Customization UI (planificado)
+- [x] Implementar Hours Customization UI (aba adicionada, funções JavaScript prontas)
 - [ ] Executar Stress Test v2 (pronto, aguarda servidor HTTP)
 
 ### Próximos passos (v2.14.0 Production)
