@@ -1,8 +1,43 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 22/07/2026  
-**Versão Atual:** 2.13.0 + Stress Test Diagnostic  
-**Status:** ⚠️ Dashboard OK / Críticos: RBAC bug + Race condition capacidade + localStorage limit discovered
+**Versão Atual:** 2.13.1  
+**Status:** ✅ RBAC Fixado / 🟠 Em progresso: Race condition + localStorage limit
+
+---
+
+## 2026-07-22 — FIX RBAC (v2.13.1)
+
+### Problema (Identificado em stress test Phase 5)
+Papéis não-Diretoria (musica, articulacao, assistente) viam TODOS os 5 departamentos em vez de apenas seus escopos. Root cause: `adminSession` era uma variável `let`, mas código/testes usavam `window.adminSession` (property no objeto window), criando duas referências desincronizadas.
+
+### Solução Implementada
+1. **Adicionados setters/getters explícitos** (linhas 3910-3923):
+   - `setAdminSession(roleId)` — setter com validação
+   - `getAdminSession()` — getter que retorna valor atual
+   - Log de debug no setter para rastreabilidade
+
+2. **Atualizadas TODAS as 15+ referências ao `adminSession`**:
+   - `getSessionDepts()` → usa `getAdminSession()`
+   - `getOperatorName()` → usa `getAdminSession()`
+   - `canAuditActions()` → usa `getAdminSession()`
+   - `isDiretoria()` → usa `getAdminSession()`
+   - `getSessionLabel()` → usa `getAdminSession()`
+   - Audit log (`createdByRole`, `lastEditedByRole`) → usa `getAdminSession()`
+   - Templates inline (onclick handlers) → usa `getAdminSession()`
+   - `logoutAdmin()` → chama `setAdminSession(null)`
+   - `doAdminLogin()` → chama `setAdminSession(resolvedRole)`
+
+3. **Validação em Browser**:
+   - ✅ Login com Silton (papel `musica`) → vê APENAS Stúdio de Música
+   - ✅ Login com Joyla (papel `articulacao`) → vê EXATAMENTE 4 departamentos (Coworking, Link Lab, Sala Treinamento, Átrio)
+   - ✅ Dashboards renderizam corretamente por departamento
+   - ✅ Sem erros de console
+
+### Impacto
+- **Segurança**: Papéis restringidos não podem mais ver dados de outros departamentos
+- **Usabilidade**: Dashboard mostra apenas departamentos relevantes por papel
+- **Auditoria**: Logs de ação registram corretamente o papel do operador
 
 ---
 

@@ -3904,15 +3904,36 @@
   let authMode = 'signup'; // 'signup' or 'login'
 
   // ==========================================
+  // SESSION MANAGEMENT (RBAC)
+  // ==========================================
+
+  // Setter explícito para adminSession com validação
+  function setAdminSession(roleId) {
+    if (roleId && !ADMIN_ROLES[roleId]) {
+      console.warn(`Papel desconhecido: ${roleId}`);
+      return false;
+    }
+    adminSession = roleId;
+    console.log(`[RBAC] Sessão admin alterada para: ${roleId || 'null'}`);
+    return true;
+  }
+
+  // Getter para garantir que sempre lê a variável correta
+  function getAdminSession() {
+    return adminSession;
+  }
+
+  // ==========================================
   // HELPERS DE ACESSO POR PAPEL (role-based access)
   // ==========================================
 
   // Departamentos que a sessão atual pode acessar
   function getSessionDepts() {
-    if (!adminSession) return [];
-    const role = ADMIN_ROLES[adminSession];
+    const currentRole = getAdminSession();
+    if (!currentRole) return [];
+    const role = ADMIN_ROLES[currentRole];
     if (role) return role.depts;
-    return DEPARTMENTS[adminSession] ? [adminSession] : [];
+    return DEPARTMENTS[currentRole] ? [currentRole] : [];
   }
 
   // A sessão atual pode acessar este departamento?
@@ -3927,27 +3948,28 @@
 
   // A sessão pode ver a trilha de auditoria (quem criou/editou/cancelou)?
   function canAuditActions() {
-    const role = ADMIN_ROLES[adminSession];
+    const role = ADMIN_ROLES[getAdminSession()];
     return !!(role && role.canAudit);
   }
 
   // A sessão é a Diretoria (visão geral consolidada)?
   function isDiretoria() {
-    const role = ADMIN_ROLES[adminSession];
+    const role = ADMIN_ROLES[getAdminSession()];
     return !!(role && role.isDiretoria);
   }
 
   // Nome identificável de quem está operando (registro de auditoria)
   function getOperatorName() {
-    const role = ADMIN_ROLES[adminSession];
+    const role = ADMIN_ROLES[getAdminSession()];
     return role ? role.manager : 'Administrador';
   }
 
   // Rótulo exibido no cabeçalho do painel
   function getSessionLabel() {
-    const role = ADMIN_ROLES[adminSession];
+    const currentRole = getAdminSession();
+    const role = ADMIN_ROLES[currentRole];
     if (role) return role.label;
-    if (DEPARTMENTS[adminSession]) return DEPARTMENTS[adminSession].name;
+    if (DEPARTMENTS[currentRole]) return DEPARTMENTS[currentRole].name;
     return 'Administrador';
   }
 
@@ -3974,7 +3996,7 @@
       log.unshift({
         action: action,                    // 'Criou', 'Editou', 'Cancelou', 'Validou'
         operator: getOperatorName(),       // ex.: 'Joyla', 'Assistente', 'Silton', 'Joyce'
-        role: adminSession,
+        role: getAdminSession(),
         senha: appt.senha || '',
         deptId: appt.deptId || '',
         apptId: appt.id || '',
@@ -4474,7 +4496,7 @@
     localStorage.setItem('admin_notifications', JSON.stringify(notifications));
 
     // If admin is logged in, show toast (optional - can be silent for background notifications)
-    if (adminSession) {
+    if (getAdminSession()) {
       console.log('📬 New appointment pending approval:', appt.id);
     }
   }
@@ -5534,7 +5556,7 @@
       }
 
       // Login bem-sucedido
-      adminSession = resolvedRole;
+      setAdminSession(resolvedRole);
       err.style.display = 'none';
       btn.innerText = originalText;
       btn.disabled = false;
@@ -5556,7 +5578,7 @@
     // Exibe aba de consentimentos somente para super e coordenadora
     const consentTab = document.getElementById('tab-consentimentos');
     if (consentTab) {
-      const role = ADMIN_ROLES[adminSession];
+      const role = ADMIN_ROLES[getAdminSession()];
       consentTab.style.display = (role && role.canAudit) ? '' : 'none';
     }
 
@@ -5574,7 +5596,7 @@
   }
   
   function logoutAdmin() {
-    adminSession = null;
+    setAdminSession(null);
     closeAdminDash();
     alert('Sessão encerrada com sucesso.');
   }
@@ -5605,7 +5627,7 @@
     }
 
     // Validação: Verificar se a senha atual está correta
-    const validPasswords = await getValidPasswordsForDept(adminSession);
+    const validPasswords = await getValidPasswordsForDept(getAdminSession());
     if (!validPasswords.includes(senhaAtual)) {
       erroSenhaAtual.innerText = 'Senha atual incorreta.';
       erroSenhaAtual.style.display = 'block';
@@ -5654,7 +5676,7 @@
     try {
       // Salvar no Supabase (prioridade alta)
       if (supabaseClient) {
-        const supabaseSaved = await savePasswordToSupabase(adminSession, novaSenha);
+        const supabaseSaved = await savePasswordToSupabase(getAdminSession(), novaSenha);
         if (!supabaseSaved) {
           mensagemErro.innerText = 'Erro ao salvar no servidor. Tente novamente.';
           mensagemErro.style.display = 'block';
@@ -5666,7 +5688,7 @@
 
       // Salvar também no localStorage (fallback/backup)
       const senhas = JSON.parse(localStorage.getItem('cadeia_senhas') || '{}');
-      senhas[adminSession] = novaSenha;
+      senhas[getAdminSession()] = novaSenha;
       localStorage.setItem('cadeia_senhas', JSON.stringify(senhas));
 
       // Exibir mensagem de sucesso
@@ -6099,11 +6121,11 @@
           <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
             <small style="color: var(--warning); font-weight: 600; display: block; margin-bottom: 8px;">⏳ Aguardando sua aprovação</small>
             <div style="display: flex; gap: 8px;">
-              <button onclick="approveAppointment('${a.id}', '${adminSession}'); loadAppointments();"
+              <button onclick="approveAppointment('${a.id}', '${getAdminSession()}'); loadAppointments();"
                 style="flex: 1; padding: 8px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
                 ✓ Aprovar
               </button>
-              <button onclick="rejectAppointment('${a.id}', '${adminSession}', 'Rejeitado pelo administrador'); loadAppointments();"
+              <button onclick="rejectAppointment('${a.id}', '${getAdminSession()}', 'Rejeitado pelo administrador'); loadAppointments();"
                 style="flex: 1; padding: 8px; background: var(--error); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
                 ✗ Rejeitar
               </button>
@@ -6339,7 +6361,7 @@
       },
       status: 'AGENDADO',
       createdBy: getOperatorName(),
-      createdByRole: adminSession,
+      createdByRole: getAdminSession(),
       createdAt: new Date().toISOString()
     };
     appointments.push(newAppt);
@@ -6514,7 +6536,7 @@
       allAppts[idx].data['Observações'] = notes;
       allAppts[idx].time = time;
       allAppts[idx].lastEditedBy = getOperatorName();
-      allAppts[idx].lastEditedByRole = adminSession;
+      allAppts[idx].lastEditedByRole = getAdminSession();
       allAppts[idx].lastEditedAt = new Date().toISOString();
       localStorage.setItem('cadeia_appointments', JSON.stringify(allAppts));
       logAudit('Editou', allAppts[idx]);

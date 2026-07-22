@@ -1,8 +1,22 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-22  
-**Versão:** 2.13.0  
-**Status Geral:** 🟢 Em Produção - Dashboard por Departamento + LGPD Auditoria + UTF-3 Fortaleza + Migração SQL + Responsividade + SVG Icons
+**Versão:** 2.13.1  
+**Status Geral:** 🟢 Em Produção - RBAC Fixado + Dashboard por Departamento + LGPD Auditoria + UTF-3 Fortaleza + Migração SQL + Responsividade + SVG Icons
+
+---
+
+## Atualização — 2026-07-22 (v2.13.1) — Fix RBAC + Validação
+
+### Concluído
+- [x] **Fix RBAC BUG (Critical)**: Papéis não-Diretoria agora veem corretamente apenas seus departamentos escopos
+  - ✓ **Root cause corrigido**: Adicionados setters/getters explícitos `setAdminSession()` e `getAdminSession()` para garantir que `adminSession` (let) é sempre sincronizado
+  - ✓ **Todas as referências atualizadas**: 15+ referências ao `adminSession` agora passam por `getAdminSession()` getter
+  - ✓ **Validação em browser com 2 papéis**:
+    - Silton (papel `musica`) → vê APENAS Stúdio de Música ✓
+    - Joyla (papel `articulacao`) → vê EXATAMENTE 4 departamentos (Coworking, Link Lab, Sala Treinamento, Átrio) ✓
+  - ✓ **Sem regressões**: Dashboard, abas de admin, audit log, renderização de departamentos — todos funcionando corretamente
+- [x] **Documentação**: ROADMAP.md + IMPLEMENTATION_LOG.md atualizados com fix details
 
 ---
 
@@ -20,8 +34,8 @@
 - [x] **Fix de renderização**: `openAdminDash()` agora chama `loadDashboardStats()` para evitar cache de login anterior; dashboard renderiza corretamente ao fazer login sem necessidade de clicar na aba
 
 ### Riscos e Débitos Técnicos Críticos
-- **RACE CONDITION CAPACIDADE** (CRITICAL): Múltiplos usuários simultâneos podem exceeder capacidade máxima. Validação em submitForm() não é thread-safe com localStorage. Detectado no stress test: 6 slots com overflow (Sala Treinamento: 35/30, 47/30).
-- **RBAC BUG** (CRITICAL): Role-based access control não está completamente escopo — função setando `window.adminSession` em vez de variável `let adminSession`. Resultado: papéis veem todos os 5 departamentos em vez de apenas seus escopos.
+- **RACE CONDITION CAPACIDADE** (CRITICAL): Múltiplos usuários simultâneos podem exceeder capacidade máxima. Validação em submitForm() não é thread-safe com localStorage. Detectado no stress test: 6 slots com overflow (Sala Treinamento: 35/30, 47/30). **[Próxima sprint v2.14.0: resolver com server-side validation + optimistic concurrency]**
+- ~~**RBAC BUG** (CRITICAL)~~ **✓ FIXADO em v2.13.1**: Role-based access control agora funciona corretamente. Setters/getters explícitos garantem sincronização de `adminSession`. Testado com múltiplos papéis.
 - **localStorage Limit** (MEDIUM): Para 100+ agendamentos simultâneos, localStorage atinge limite (~5MB). Requer migração para Supabase.
 - **Cross-Tab Sync** (MEDIUM): Sem sincronização entre abas navegador. Usuário abrindo 2 abas não verá atualizações da outra.
 - **Status Imbalance** (LOW): Apenas status PENDENTE em uso. Fluxo completo não implementado (VALIDADO → CONCLUÍDO / NAO_COMPARECEU).
