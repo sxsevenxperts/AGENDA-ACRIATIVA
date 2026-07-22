@@ -1,8 +1,81 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 22/07/2026  
-**Versão Atual:** 2.13.1  
-**Status:** ✅ RBAC Fixado / 🟠 Em progresso: Race condition + localStorage limit
+**Versão Atual:** 2.13.1 (Estável) / 2.14.0 (Em Preparação)  
+**Status:** ✅ RBAC Fixado / 🟠 v2.14.0 Arquivos Preparados: Aguardando Integração
+
+---
+
+## 2026-07-22 — PREPARAÇÃO v2.14.0 — Race Condition + localStorage Fix + Hours Customization
+
+### Objetivo
+Implementar 3 componentes críticos:
+1. **Race Condition Fix**: RPC `create_appointment()` com validação de capacidade atômica no servidor
+2. **localStorage Fix**: Migração para persistência Supabase com real-time sync
+3. **Hours Customization**: UI admin para personalizar horários por departamento
+
+### Arquivos Criados
+
+**1. sql/001_lgpd_consents.sql** (104 linhas)
+- ✅ Tabela `lgpd_consents` com RLS (Row-Level Security)
+- ✅ RPC `log_consent()` para auditoria de privacidade
+- ✅ Índices para consultas rápidas
+- 📝 Status: Pronto para executar em Supabase Studio UI
+
+**2. sql/002_create_appointment_rpc.sql** (320 linhas)
+- ✅ Tabela `appointments` com persistência full
+- ✅ Tabela `slots` com `version` field (optimistic concurrency)
+- ✅ RPC `create_appointment()` com **validação atômica de capacidade**:
+  - ✓ Valida numero de participantes contra capacidade máxima
+  - ✓ Usa transação SQL (UPDATE slot + INSERT appointment em uma operação)
+  - ✓ Implementa optimistic locking via slot.version
+  - ✓ Retorna jsonb com {success, appointment_code, occupancy, capacity, error}
+  - ✓ Trata race condition: múltiplos users simultâneos não conseguem ultrapassar limite
+- ✅ RLS policies para acesso by role/email
+- 📝 Status: Pronto para executar em Supabase Studio UI
+
+**3. js/supabase-appointments.js** (200 linhas)
+- ✅ `createAppointmentViaSupabase()` — chama RPC com fallback para localStorage
+- ✅ `syncAppointmentsWithSupabase()` — sincronização bidirecional
+- ✅ `subscribeToAppointmentChanges()` — real-time listener via WebSocket
+- ✅ Comentários com ponto de integração exato em `submitForm()`
+- 📝 Status: Pronto para incluir em index.html
+
+**4. INTEGRATION_PLAN_v214.md** (250 linhas)
+- ✅ Cronograma de execução (5h30 total)
+- ✅ 3 formas de executar SQL (Studio UI, CLI, cURL)
+- ✅ Mudanças específicas necessárias em index.html (linhas, funções, código)
+- ✅ UI para hours customization (HTML + JavaScript)
+- ✅ Stress test v2 validação (JavaScript para console)
+- 📝 Status: Pronto como guia de implementação
+
+### Mudanças Necessárias em index.html (Documentadas)
+1. Adicionar `<script src="js/supabase-appointments.js"></script>` após linha 3850
+2. Substituir validação de capacidade em `submitForm()` por chamada RPC
+3. Adicionar subscription real-time após `openAdminDash()`
+4. Adicionar aba "Personalizar Horários" no admin dashboard
+
+### Estimativa de Integração
+- Executar SQL: 30 min (manual via Supabase UI)
+- Integrar index.html: 1h
+- Implementar hours UI: 1h30
+- Stress test v2: 1h
+- Documentação + commit: 30 min
+- **Total: 5h30**
+
+### Validação Pós-Implementação
+- [ ] Executar `SELECT table_name FROM information_schema.tables WHERE table_schema = 'agenda_sobral'`
+- [ ] Verificar RPC: `SELECT routine_name FROM information_schema.routines WHERE routine_schema = 'agenda_sobral'`
+- [ ] Stress test console: `await stressTest()` deve retornar `{successful: 100, overflows: 0}`
+- [ ] Dashboard mostra "Capacidade máxima: X pessoas" corretamente
+- [ ] Multiplos users simultâneos não conseguem ultrapassar limite (race condition FIXADO)
+
+### Próximas Ações
+1. **User executa LGPD SQL** (pode fazer agora via Supabase Studio)
+2. **Integrar RPC no index.html** (substituir submitForm validation)
+3. **Implementar hours UI** (adicionar nova aba no admin)
+4. **Stress test v2** (validar 0 race conditions)
+5. **Final commit v2.14.0**
 
 ---
 

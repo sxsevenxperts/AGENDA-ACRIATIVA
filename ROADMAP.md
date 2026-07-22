@@ -41,12 +41,16 @@
 - **Status Imbalance** (LOW): Apenas status PENDENTE em uso. Fluxo completo não implementado (VALIDADO → CONCLUÍDO / NAO_COMPARECEU).
 
 ### Próximos passos (Priorizado)
-- [ ] **v2.13.1 (URGENTE):** Fix RBAC — corrigir setagem de `adminSession` como variável (não window property)
-- [ ] **v2.14.0:** Implementar server-side validation no Supabase (capacidade, LGPD, dados obrigatórios)
-- [ ] **v2.14.0:** Implementar optimistic concurrency locking para agendamentos (versioning ou transaction pattern)
-- [ ] **v2.14.0:** Completar fluxo de status (PENDENTE → VALIDADO → CONCLUÍDO / NAO_COMPARECEU)
+- [x] **v2.13.1 (URGENTE):** ✓ Fix RBAC — Setters/getters explícitos + Testado + Pushed
+- [ ] **v2.14.0 (EM PROGRESSO):**
+  - [ ] Executar LGPD SQL em produção (001_lgpd_consents.sql)
+  - [ ] Executar RPC create_appointment (002_create_appointment_rpc.sql) com optimistic concurrency
+  - [ ] Integrar supabase-appointments.js no index.html
+  - [ ] Implementar hours customization UI (department_hours table + admin panel)
+  - [ ] Stress test v2 com 100 usuários (validar 0 race conditions)
+  - [ ] Completar fluxo de status (PENDENTE → VALIDADO → CONCLUÍDO / NAO_COMPARECEU)
 - [ ] **v2.13.1 (MEDIUM):** Cross-tab synchronization com storage event listeners
-- [ ] **v2.14.0 / v2.15.0:** Migrar dados para Supabase com persistência real e real-time listeners
+- [ ] **v2.14.0 / v2.15.0:** Migrar dados históricos para Supabase (read-only)
 
 ---
 
