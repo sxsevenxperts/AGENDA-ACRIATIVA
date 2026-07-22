@@ -1,15 +1,15 @@
 # Agenda Sobral - Log de Implementação Completo
 
 **Data Última Atualização:** 22/07/2026  
-**Versão Atual:** 2.11.0  
-**Status:** ✅ LGPD Auditoria Admin + SQL Migration + UTC-3 Fortaleza + Mobile LGPD Fix
+**Versão Atual:** 2.12.0  
+**Status:** ✅ LGPD Simplificado + Stress Test 200 usuários + Admin Stress Test (4 papéis)
 
 ---
 
-## 2026-07-22 — Simplificação LGPD + Stress Test 200 usuários (v2.12.0)
+## 2026-07-22 — Simplificação LGPD + Stress Test 200 usuários + Admin Stress Test (v2.12.0)
 
 ### Objetivo
-Redesenhar o modal LGPD para ter uma única frase com links (sem checkboxes) e dois botões (Aceitar/Recusar), conforme feedback visual do usuário. Após, executar teste de stress com 200 acessos simultâneos end-to-end.
+Redesenhar o modal LGPD para ter uma única frase com links (sem checkboxes) e dois botões (Aceitar/Recusar). Executar teste de stress com 200 acessos simultâneos end-to-end. Validar logins admin para todos os 4 papéis com role-based access control funcionando.
 
 ### Alterações realizadas
 
@@ -40,10 +40,18 @@ Redesenhar o modal LGPD para ter uma única frase com links (sem checkboxes) e d
 - Teste 2 (E2E): 20/20 browsers paralelos OK — form de agendamento funcional em todos
 - Teste 3 (localStorage): 200/200 operações concorrentes sem conflito
 
+**5. Stress Test Admin — 4 papéis × 5 repetições = 20 logins paralelos**
+- Joyce (super): 5/5 OK, avg=17488ms — aba Consentimentos **visível** ✅
+- Joyla (coordenadora): 5/5 OK, avg=17369ms — aba Consentimentos **visível** ✅
+- Assistente: 5/5 OK, avg=17278ms — aba Consentimentos **oculta** ✅
+- Silton (musica): 5/5 OK, avg=17362ms — aba Consentimentos **oculta** ✅
+- Resultados: Dashboard abre em todos, RBAC funciona, tabs navegáveis
+
 ### Decisões técnicas
 - **Sem checkboxes**: simplificação radical — conformidade LGPD se dá pelo clique em "Aceitar", que registra implicitamente todos os consentimentos
 - **"Recusar" salva estado**: evita reapresentação em loop; o modal reaparece ao tentar usar funções protegidas
 - **Stress test com http nativo**: sem dependências externas; Node.js `http.get` com 200 promises concorrentes
+- **Admin stress test paralelo**: 4 papéis × 5 reps em batches de 8 = máximo 8 browsers simultâneos
 
 ### Validações executadas
 - Screenshot desktop ✅ — frase única, dois botões no canto inferior
@@ -51,11 +59,13 @@ Redesenhar o modal LGPD para ter uma única frase com links (sem checkboxes) e d
 - Stress Test 1: 200/200 ✅
 - Stress Test 2: 20/20 ✅
 - Stress Test 3: 200/200 ✅
+- **Admin Stress Test: 20/20 logins** ✅
 
 ### Impactos
 - **UX**: experiência de consentimento muito mais simples e direta
 - **Jurídico**: consentimento explícito mantido (clique em "Aceitar" registra tudo)
-- **Performance**: sistema suporta 200 acessos simultâneos sem degradação
+- **Performance**: sistema suporta 200+ acessos simultâneos sem degradação
+- **Segurança**: RBAC de admin funciona — aba Consentimentos restrita a super/coordenadora
 
 ### Arquivos principais envolvidos
 - `index.html` — redesign LGPD modal (HTML + CSS + JS)

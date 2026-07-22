@@ -1,12 +1,12 @@
 # 🗺️ ROADMAP - Cadeia Criativa Agenda Sobral
 
 **Última atualização:** 2026-07-22  
-**Versão:** 2.11.0  
+**Versão:** 2.12.0  
 **Status Geral:** 🟢 Em Produção - LGPD Auditoria + UTC-3 Fortaleza + Migração SQL + Responsividade
 
 ---
 
-## Atualização — 2026-07-22 (v2.12.0) — Simplificação LGPD + Stress Test 200 usuários
+## Atualização — 2026-07-22 (v2.12.0) — Simplificação LGPD + Stress Test 200 usuários + Admin Stress Test
 
 ### Concluído
 - [x] **Modal LGPD redesenhado**: uma frase com links + Aceitar / Recusar (sem checkboxes)
@@ -20,13 +20,20 @@
   - ✅ 200 requisições HTTP simultâneas: 200/200 OK, avg=365ms, p95=559ms, 327 req/s
   - ✅ 20 browsers E2E paralelos (~200 virtual users): 20/20 OK, form abre em todos
   - ✅ 200 operações localStorage concorrentes: 200/200 OK, sem conflitos
+- [x] **Stress Test Admin — 4 papéis × 5 repetições = 20 logins paralelos**:
+  - ✅ Joyce (super): 5/5 OK, avg=17488ms, vê aba Consentimentos
+  - ✅ Joyla (coordenadora): 5/5 OK, avg=17369ms, vê aba Consentimentos
+  - ✅ Assistente: 5/5 OK, avg=17278ms, aba Consentimentos oculta
+  - ✅ Silton (musica): 5/5 OK, avg=17362ms, aba Consentimentos oculta
+  - ✅ Dashboard abre, tabs navegáveis, controle de acesso por role funcionando
 
 ### Próximos passos
 - [ ] Executar `sql/001_lgpd_consents.sql` no Supabase em produção
+- [ ] Substituir emojis por ícones SVG (iniciado)
 - [ ] Personalização de horários por departamento (sob demanda)
 
 ### Riscos e débitos técnicos
-- Nenhum novo risco identificado. Stress test confirma estabilidade sob carga.
+- Nenhum novo risco identificado. Stress tests confirmam estabilidade sob carga e RBAC funcionando corretamente.
 
 ---
 
