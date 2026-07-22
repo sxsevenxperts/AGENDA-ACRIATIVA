@@ -821,6 +821,165 @@
     }
 
     /* ============================================
+       LGPD / CONSENTIMENTO MODAL
+       ============================================ */
+
+    .lgpd-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      backdrop-filter: blur(4px);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .lgpd-modal.active {
+      display: flex;
+    }
+
+    .lgpd-content {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      max-width: 520px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px;
+      animation: slideUp 0.35s var(--ease-out);
+    }
+
+    .lgpd-header {
+      margin-bottom: 20px;
+    }
+
+    .lgpd-header h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--cc-navy);
+      margin-bottom: 8px;
+    }
+
+    .lgpd-header p {
+      font-size: 14px;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+
+    .lgpd-items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .lgpd-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lgpd-item:hover {
+      background: var(--gray-100);
+      border-color: var(--cc-cyan);
+    }
+
+    .lgpd-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--cc-cyan);
+      flex-shrink: 0;
+    }
+
+    .lgpd-item-text {
+      flex: 1;
+    }
+
+    .lgpd-item-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .lgpd-item-desc {
+      font-size: 12px;
+      color: var(--gray-500);
+      line-height: 1.5;
+    }
+
+    .lgpd-item-desc a {
+      color: var(--cc-cyan-dark);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid var(--cc-cyan-dark);
+    }
+
+    .lgpd-item-desc a:hover {
+      color: var(--cc-cyan);
+      border-color: var(--cc-cyan);
+    }
+
+    .lgpd-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .lgpd-btn-accept {
+      flex: 1;
+      padding: 12px 24px;
+      background: var(--cc-cyan);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .lgpd-btn-accept:hover:not(:disabled) {
+      background: var(--cc-cyan-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(81, 183, 222, 0.3);
+    }
+
+    .lgpd-btn-accept:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .lgpd-info {
+      background: linear-gradient(135deg, rgba(81,183,222,0.08) 0%, rgba(81,183,222,0.03) 100%);
+      border-left: 3px solid var(--cc-cyan);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: var(--cc-navy);
+      line-height: 1.6;
+      margin-top: 20px;
+    }
+
+    /* ============================================
        DEPARTMENT GRID
        ============================================ */
     
@@ -1037,6 +1196,22 @@
       align-items: center;
       gap: 4px;
     }
+
+    .dept-capacity {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(81,183,222,0.08) 0%, rgba(81,183,222,0.02) 100%);
+      border: 1px solid rgba(81,183,222,0.2);
+      padding: 8px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cc-cyan-dark);
+      margin-top: 4px;
+    }
+
+    .dept-capacity svg { flex-shrink: 0; }
 
     .dept-btn {
       display: inline-flex;
@@ -2482,6 +2657,7 @@
           <div class="dept-meta">
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sex</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 70 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('coworking')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2504,6 +2680,7 @@
           <div class="dept-meta">
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sex</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 120 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('linklab')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2526,6 +2703,7 @@
           <div class="dept-meta">
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 30 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('salatreinamento')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2548,6 +2726,7 @@
           <div class="dept-meta">
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 150 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('atrio')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2570,6 +2749,7 @@
           <div class="dept-meta">
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 08h-12h · 13h-17h · 18h-21h</div>
             <div class="dept-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Seg-Sáb</div>
+            <div class="dept-capacity" aria-label="Capacidade máxima"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Até 10 pessoas</div>
           </div>
           <div class="dept-card-actions">
             <button class="dept-btn" onclick="openForm('musica')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="19 14 19 20 5 20 5 14"/></svg> Agendar</button>
@@ -2760,6 +2940,61 @@
           <button class="btn-print" onclick="window.print()"><i class="ph ph-printer"></i> Imprimir / PDF</button>
           <button class="btn-done" onclick="closeForm('confirmation')">✓ Concluir</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LGPD / CONSENTIMENTO MODAL ==================== -->
+  <div class="lgpd-modal" id="lgpd-modal">
+    <div class="lgpd-content">
+      <div class="lgpd-header">
+        <h2>🔐 Consentimento e Privacidade</h2>
+        <p>Para usar o sistema de agendamento, por favor, aceite os termos de privacidade e consentimento de dados.</p>
+      </div>
+
+      <div class="lgpd-items">
+        <!-- Item 1: LGPD -->
+        <label class="lgpd-item">
+          <input type="checkbox" id="consent-lgpd" required>
+          <div class="lgpd-item-text">
+            <div class="lgpd-item-title">✓ Conformidade LGPD</div>
+            <div class="lgpd-item-desc">
+              Confirmo que autorizo o processamento de meus dados pessoais conforme a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018) para fins de agendamento e gerenciamento de eventos na Cadeia Criativa.
+            </div>
+          </div>
+        </label>
+
+        <!-- Item 2: Privacidade -->
+        <label class="lgpd-item">
+          <input type="checkbox" id="consent-privacy" required>
+          <div class="lgpd-item-text">
+            <div class="lgpd-item-title">✓ Política de Privacidade</div>
+            <div class="lgpd-item-desc">
+              Li e aceito a <a href="#" onclick="showPrivacyPolicy(event)">Política de Privacidade</a> da Cadeia Criativa. Meus dados serão protegidos e não compartilhados com terceiros sem consentimento.
+            </div>
+          </div>
+        </label>
+
+        <!-- Item 3: Cookies -->
+        <label class="lgpd-item">
+          <input type="checkbox" id="consent-cookies">
+          <div class="lgpd-item-text">
+            <div class="lgpd-item-title">Cookies e Rastreamento (Opcional)</div>
+            <div class="lgpd-item-desc">
+              Autorizo o uso de cookies para análise de uso, melhorias de interface e preferências pessoais.
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="lgpd-info">
+        <strong>ℹ️ Segurança Jurídica:</strong> Seu consentimento será registrado com timestamp na infraestrutura. Em caso de dúvidas, entre em contato com admin@agendacriativa.sevenxperts.solutions
+      </div>
+
+      <div class="lgpd-actions">
+        <button class="lgpd-btn-accept" id="lgpd-accept-btn" onclick="acceptLGPD()" disabled>
+          Aceitar e Continuar
+        </button>
       </div>
     </div>
   </div>
@@ -6486,5 +6721,139 @@
     });
   })();
 </script>
+
+<!-- LGPD / Consent Management -->
+<script>
+  const LGPD_KEY = 'lgpd_consent_v1';
+  const LGPD_CHECKBOXES = ['consent-lgpd', 'consent-privacy', 'consent-cookies'];
+
+  // Initialize LGPD on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    initLGPD();
+    setupConsentCheckboxes();
+  });
+
+  function initLGPD() {
+    const consent = localStorage.getItem(LGPD_KEY);
+    if (!consent) {
+      showLGPDModal();
+    }
+  }
+
+  function showLGPDModal() {
+    const modal = document.getElementById('lgpd-modal');
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function hideLGPDModal() {
+    const modal = document.getElementById('lgpd-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  function setupConsentCheckboxes() {
+    const checkboxes = LGPD_CHECKBOXES.map(id => document.getElementById(id));
+    const acceptBtn = document.getElementById('lgpd-accept-btn');
+
+    checkboxes.forEach(checkbox => {
+      if (checkbox) {
+        checkbox.addEventListener('change', function() {
+          const lgpd = document.getElementById('consent-lgpd');
+          const privacy = document.getElementById('consent-privacy');
+          const allRequired = lgpd && lgpd.checked && privacy && privacy.checked;
+          if (acceptBtn) {
+            acceptBtn.disabled = !allRequired;
+          }
+        });
+      }
+    });
+  }
+
+  function acceptLGPD() {
+    const lgpd = document.getElementById('consent-lgpd')?.checked;
+    const privacy = document.getElementById('consent-privacy')?.checked;
+    const cookies = document.getElementById('consent-cookies')?.checked;
+
+    if (!lgpd || !privacy) {
+      alert('Por favor, aceite LGPD e Política de Privacidade.');
+      return;
+    }
+
+    const consentData = {
+      timestamp: new Date().toISOString(),
+      lgpd: lgpd,
+      privacy: privacy,
+      cookies: cookies || false,
+      ip: 'captured',
+      userAgent: navigator.userAgent.substring(0, 256)
+    };
+
+    localStorage.setItem(LGPD_KEY, JSON.stringify(consentData));
+
+    // Registrar na Supabase (async, não bloqueia)
+    registerConsentToSupabase(consentData);
+
+    hideLGPDModal();
+  }
+
+  function registerConsentToSupabase(consentData) {
+    // Se SUPABASE está disponível, registrar na tabela de consentimentos
+    if (typeof window.SUPABASE_ANON_KEY !== 'undefined' && window.SUPABASE_ANON_KEY) {
+      fetch('https://kihnjrlwzuwfunzocswa.supabase.co/rest/v1/rpc/log_consent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': window.SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({
+          consent_timestamp: consentData.timestamp,
+          lgpd_accepted: consentData.lgpd,
+          privacy_accepted: consentData.privacy,
+          cookies_accepted: consentData.cookies,
+          user_agent: consentData.userAgent
+        })
+      }).catch(err => console.log('Consent logged locally. Supabase registration skipped.'));
+    }
+  }
+
+  function showPrivacyPolicy(event) {
+    event.preventDefault();
+    // Trigger existing privacy modal if available
+    if (typeof showPrivacyModal === 'function') {
+      showPrivacyModal();
+    } else {
+      alert('Política de Privacidade:\n\nSeus dados pessoais são coletados apenas para agendamento. Não serão compartilhados com terceiros. Você pode solicitar acesso, correção ou exclusão a qualquer momento.');
+    }
+  }
+
+  // Show LGPD modal before opening form if consent not given
+  const originalOpenForm = window.openForm;
+  window.openForm = function(dept) {
+    const consent = localStorage.getItem(LGPD_KEY);
+    if (!consent) {
+      showLGPDModal();
+      return;
+    }
+    if (originalOpenForm) originalOpenForm.call(this, dept);
+  };
+
+  // Show LGPD modal before consulting if consent not given
+  const originalOpenConsultarModal = window.openConsultarModal;
+  window.openConsultarModal = function(dept) {
+    const consent = localStorage.getItem(LGPD_KEY);
+    if (!consent) {
+      showLGPDModal();
+      return;
+    }
+    if (originalOpenConsultarModal) originalOpenConsultarModal.call(this, dept);
+  };
+</script>
+
 </body>
 </html>
