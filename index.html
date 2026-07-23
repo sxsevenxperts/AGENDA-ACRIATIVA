@@ -2770,7 +2770,7 @@
              
              <div class="form-group">
                 <label class="form-label">Data do Agendamento <span class="required">*</span></label>
-                <input type="date" class="form-input" id="dynamic-date" required onchange="generateTimeSlots()">
+                <input type="date" class="form-input" id="dynamic-date" required onchange="generateTimeSlots(); renderFields();">
              </div>
              
              <div class="form-group" style="margin-top: 24px;">
@@ -3831,102 +3831,33 @@
   };
 
   // Default Questions - Unified form for all departments
+  // FORMULÁRIO PADRÃO — IDÊNTICO PARA TODOS OS DEPARTAMENTOS
+  // Usar DEFAULT_QUESTIONS_STANDARD para todos
+  const DEFAULT_QUESTIONS_STANDARD = [
+    { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
+    { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
+    { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
+    { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
+    { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+    { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
+    { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
+    { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes', validationMsg: 'O número de participantes não pode exceder a capacidade do espaço' },
+    { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
+    { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
+    { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
+    { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
+    { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+    { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
+    { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
+    { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
+  ];
+
   const DEFAULT_QUESTIONS = {
-    'coworking': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
-      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
-      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
-      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
-      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
-      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
-      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
-      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
-      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
-      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
-      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
-      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
-      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
-      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
-      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
-      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
-      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
-    ],
-    'linklab': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
-      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
-      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
-      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
-      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
-      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
-      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
-      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
-      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
-      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
-      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
-      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
-      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
-      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
-      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
-      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
-      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
-    ],
-    'salatreinamento': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
-      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
-      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
-      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
-      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
-      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
-      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
-      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
-      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
-      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
-      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
-      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
-      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
-      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
-      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
-      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
-      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
-    ],
-    'atrio': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
-      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
-      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
-      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
-      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
-      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
-      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
-      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
-      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
-      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
-      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
-      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
-      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
-      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
-      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
-      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
-      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
-    ],
-    'musica': [
-      { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
-      { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
-      { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
-      { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
-      { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
-      { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
-      { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
-      { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
-      { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
-      { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Gravação', 'Ensaio', 'Masterclass', 'Workshop Musical', 'Produção', 'Performance'] },
-      { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 3 horas' },
-      { id: 'q12', label: 'Público Estimado', type: 'text', required: true, width: '100%', placeholder: 'Número de pessoas estimadas' },
-      { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes' },
-      { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
-      { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
-      { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
-      { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
-    ]
+    'coworking': DEFAULT_QUESTIONS_STANDARD,
+    'linklab': DEFAULT_QUESTIONS_STANDARD,
+    'salatreinamento': DEFAULT_QUESTIONS_STANDARD,
+    'atrio': DEFAULT_QUESTIONS_STANDARD,
+    'musica': DEFAULT_QUESTIONS_STANDARD
   };
 
   // State
@@ -4882,9 +4813,43 @@
   function renderFields() {
     const container = document.getElementById('dynamic-fields-container');
     container.innerHTML = '';
-    
+
+    // NOVO: Adicionar display de ocupação/capacidade
+    const deptCapacity = DEPARTMENTS[currentDeptId].capacity;
+    const deptCurrentOccupancy = calculateCurrentOccupancy(currentDeptId);
+    const remainingCapacity = deptCapacity - deptCurrentOccupancy;
+    const occupancyPercent = Math.round((deptCurrentOccupancy / deptCapacity) * 100);
+
+    const occupancyDiv = document.createElement('div');
+    occupancyDiv.style.cssText = `
+      background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(147, 112, 219, 0.1) 100%);
+      border: 2px solid #4FAC FE;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    `;
+
+    const barColor = remainingCapacity > deptCapacity * 0.3 ? '#10B981' : (remainingCapacity > 5 ? '#F59E0B' : '#EF4444');
+
+    occupancyDiv.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="font-weight: 600; color: #1F2937; margin: 0; font-size: 14px;">Ocupação do Espaço</label>
+        <span style="background: ${barColor}; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${deptCurrentOccupancy}/${deptCapacity} pessoas</span>
+      </div>
+      <div style="width: 100%; background: #E5E7EB; border-radius: 8px; height: 24px; overflow: hidden;">
+        <div style="background: linear-gradient(90deg, ${barColor} 0%, ${barColor}EE 100%); height: 100%; width: ${occupancyPercent}%; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; color: white; font-size: 11px; font-weight: 600;">${occupancyPercent > 5 ? occupancyPercent + '%' : ''}</div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #6B7280;">
+        <span>Disponíveis: <strong style="color: ${barColor}">${remainingCapacity}</strong></span>
+        <span>Limite: <strong>${deptCapacity}</strong></span>
+      </div>
+    `;
+
+    container.appendChild(occupancyDiv);
+
     const questions = config[currentDeptId].questions;
-    
+
     questions.forEach((q, index) => {
       const div = document.createElement('div');
       div.className = 'form-group';
@@ -5026,6 +4991,32 @@
   
   function updateOrientacoes(val) {
     config[currentDeptId].orientacoes = val;
+  }
+
+  // Calcula ocupação atual de um departamento na data selecionada
+  function calculateCurrentOccupancy(deptId) {
+    const dateInput = document.getElementById('dynamic-date');
+    if (!dateInput || !dateInput.value) return 0;
+
+    const selectedDate = dateInput.value;
+    const appointments = JSON.parse(localStorage.getItem('cadeia_appointments') || '[]');
+
+    const occupancy = appointments
+      .filter(a => a.deptId === deptId && a.date === selectedDate && a.status !== 'CANCELADO')
+      .reduce((total, a) => {
+        const numParticipants = parseInt(a.numParticipants) || parseInt(a.data?.q12b) || 1;
+        return total + numParticipants;
+      }, 0);
+
+    return occupancy;
+  }
+
+  // Valida se o número de participantes excede a capacidade
+  function validateParticipantCount(deptId, participantCount) {
+    const capacity = DEPARTMENTS[deptId].capacity;
+    const currentOccupancy = calculateCurrentOccupancy(deptId);
+    const remaining = capacity - currentOccupancy;
+    return participantCount <= remaining;
   }
 
   // ==========================================
