@@ -2,7 +2,69 @@
 
 **Data Última Atualização:** 22/07/2026  
 **Versão Atual:** 2.14.0 (Em Integração)  
-**Status:** ✅ RBAC Fixado / 🟡 v2.14.0 RPC Integrado + Hours Customization UI: Aguarda Stress Test
+**Status:** ✅ RBAC Fixado / ✅ Formulário Padronizado / 🟡 v2.14.0 RPC Integrado + Hours Customization UI: Aguarda Stress Test
+
+---
+
+## 2026-07-22 — PADRONIZAÇÃO FORMULÁRIO + OCUPAÇÃO/CAPACIDADE VISUAL (v2.14.0)
+
+### Objetivo
+Implementar formulário idêntico para TODOS os departamentos com display em tempo real de ocupação vs capacidade, resolvendo o pedido: "QUERO EXATAMENTE COM AS MESMAS PERGUNTAS E PADRONIZE PARA TODOS OS DEPARTAMENTOS"
+
+### Alterações Realizadas
+
+**1. index.html**
+- ✅ Linha ~3835: Criado `DEFAULT_QUESTIONS_STANDARD` com 7 perguntas padrão
+- ✅ Linhas ~3856-3860: TODOS os departamentos (coworking, linklab, salatreinamento, atrio, musica) agora apontam para DEFAULT_QUESTIONS_STANDARD
+- ✅ Removida duplicação: ~70 linhas de código redundante (4 departamentos diferentes tinham listas idênticas)
+- ✅ Linha ~2773: onchange no date input agora chama `renderFields()` para atualizar ocupação
+- ✅ Linhas ~4812-4850: Adicionado render visual de ocupação/capacidade no topo de `renderFields()`
+  - Barra de progresso dinâmica com cor (verde/amarelo/vermelho)
+  - Exibe: Ocupação atual / Capacidade máxima / Lugares disponíveis
+- ✅ Linhas ~4997-5020: Funções `calculateCurrentOccupancy()` e `validateParticipantCount()`
+
+**2. Perguntas Padrão (7 base + adicionais)**
+```
+1. Nome Completo (text)
+2. E-mail Pessoal (email)
+3. Empresa/Instituição (text)
+4. Cargo/Função (text)
+5. Telefone/WhatsApp (tel)
+6. E-mail da Empresa (email)
+7. Título do Evento (text)
+8. Quantas pessoas participarão desta sessão? (number) ← NOVO, proeminente
+9-16. Perguntas adicionais (datas, justificativa, ODS, etc)
+```
+
+### Fluxo Visual Implementado
+1. Admin abre formulário de agendamento
+2. Seleciona data
+3. Sistema calcula automaticamente:
+   - Quantas pessoas já estão agendadas para essa data
+   - Quanto espaço sobra (capacidade - ocupação)
+   - Cor da barra (verde = espaço, vermelho = lotado)
+4. Admin preenche "Quantas pessoas" — validação compara contra espaço disponível
+5. Se exceder: erro com mensagem clara "Capacidade insuficiente"
+
+### Validações Executadas
+- ✅ Sintaxe HTML/JS válida (sem erros de console)
+- ✅ Arquivo compilado com sucesso
+- ✅ Todas as 5 departamentos referenciando corretamente DEFAULT_QUESTIONS_STANDARD
+- ✅ Funções `calculateCurrentOccupancy()` e `validateParticipantCount()` implementadas
+- ✅ Display de ocupação renderizado com cores dinâmicas
+- ✅ Nenhuma credencial/senha exposta
+
+### Impactos
+- ✅ **Consistência de UX**: Mesmas perguntas, mesma ordem, mesma experiência em todos departamentos
+- ✅ **Transparência**: Usuários veem EXATAMENTE quanto espaço está disponível
+- ✅ **Validação Dupla**: Client-side visual + server-side RPC validate ainda ativo
+- ✅ **Manutenção**: Uma única fonte de verdade (DEFAULT_QUESTIONS_STANDARD) torna futuras mudanças mais fáceis
+- ✅ **Redução de Código**: ~70 linhas de duplicação removidas
+
+### Pendências
+- ⏳ Testar end-to-end em produção (https://agendacriativa.sevenxperts.solutions/)
+- ⏳ Validar ocupação/capacidade atualiza corretamente quando data muda
+- ⏳ Testar em múltiplos departamentos para garantir padrão
 
 ---
 

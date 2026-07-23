@@ -2,7 +2,36 @@
 
 **Última atualização:** 2026-07-22  
 **Versão:** 2.14.0 (Em Integração)  
-**Status Geral:** 🟡 Em Desenvolvimento - RPC integrado + Race Condition resolvido + Real-time listener ativo
+**Status Geral:** 🟡 Em Desenvolvimento - Formulário padronizado + Ocupação/Capacidade visual implementado
+
+---
+
+## Atualização — 2026-07-22 (v2.14.0) — Formulário Padrão + Ocupação/Capacidade (COMPLETO)
+
+### Concluído
+- [x] **Padronização do Formulário**: TODOS os 5 departamentos usam EXATAMENTE as MESMAS 7 perguntas
+  - ✓ Coworking, Link Lab, Sala Treinamento, Átrio, Stúdio de Música com formulário idêntico
+  - ✓ DEFAULT_QUESTIONS_STANDARD criado como referência única
+  - ✓ Removidas duplicações de código (4 departamentos diferentes agora apontam para 1 padrão)
+- [x] **Campo de Participantes**: "Quantas pessoas participarão desta sessão?" adicionado prominentemente
+  - ✓ Posicionado estrategicamente (3ª pergunta após dados de contato)
+  - ✓ Validação: número não pode exceder capacidade da sala
+- [x] **Display Visual de Ocupação/Capacidade**:
+  - ✓ Barra de progresso dinâmica (verde <60%, amarelo 60-89%, vermelho ≥90%)
+  - ✓ Mostra: Ocupação atual / Capacidade máxima / Lugares disponíveis
+  - ✓ Auto-atualiza quando data é alterada (renderFields() vinculado a onchange)
+  - ✓ Cálculo em tempo real de ocupação por departamento
+
+### Funções Implementadas
+- `calculateCurrentOccupancy(deptId)`: Conta pessoas já agendadas para data selecionada
+- `validateParticipantCount(deptId, participantCount)`: Valida capacidade
+- `renderFields()`: Inclui render de ocupação/capacidade no topo do formulário
+
+### Impactos
+- ✅ **UX Melhorada**: Usuários veem exatamente quanto espaço têm antes de confirmar
+- ✅ **Consistência**: Mesmo formulário em todos os departamentos (sem surpresas)
+- ✅ **Compatibilidade**: Mantém validação dupla (client + server RPC)
+- ✅ **Escalabilidade**: Código unificado (manutenção futura mais fácil)
 
 ---
 
