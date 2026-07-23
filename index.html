@@ -2440,10 +2440,10 @@
     <nav class="header-nav-bar">
       <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
         <div style="display: flex; gap: 24px;">
-          <a href="#" class="nav-link active">Início</a>
-          <a href="#agendar" class="nav-link">Agendar</a>
+          <a href="#" onclick="navGoInicio(); return false;" class="nav-link active">Início</a>
+          <a href="#" onclick="navGoAgendar(); return false;" class="nav-link">Agendar</a>
           <a href="#" onclick="openConsultarModal(); return false;" class="nav-link">Consultar</a>
-          <a href="#" class="nav-link">Admin</a>
+          <a href="#" onclick="navGoAdmin(); return false;" class="nav-link">Admin</a>
         </div>
         <button class="nav-link" id="user-auth-btn" style="background: none; border: none; cursor: pointer; font-weight: 500; white-space: nowrap;" onclick="openUserAuth('signup')">
           <svg style="display:inline-block;width:1em;height:1em;vertical-align:-0.125em;margin-right:4px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Entrar / Cadastro
@@ -3832,24 +3832,26 @@
 
   // Default Questions - Unified form for all departments
   // FORMULÁRIO PADRÃO — IDÊNTICO PARA TODOS OS DEPARTAMENTOS
-  // Usar DEFAULT_QUESTIONS_STANDARD para todos
+  // Réplica EXATA do Google Form oficial "Ficha de solicitação de parceria de eventos"
+  // do Centro de Inovação Cadeia Criativa de Sobral.
   const DEFAULT_QUESTIONS_STANDARD = [
-    { id: 'q1', label: 'Nome Completo', type: 'text', required: true, width: '100%', placeholder: 'Seu nome completo' },
-    { id: 'q2', label: 'E-mail Pessoal', type: 'email', required: true, width: '100%', placeholder: 'seu.email@dominio.com' },
-    { id: 'q3', label: 'Empresa/Instituição', type: 'text', required: true, width: '100%', placeholder: 'Nome da empresa ou instituição' },
-    { id: 'q4', label: 'Cargo/Função', type: 'text', required: true, width: '100%', placeholder: 'Seu cargo ou função' },
-    { id: 'q5', label: 'Telefone/WhatsApp', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
-    { id: 'q6', label: 'E-mail da Empresa', type: 'email', required: true, width: '100%', placeholder: 'contato@empresa.com' },
-    { id: 'q7', label: 'Título do Evento', type: 'text', required: true, width: '100%', placeholder: 'Título ou tema do seu evento' },
-    { id: 'q12b', label: 'Quantas pessoas participarão desta sessão?', type: 'number', required: true, width: '100%', placeholder: 'Insira número de participantes', validationMsg: 'O número de participantes não pode exceder a capacidade do espaço' },
-    { id: 'q8', label: 'Datas Propostas para Realização do Evento', type: 'textarea', required: true, width: '100%', placeholder: 'Descreva as datas sugeridas' },
-    { id: 'q9', label: 'Justificativa de Compatibilização', type: 'textarea', required: true, width: '100%', placeholder: 'Justifique a compatibilização do evento com os objetivos do ecossistema' },
-    { id: 'q10', label: 'Tipo de Evento', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Conhecimento', 'Materiais', 'Vídeo', 'Ferramentas', 'Mediação', 'Consultoria', 'Feiras'] },
-    { id: 'q11', label: 'Horário de Duração do Evento', type: 'text', required: true, width: '100%', placeholder: 'Ex: 2 horas' },
-    { id: 'q13', label: 'Precisa de Tempo Anterior para Montagem de Estrutura?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
-    { id: 'q14', label: 'Objetivos de Desenvolvimento Sustentável Contemplados', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 - Erradicação da Pobreza', 'ODS 2 - Fome Zero e Agricultura Sustentável', 'ODS 3 - Saúde e Bem-Estar', 'ODS 4 - Educação de Qualidade', 'ODS 5 - Igualdade de Gênero', 'ODS 6 - Água Potável e Saneamento', 'ODS 7 - Energia Acessível e Limpa', 'ODS 8 - Trabalho Decente e Crescimento Econômico', 'ODS 9 - Indústria, Inovação e Infraestrutura', 'ODS 10 - Redução das Desigualdades', 'ODS 11 - Cidades e Comunidades Sustentáveis', 'ODS 12 - Consumo e Produção Responsáveis', 'ODS 13 - Ação Climática', 'ODS 14 - Vida na Água', 'ODS 15 - Vida Terrestre', 'ODS 16 - Paz, Justiça e Instituições Eficazes', 'ODS 17 - Parcerias e Meios de Implementação'] },
-    { id: 'q15', label: 'Palestrantes/Facilitadores Previstos (Nomes)', type: 'textarea', required: true, width: '100%', placeholder: 'Liste os nomes dos palestrantes ou facilitadores' },
-    { id: 'q16', label: 'Layout Preferido da Sala', type: 'select', required: true, width: '100%', options: ['Formato Auditório', 'Formato em U com Mesas', 'Formato de Cabine Mesas', 'Formato de Mesa Redonda', 'Outro'] }
+    { id: 'q1', label: 'NOME', type: 'text', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q2', label: 'EMAIL', type: 'email', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q3', label: 'EMPRESA/INSTITUIÇÃO', type: 'text', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q4', label: 'CARGO', type: 'text', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q5', label: 'FONE', type: 'tel', required: true, width: '100%', placeholder: '(00) 99999-9999', mask: 'phone' },
+    { id: 'q6', label: 'EMAIL DA EMPRESA', type: 'email', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q7', label: '1 - INDICAR O TÍTULO DO EVENTO.', type: 'text', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q8', label: '1.1 INDIQUE DUAS PROPOSTAS DE DATAS PERÍODOS PARA A REALIZAÇÃO DO EVENTO.', type: 'textarea', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q9', label: '2 - JUSTIFIQUE A CONTRIBUIÇÃO DO SEU EVENTO PARA A CRIATIVIDADE, INOVAÇÃO, EMPREENDEDORISMO E DESENVOLVIMENTO DO ECOSSISTEMA DA REGIÃO NORTE.', type: 'textarea', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q10', label: '3 - QUAL SEU TIPO DE EVENTO?', type: 'select', required: true, width: '100%', options: ['Palestra', 'Seminário', 'Curso/Oficina', 'Workshop', 'Visita', 'Treinamento', 'Mentoria', 'Consultoria', 'Outro'] },
+    { id: 'q11', label: '3.1 - HORÁRIO DE DURAÇÃO DO SEU EVENTO:', type: 'text', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q12', label: '3.2 - PÚBLICO ESTIMADO:', type: 'text', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q12b', label: 'NÚMERO DE PESSOAS QUE ESTARÃO PRESENTES NO EVENTO (dentro da capacidade do espaço):', type: 'number', required: true, width: '100%', placeholder: 'Informe a quantidade de participantes', validationMsg: 'O número de participantes não pode exceder a capacidade do espaço' },
+    { id: 'q13', label: '3.3 SEU EVENTO PRECISA DE UM TURNO ANTERIOR PARA MONTAGEM DE ESTRUTURA?', type: 'select', required: true, width: '100%', options: ['Sim', 'Não'] },
+    { id: 'q14', label: '4 - QUAL(IS) OBJETIVO(S) DE DESENVOLVIMENTO SUSTENTÁVEL (ODS) DA AGENDA 2030 DA ONU SEU EVENTO CONTEMPLA?', type: 'checkbox-group', required: true, width: '100%', options: ['ODS 1 – Erradicação da Pobreza', 'ODS 2 – Fome Zero e Agricultura Sustentável', 'ODS 3 – Saúde e Bem-Estar', 'ODS 4 – Educação de Qualidade', 'ODS 5 – Igualdade de Gênero', 'ODS 6 – Água Potável e Saneamento', 'ODS 7 – Energia Limpa e Acessível', 'ODS 8 – Trabalho Decente e Crescimento Econômico', 'ODS 9 – Indústria, Inovação e Infraestrutura', 'ODS 10 – Redução das Desigualdades', 'ODS 11 – Cidades e Comunidades Sustentáveis', 'ODS 12 – Consumo e Produção Responsáveis', 'ODS 13 – Ação Contra a Mudança do Clima', 'ODS 14 – Vida na Água', 'ODS 15 – Vida Terrestre', 'ODS 16 – Paz, Justiça e Instituições Eficazes', 'ODS 17 – Parcerias e Meios de Implementação'] },
+    { id: 'q15', label: '5- PALESTRANTE/FACILITADOR PREVISTOS (INSERIR NOME):', type: 'textarea', required: true, width: '100%', placeholder: 'Sua resposta' },
+    { id: 'q16', label: '6- LAYOUT DA SALA', type: 'select', required: true, width: '100%', options: ['FORMATO AUDITÓRIO', 'FORMATO EM U COM MESAS', 'FORMATO EM U SEM MESAS', 'FORMATO DE MESA DE REUNIÃO', 'Outro'] }
   ];
 
   const DEFAULT_QUESTIONS = {
@@ -4678,20 +4680,33 @@
     const storedConfig = localStorage.getItem('cadeia_departments');
     config = storedConfig ? JSON.parse(storedConfig) : {};
 
-    // Garante que TODOS os departamentos atuais tenham config — mesmo p/ usuários com
-    // localStorage antigo (que não tinha Link Lab / Sala de Treinamento / Stúdio de Música).
+    // Versão do formulário padrão. Ao incrementar, força atualização das perguntas
+    // em TODOS os departamentos (mesmo em navegadores com localStorage antigo),
+    // preservando apenas as orientações personalizadas por departamento.
+    const FORM_VERSION = '2026-07-22-google-form-exato';
+    const storedFormVersion = localStorage.getItem('cadeia_form_version');
+    const needsFormSync = storedFormVersion !== FORM_VERSION;
+
     let configChanged = false;
     Object.keys(DEPARTMENTS).forEach(key => {
       if (!config[key]) {
+        // Departamento sem config: cria do zero com o formulário padrão.
         config[key] = {
           questions: DEFAULT_QUESTIONS[key] || DEFAULT_QUESTIONS['coworking'],
           orientacoes: DEPARTMENTS[key].defaultOrientacoes
         };
         configChanged = true;
+      } else if (needsFormSync) {
+        // Config antiga: substitui as perguntas pelo padrão novo, mantém orientações.
+        config[key].questions = DEFAULT_QUESTIONS[key] || DEFAULT_QUESTIONS['coworking'];
+        configChanged = true;
       }
     });
     if (!storedConfig || configChanged) {
       localStorage.setItem('cadeia_departments', JSON.stringify(config));
+    }
+    if (needsFormSync) {
+      localStorage.setItem('cadeia_form_version', FORM_VERSION);
     }
 
     // Initialize appointments and counters if not present
@@ -5092,6 +5107,33 @@
     document.getElementById('form-dynamic').classList.remove('active');
     document.body.style.overflow = '';
     if(isEditMode) toggleEditMode(); // revert edit mode cleanly
+  }
+
+  // ==========================================
+  // NAVEGAÇÃO DO CABEÇALHO
+  // Handlers explícitos (funcionam em TODO clique, ao contrário de âncoras #hash
+  // que só disparam na 1ª vez porque o hash da URL não muda no 2º clique).
+  // ==========================================
+  function setActiveNav(label) {
+    document.querySelectorAll('.header-nav-bar .nav-link').forEach(l => {
+      l.classList.toggle('active', l.innerText.trim() === label);
+    });
+  }
+
+  function navGoInicio() {
+    setActiveNav('Início');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function navGoAgendar() {
+    setActiveNav('Agendar');
+    const grid = document.querySelector('.dept-grid');
+    if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function navGoAdmin() {
+    document.getElementById('form-admin-login').classList.add('active');
+    document.body.style.overflow = 'hidden';
   }
 
   function openPrivacyPolicy() {
@@ -7065,15 +7107,8 @@
   // GLOBAL BINDINGS
   // ==========================================
   
-  // Open Admin Login from Header Nav
-  document.querySelectorAll('a[href="#"]').forEach(link => {
-     if(link.innerText === 'Admin') {
-        link.addEventListener('click', (e) => {
-           e.preventDefault();
-           document.getElementById('form-admin-login').classList.add('active');
-        });
-     }
-  });
+  // (Admin login agora é aberto via navGoAdmin() no onclick do link, que funciona
+  //  em todo clique — o binding antigo baseado em href="#"/innerText foi removido.)
 
   // Close on overlay click
   document.querySelectorAll('.form-overlay').forEach(overlay => {

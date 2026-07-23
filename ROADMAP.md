@@ -2,7 +2,34 @@
 
 **Última atualização:** 2026-07-22  
 **Versão:** 2.14.0 (Em Integração)  
-**Status Geral:** 🟡 Em Desenvolvimento - Formulário padronizado + Ocupação/Capacidade visual implementado
+**Status Geral:** 🟡 Em Desenvolvimento - Formulário réplica-exata do Google Form + navbar corrigida
+
+---
+
+## Atualização — 2026-07-22 (v2.14.0) — Formulário RÉPLICA EXATA Google Form + Fix Navbar
+
+### Concluído
+- [x] **Formulário = réplica EXATA do Google Form oficial** ("Ficha de solicitação de parceria de eventos")
+  - ✓ Labels idênticos com numeração original (NOME, EMAIL, "1 - INDICAR O TÍTULO...", "1.1...", "2 - JUSTIFIQUE...", "3 - QUAL SEU TIPO...", "3.1", "3.2", "3.3", "4 - QUAL(IS) OBJETIVO(S)...", "5-", "6-")
+  - ✓ **Tipo de Evento corrigido**: Palestra, Seminário, Curso/Oficina, Workshop, Visita, Treinamento, Mentoria, Consultoria, Outro (antes tinha opções inventadas: Conhecimento, Materiais, Vídeo, Ferramentas, Feiras)
+  - ✓ **Layout da Sala corrigido**: FORMATO AUDITÓRIO, EM U COM MESAS, EM U SEM MESAS, DE MESA DE REUNIÃO, Outro (antes tinha Cabine Mesas, Mesa Redonda)
+  - ✓ **3.2 - Público Estimado** restaurado (havia sido removido)
+  - ✓ ODS com traços longos (–) e textos exatos ("Energia Limpa e Acessível", "Ação Contra a Mudança do Clima")
+- [x] **Campo NOVO** "NÚMERO DE PESSOAS QUE ESTARÃO PRESENTES NO EVENTO (dentro da capacidade do espaço)" com validação contra capacidade máxima
+- [x] **Idêntico em TODOS os 5 departamentos** (referência única DEFAULT_QUESTIONS_STANDARD), variando só a capacidade (70/120/30/150/10)
+- [x] **Versionamento de formulário** (`cadeia_form_version`): força atualização das perguntas em navegadores com localStorage antigo, preservando orientações personalizadas
+- [x] **Fix Bug Navbar** ("link só aceita 1 clique"):
+  - ✓ Links "Início"/"Agendar"/"Admin" convertidos de âncora #hash para handlers onclick (navGoInicio/navGoAgendar/navGoAdmin) que funcionam em TODO clique
+  - ✓ "Admin" agora abre corretamente o login (antes dependia de binding frágil por innerText)
+  - ✓ Testado no browser: 2º clique em "Agendar" volta a rolar aos departamentos (antes ficava parado)
+
+### Validado
+- ✓ Sintaxe JS: 4 blocos inline, 0 erros
+- ✓ Coworking renderizado no browser: labels exatos + badge de capacidade 0/70 + opções corretas
+- ✓ Navbar: 2 cliques consecutivos em "Agendar" funcionam
+
+### Observações
+- Teste interativo dos 5 forms via preview file:// é limitado (snapshot estático remove overlays ocultos); validação em produção HTTP recomendada. Formulário idêntico é garantido estruturalmente (mesma referência de array para os 5 departamentos).
 
 ---
 

@@ -2,7 +2,72 @@
 
 **Data Última Atualização:** 22/07/2026  
 **Versão Atual:** 2.14.0 (Em Integração)  
-**Status:** ✅ RBAC Fixado / ✅ Formulário Padronizado / 🟡 v2.14.0 RPC Integrado + Hours Customization UI: Aguarda Stress Test
+**Status:** ✅ RBAC Fixado / ✅ Form réplica-exata Google Form / ✅ Navbar corrigida / 🟡 RPC + Hours Customization: Aguarda Stress Test
+
+---
+
+## 2026-07-22 — FORMULÁRIO RÉPLICA EXATA DO GOOGLE FORM + FIX NAVBAR (v2.14.0)
+
+### Objetivo
+1. Corrigir o formulário para ser réplica EXATA do Google Form oficial (o usuário apontou 3x que as opções estavam inventadas).
+2. Corrigir bug: "link só aceita 1 clique, o segundo não leva a lugar nenhum".
+
+### Problema Identificado (Formulário)
+As versões anteriores tinham OPÇÕES INVENTADAS que não batiam com o Google Form real:
+- **Tipo de Evento**: tinha "Conhecimento, Materiais, Vídeo, Ferramentas, Mediação, Feiras" (ERRADO)
+- **Layout da Sala**: tinha "Cabine Mesas, Mesa Redonda" (ERRADO)
+- **3.2 Público Estimado**: havia sido REMOVIDO
+- Labels sem a numeração oficial (1, 1.1, 2, 3, 3.1, 3.2, 3.3, 4, 5, 6)
+
+### Alterações Realizadas
+
+**1. index.html — DEFAULT_QUESTIONS_STANDARD (linha ~3836)**
+Reescrito para bater EXATAMENTE com o Google Form:
+- NOME / EMAIL / EMPRESA·INSTITUIÇÃO / CARGO / FONE / EMAIL DA EMPRESA
+- "1 - INDICAR O TÍTULO DO EVENTO."
+- "1.1 INDIQUE DUAS PROPOSTAS DE DATAS PERÍODOS PARA A REALIZAÇÃO DO EVENTO."
+- "2 - JUSTIFIQUE A CONTRIBUIÇÃO DO SEU EVENTO..."
+- "3 - QUAL SEU TIPO DE EVENTO?" → Palestra, Seminário, Curso/Oficina, Workshop, Visita, Treinamento, Mentoria, Consultoria, Outro
+- "3.1 - HORÁRIO DE DURAÇÃO DO SEU EVENTO:"
+- "3.2 - PÚBLICO ESTIMADO:" (RESTAURADO)
+- **NOVO**: "NÚMERO DE PESSOAS QUE ESTARÃO PRESENTES NO EVENTO (dentro da capacidade do espaço):" (validação vs capacidade)
+- "3.3 SEU EVENTO PRECISA DE UM TURNO ANTERIOR PARA MONTAGEM DE ESTRUTURA?" → Sim, Não
+- "4 - QUAL(IS) OBJETIVO(S) DE DESENVOLVIMENTO SUSTENTÁVEL (ODS)..." (17 ODS com textos exatos)
+- "5- PALESTRANTE/FACILITADOR PREVISTOS (INSERIR NOME):"
+- "6- LAYOUT DA SALA" → FORMATO AUDITÓRIO, EM U COM MESAS, EM U SEM MESAS, DE MESA DE REUNIÃO, Outro
+
+**2. index.html — Versionamento de formulário (linha ~4680)**
+- Adicionado `FORM_VERSION = '2026-07-22-google-form-exato'` + chave localStorage `cadeia_form_version`
+- Ao detectar versão diferente, força substituição das perguntas em TODOS os departamentos (mesmo com localStorage antigo), preservando orientações personalizadas
+- Resolve: navegadores que já tinham config salva continuariam vendo o form velho
+
+**3. index.html — Fix Navbar (linha ~2443 e ~5106)**
+- Links "Início"/"Agendar"/"Admin" migrados de `href="#agendar"`/`href="#"` para `onclick="navGo...()"` com `return false`
+- Novas funções: `navGoInicio()` (scroll topo), `navGoAgendar()` (scroll .dept-grid), `navGoAdmin()` (abre login), `setActiveNav()` (destaque)
+- Removido binding global frágil (`a[href="#"]` + innerText==='Admin')
+- **Causa raiz do bug**: âncora #hash só dispara scroll quando o hash MUDA; no 2º clique o hash já é o mesmo → navegador não faz nada
+
+### Validações Executadas
+- ✅ Sintaxe JS validada via node (4 blocos inline, 0 erros)
+- ✅ Browser (file://): Coworking abriu com labels EXATOS + placeholder "Sua resposta" + badge de ocupação 0/70 + Limite 70
+- ✅ Browser: opções de Tipo de Evento e Layout conferidas via get_page_text (batem com Google Form)
+- ✅ Browser: navbar — 2 cliques consecutivos em "Agendar" funcionam (bug resolvido)
+- ⚠️ Teste dos 5 forms um-a-um limitado pelo preview file:// (snapshot estático remove overlays ocultos). Identidade garantida estruturalmente (mesma referência DEFAULT_QUESTIONS_STANDARD). Recomenda-se validação final em produção HTTP.
+
+### Impactos
+- ✅ **Fidelidade**: formulário agora é cópia fiel do documento oficial da Cadeia Criativa
+- ✅ **Consistência**: 5 departamentos com perguntas idênticas, só a capacidade varia
+- ✅ **UX**: navbar 100% funcional (Admin abre, links repetíveis)
+- ✅ **Migração segura**: versionamento atualiza usuários antigos sem perder orientações
+
+### Pendências
+- ⏳ Validar em produção HTTP os 5 departamentos (form idêntico + capacidade correta)
+- ⏳ Confirmar que localStorage antigo migra corretamente para o form novo
+
+### Arquivos Principais Envolvidos
+- `index.html` (DEFAULT_QUESTIONS_STANDARD, versionamento config, navbar handlers)
+- `ROADMAP.md`
+- `IMPLEMENTATION_LOG.md`
 
 ---
 
